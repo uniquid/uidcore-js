@@ -93,7 +93,9 @@
       }
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "bitcore-p2p": "1.1.2"
+  },
   "devDependencies": {
     "@types/jest": "20.0.2",
     "@types/node": "7.0.31",
