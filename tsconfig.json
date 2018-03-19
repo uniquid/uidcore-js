@@ -12,8 +12,9 @@
     // "types": ["node"],
     "strict": true,
     "allowSyntheticDefaultImports": true,
-    "suppressImplicitAnyIndexErrors": true,
+    // "suppressImplicitAnyIndexErrors": true,
     "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
     "pretty": true,
     // "jsx": "react",
     // change this to any hyperscript like function that you're using
