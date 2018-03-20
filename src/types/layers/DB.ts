@@ -1,10 +1,10 @@
-import { Contract, ContractOf } from '../data/Contract'
-import { IdAddress, Role } from '../data/Identity'
+import { Contract } from '../data/Contract'
+import { AbstractIdentity, Role } from '../data/Identity'
 import { NodeInfo } from '../data/NodeInfo'
 
 export interface DB {
-  storeCtr<CT extends Contract>(ctr: CT): Promise<CT>
-  findCtr<RT extends Role>(as: RT, address: IdAddress): Promise<ContractOf[RT]>
+  storeCtr(ctr: Contract<Role>): Promise<void>
+  findCtr<R extends Role>(as: AbstractIdentity<R>): Promise<Contract<R>[]>
   getInfo(): Promise<NodeInfo | null>
-  setInfo<NI extends NodeInfo>(nodeInfo: NI): Promise<NI>
+  setInfo(nodeInfo: NodeInfo): Promise<void>
 }

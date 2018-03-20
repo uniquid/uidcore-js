@@ -1,38 +1,33 @@
-import { ProviderIdentity, UserIdentity } from './Identity'
+import { AbstractIdentity, Role } from './Identity'
 
-export const CREATED = 'CREATED_NODE'
-export const IMPRINTED = 'IMPRINTED_NODE'
-export const READY = 'READY_NODE'
-export type NodeState = typeof IMPRINTED | typeof READY | typeof CREATED
+export enum NodeState {
+  Created = 'CREATED',
+  Imprinted = 'IMPRINTED',
+}
 
-export interface BaseNodeInfo {
+export interface AbstractNodeInfo {
   name: string
   state: NodeState
-  lastUserId: null | UserIdentity
-  lastProviderId: null | ProviderIdentity
+  createdAt: number | null
+  imprintedAt: number | null
+  nextUserId: AbstractIdentity<Role.User> | null
+  nextProviderId: AbstractIdentity<Role.Provider> | null
 }
-export interface CreatedNodeData extends BaseNodeInfo {
+
+export interface CreatedNodeInfo extends AbstractNodeInfo {
+  state: NodeState.Created
   createdAt: number
+  imprintedAt: null
+  nextUserId: null
+  nextProviderId: null
 }
 
-export interface ImprintedNodeData extends CreatedNodeData {
+export interface ImprintedNodeInfo extends AbstractNodeInfo {
+  state: NodeState.Created
+  createdAt: number
   imprintedAt: number
+  nextUserId: AbstractIdentity<Role.User>
+  nextProviderId: AbstractIdentity<Role.Provider>
 }
 
-// export interface ReadyNodeData extends ImprintedNodeData {
-//   readyAt: number
-// }
-
-export interface CreatedNode extends CreatedNodeData {
-  state: typeof CREATED
-}
-
-export interface ImprintedNode extends ImprintedNodeData {
-  state: typeof IMPRINTED
-}
-
-// export interface ReadyNode extends ReadyNodeData {
-//   state: typeof READY
-// }
-
-export type NodeInfo = CreatedNode | ImprintedNode // | ReadyNode
+export type NodeInfo = CreatedNodeInfo | ImprintedNodeInfo

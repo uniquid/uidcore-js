@@ -11,6 +11,7 @@
     ],
     // "types": ["node"],
     "strict": true,
+    "strictNullChecks": true,
     "allowSyntheticDefaultImports": true,
     // "suppressImplicitAnyIndexErrors": true,
     "forceConsistentCasingInFileNames": true,
@@ -23,6 +24,7 @@
     "outDir": "lib",
     "declaration": true,
     "declarationDir": "typings",
+    "rootDir": "src",
     "stripInternal": true
   },
   "include": [

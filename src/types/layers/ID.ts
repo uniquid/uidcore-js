@@ -1,6 +1,6 @@
-import { AbstractIdentity, Identity } from '../data/Identity'
+import { AbstractIdentity, Identity, Role } from '../data/Identity'
 
 export interface ID {
-  signFor(absId: AbstractIdentity, rawContract: string): string
-  identityFor(absId: AbstractIdentity): Identity
+  signFor<R extends Role>(absId: AbstractIdentity<R>, doc: string): string
+  identityFor<R extends Role>(absId: AbstractIdentity<R>): Identity<R>
 }
