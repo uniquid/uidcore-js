@@ -94,6 +94,7 @@
     }
   },
   "dependencies": {
+    "bcoin": "1.0.0-beta.15",
     "bitcore-p2p": "1.1.2"
   },
   "devDependencies": {

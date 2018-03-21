@@ -24,7 +24,7 @@
     "outDir": "lib",
     "declaration": true,
     "declarationDir": "typings",
-    "rootDir": "src",
+    "baseUrl": "src",
     "stripInternal": true
   },
   "include": [
