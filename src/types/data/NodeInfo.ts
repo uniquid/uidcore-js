@@ -1,38 +1,38 @@
-import { ProviderIdentity, UserIdentity } from './Identity'
+import { AbstractIdentity, Role } from './Identity'
 
-export const CREATED = 'CREATED_NODE'
-export const IMPRINTED = 'IMPRINTED_NODE'
-export const READY = 'READY_NODE'
-export type NodeState = typeof IMPRINTED | typeof READY | typeof CREATED
-
-export interface BaseNodeInfo {
-  name: string
-  state: NodeState
-  lastUserId: null | UserIdentity
-  lastProviderId: null | ProviderIdentity
+export enum NodeState {
+  Created = 'CREATED',
+  Imprinted = 'IMPRINTED',
+  Orchestrated = 'ORCHESTRATED',
 }
-export interface CreatedNodeData extends BaseNodeInfo {
+
+export interface AbstractNodeInfoData {
+  name: string
+  createdAt: number | null
+}
+
+export interface CreatedNodeInfoData extends AbstractNodeInfoData {
   createdAt: number
 }
 
-export interface ImprintedNodeData extends CreatedNodeData {
+export interface ImprintedNodeInfoData extends CreatedNodeInfoData {
+  createdAt: number
   imprintedAt: number
 }
 
-// export interface ReadyNodeData extends ImprintedNodeData {
-//   readyAt: number
-// }
-
-export interface CreatedNode extends CreatedNodeData {
-  state: typeof CREATED
+export interface OrchestratedNodeInfoData extends ImprintedNodeInfoData {
+  orchestratedAt: number
+  nextUserId: AbstractIdentity<Role.User>
+  nextProviderId: AbstractIdentity<Role.Provider>
+}
+export interface CreatedNodeInfo extends CreatedNodeInfoData {
+  state: NodeState.Created
+}
+export interface ImprintedNodeInfo extends ImprintedNodeInfoData {
+  state: NodeState.Imprinted
+}
+export interface OrchestratedNodeInfo extends OrchestratedNodeInfoData {
+  state: NodeState.Orchestrated
 }
 
-export interface ImprintedNode extends ImprintedNodeData {
-  state: typeof IMPRINTED
-}
-
-// export interface ReadyNode extends ReadyNodeData {
-//   state: typeof READY
-// }
-
-export type NodeInfo = CreatedNode | ImprintedNode // | ReadyNode
+export type NodeInfo = CreatedNodeInfo | ImprintedNodeInfo | OrchestratedNodeInfo

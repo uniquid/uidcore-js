@@ -1,23 +1,13 @@
 export type IdAddress = string
-export const PROVIDER = 'PROVIDER'
-export const USER = 'USER'
-export type Role = typeof USER | typeof PROVIDER
-export interface AbstractIdentity {
-  role: Role
+export type IdIndex = number
+export enum Role {
+  Provider = 'PROVIDER',
+  User = 'USER',
+}
+export interface AbstractIdentity<R extends Role> {
+  role: R
   index: number
 }
-export interface BaseIdentity extends AbstractIdentity {
+export interface Identity<R extends Role> extends AbstractIdentity<R> {
   address: IdAddress
-}
-export interface UserIdentity extends BaseIdentity {
-  role: typeof USER
-}
-export interface ProviderIdentity extends BaseIdentity {
-  role: typeof PROVIDER
-}
-export type Identity = UserIdentity | ProviderIdentity
-
-export interface IdentityOf {
-  [PROVIDER]: ProviderIdentity
-  [USER]: UserIdentity
 }

@@ -94,6 +94,7 @@
     }
   },
   "dependencies": {
+    "bcoin": "1.0.0-beta.15",
     "bitcore-p2p": "1.1.2"
   },
   "devDependencies": {
@@ -118,7 +119,7 @@
     "tslint-config-standard": "6.0.1",
     "tslint-react": "3.0.0",
     "typedoc": "0.7.1",
-    "typescript": "2.4.1",
+    "typescript": "2.7.2",
     "uglify-js": "git://github.com/mishoo/UglifyJS2#harmony-v2.8.22",
     "uglifyjs-webpack-plugin": "0.4.5",
     "validate-commit-msg": "2.12.2",

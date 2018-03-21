@@ -1,38 +1,19 @@
-import { IdAddress, Identity, PROVIDER, ProviderIdentity, USER, UserIdentity } from './Identity'
-export interface BaseContract {
-  identity: Identity
+import { AbstractIdentity, IdAddress, Role } from './Identity'
+export interface AbstractContract {
+  received: number
+  contractor: IdAddress
+}
+
+export interface Contract<R extends Role> extends AbstractContract {
+  identity: AbstractIdentity<R>
   revoker: IdAddress
   payload: string
-  received: number
-}
-export interface ProviderContract extends BaseContract {
-  user: IdAddress
-  identity: ProviderIdentity
 }
 
-export interface UserContract extends BaseContract {
-  provider: IdAddress
-  identity: UserIdentity
+export interface ImprintingContract extends AbstractContract {
+  imprinting: true
 }
 
-export interface ImprintContract extends BaseContract {
-  imprinter: IdAddress
-  identity: ProviderIdentity
-}
-
-export interface RechargeContract extends BaseContract {
-  from: IdAddress[]
-  identity: ProviderIdentity
-}
-
-export interface RevokeContract extends BaseContract {
-  revoker: IdAddress
-  identity: UserIdentity
-}
-
-export type Contract = ImprintContract | ProviderContract | UserContract | RechargeContract | RevokeContract
-
-export interface ContractOf {
-  [PROVIDER]: ProviderIdentity
-  [USER]: UserIdentity
+export interface OrchestrationContract extends Contract<Role.Provider> {
+  orchestration: true
 }
