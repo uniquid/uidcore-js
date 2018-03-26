@@ -1,6 +1,5 @@
 // tslint:disable-next-line:no-require-imports
 const bcoin = require('bcoin')
-bcoin.set('uq')
 bcoin.networks.uq = Object.assign({}, bcoin.networks.regtest, {
   port: 19000,
   addressPrefix: bcoin.networks.testnet.addressPrefix,
@@ -8,11 +7,12 @@ bcoin.networks.uq = Object.assign({}, bcoin.networks.regtest, {
     coinType: 0,
   }),
 })
+bcoin.set('uq')
 
 export interface Options {
-  logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam'
-  dbFolder: string
-  seeds: string[]
+  logLevel?: 'error' | 'warning' | 'info' | 'debug' | 'spam'
+  dbFolder?: string
+  seeds?: string[]
 }
 const defOpts: Options = {
   logLevel: 'spam',
@@ -49,6 +49,7 @@ export const Pool = async (opts?: Options): Promise<BCPool> => {
   await chainLogger.open()
   await poolLogger.open()
   await pool.open()
+  await pool.connect()
 
   return pool
 }

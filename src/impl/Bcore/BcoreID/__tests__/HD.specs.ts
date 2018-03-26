@@ -6,7 +6,7 @@ const masterPrivKey =
   'tprv8ZgxMBicQKsPd7Uf69XL1XwhmjHopUGep8GuEiJDZmbQz6o58LninorQAfcKZWARbtRtfnLcJ5MQ2AtHcQJCCRUcMRvmDUjyEmNUWwx8UbK'
 describe('HD keys derivation', () => {
   it('derive Private Key', () => {
-    const derivedPrivkey = derivePrivateKey(masterPrivKey)([1, 1])
+    const derivedPrivkey = derivePrivateKey(masterPrivKey)([0, 1, 1])
     expect(derivedPrivkey.toBase58()).toBe(
       'tprv8knzXLyzXNU2S5ccu2F2y8LYqK4YDjrD4uoaC6froKRTig9nn5jjSTVPAsqsQcmkyayA5ooih3eRJv7jqfxMCK8gbNGhCPxC5rctSTcgUhi'
     )
