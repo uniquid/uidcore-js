@@ -3,16 +3,16 @@ const VERSION_LENGTH = 4
 const TX_HASH_LENGTH = 32
 const INPUT_INDEX_LENGTH = 4
 const SEQ_LENGTH = 4
-const splitList = <T>(list: T[], at) => ({
+const splitList = <T>(list: T[], at: number) => ({
   head: list.slice(0, at),
   tail: list.slice(at),
 })
-interface TXObj {
+export interface TXObj {
   version: number[]
   inputs: InputObj[]
   tail: number[]
 }
-interface InputObj {
+export interface InputObj {
   tx: number[]
   index: number[]
   script: number[]
@@ -85,7 +85,7 @@ export const formatTx = (txObj: TXObj) => {
     const flInput = tx.concat(index).concat(varintScriptLength).concat(script).concat(seq)
 
     return acc.concat(flInput)
-  }, [])
+  }, [] as number[])
   const { res: varintNumberOfInputs } = encodeVarint(inputs.length)
 
   return version.concat(varintNumberOfInputs).concat(flattenedInputs).concat(tail)
