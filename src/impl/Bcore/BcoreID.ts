@@ -5,9 +5,18 @@ import { BcoreID as BcoreIDType } from './types/BcoreID'
 // tslint:disable-next-line:no-require-imports
 const BcoinPrivateKey = require('bcoin/lib/hd/private')
 
-export const BcoreID = (): BcoreIDType => {
-  console.log(path, fs)
-  const privateKeyFilePath = path.join(process.cwd(), 'PrivK')
+export type Options = {
+  pkFile: string
+}
+const defOpts: Options = {
+  pkFile: path.join(process.cwd(), 'PrivK'),
+}
+export const BcoreID = (opts?: Options): BcoreIDType => {
+  opts = {
+    ...defOpts,
+    ...opts,
+  }
+  const privateKeyFilePath = opts.pkFile
   const exists = fs.existsSync(privateKeyFilePath)
   console.log(exists)
   let privateKeyBase58: hd.Bip32Base58PrivKey
@@ -21,8 +30,9 @@ export const BcoreID = (): BcoreIDType => {
   console.log(bcoinPrivateKey.xprivkey())
 
   return {
-    signFor: hd.signFor(privateKeyBase58),
+    signFor: hd.signFor(privateKeyBase58, 1),
     identityFor: hd.identityFor(privateKeyBase58),
+    derivePrivateKey: hd.derivePrivateKey(privateKeyBase58),
   }
 }
 

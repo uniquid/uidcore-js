@@ -1,5 +1,6 @@
 import { Buffer } from 'buffer'
 import { AbstractIdentity, Identity, Role } from '../../../types/data/Identity'
+import { ID } from '../../../types/layers/ID'
 // tslint:disable-next-line:no-require-imports
 // const secp256k1 = require('bcoin/lib/crypto/secp256k1')
 // tslint:disable-next-line:no-require-imports
@@ -20,9 +21,13 @@ export type BcoinHDPublicKey = { publicKey: PublicKey }
 export type PublicKey = Buffer
 export type PrivateKey = Buffer
 
-export const derivePrivateKey = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (subPath: (string | number)[]) => {
+const BASE_PATH = ['m', "44'", "0'"]
+export type DerivePrivateKey = (subPath: (string | number)[]) => BcoinHDPrivateKey
+export const derivePrivateKey = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey): DerivePrivateKey => (
+  subPath: (string | number)[]
+) => {
   const masterPrivateKey: BcoinHDPrivateKey = BcoinPrivateKey.fromBase58(bip32ExtMasterPrivateKey)
-  const derivedPrivkey = masterPrivateKey.derivePath("m/44'/0'/0/" + subPath.join('/'))
+  const derivedPrivkey = masterPrivateKey.derivePath([...BASE_PATH, ...subPath].join('/'))
   // // 0 - Having a private ECDSA key
   // const privkey = buffer.Buffer.from('18E14A7B6A307F426A94F8114701E7C8E774E7F9A47E2C2035DB29A206321725', 'hex');
 
@@ -32,24 +37,19 @@ export const derivePrivateKey = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) =
   return derivedPrivkey
 }
 
-export const signFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (
+export const signFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey, extOrInt: 0 | 1 = 1): ID['signFor'] => (
   abstrId: AbstractIdentity<Role>,
   tx: string
 ): string => {
-  return ''
+  const rolePath = abstrId.role === Role.Provider ? 0 : 1
+  const path = [...BASE_PATH, 0, rolePath, extOrInt, abstrId.index]
+
+  return path.join('/')
 }
 
-export const identityFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => <R extends Role>(
-  abstrId: AbstractIdentity<R>
-): Identity<R> => {
-  const { role, index } = abstrId
-  const isForProvider = role === Role.Provider
-  const rolePath = isForProvider ? '0' : '1'
-  const ctrPath = isForProvider ? '1' : '0'
-  const subPath = [rolePath, ctrPath, index]
-  const derivedPubkey = derivePrivateKey(bip32ExtMasterPrivateKey)(subPath).toPublic()
+export const base58AddrByPrivKey = (privkey: BcoinHDPrivateKey) => {
   // 2 - Perform SHA-256 hashing on the public key
-  const step2: Buffer = crypto.sha256(derivedPubkey.publicKey)
+  const step2: Buffer = crypto.sha256(privkey.toPublic().publicKey)
 
   // 3 - Perform RIPEMD-160 hashing on the result of SHA-256
   const step3: Buffer = crypto.ripemd160(step2)
@@ -75,6 +75,20 @@ export const identityFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => <R 
 
   // 9 - Convert the result from a byte string into a base58 string using Base58Check encoding. This is the most commonly used Bitcoin Address format
   const address: Base58Address = base58.encode(step8)
+
+  return address
+}
+
+export const identityFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => <R extends Role>(
+  abstrId: AbstractIdentity<R>
+): Identity<R> => {
+  const { role, index } = abstrId
+  const isForProvider = role === Role.Provider
+  const rolePath = isForProvider ? '0' : '1'
+  const ctrPath = isForProvider ? '1' : '0'
+  const subPath = [0, rolePath, ctrPath, index]
+  const derivedPrivkey = derivePrivateKey(bip32ExtMasterPrivateKey)(subPath)
+  const address = base58AddrByPrivKey(derivedPrivkey)
 
   return {
     ...abstrId,
