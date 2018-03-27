@@ -30,7 +30,7 @@ export const BcoreID = (opts?: Options): BcoreIDType => {
   console.log(bcoinPrivateKey.xprivkey())
 
   return {
-    signFor: hd.signFor(privateKeyBase58, 1),
+    signFor: hd.signFor(privateKeyBase58),
     identityFor: hd.identityFor(privateKeyBase58),
     derivePrivateKey: hd.derivePrivateKey(privateKeyBase58),
   }

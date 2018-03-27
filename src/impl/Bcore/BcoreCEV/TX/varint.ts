@@ -3,7 +3,7 @@
  */
 // tslint:disable:no-magic-numbers no-bitwise
 
-export const decodeVarInt = (buf, offset = 0) => {
+export const decodeVarInt = (buf: number[], offset = 0) => {
   const MSB = 0x80
   const REST = 0x7f
   const l = buf.length
@@ -24,7 +24,7 @@ export const decodeVarInt = (buf, offset = 0) => {
   return { res, length: counter - offset }
 }
 
-export const encodeVarint = (num, offset = 0) => {
+export const encodeVarint = (num: number, offset = 0) => {
   const MSB = 0x80
   const REST = 0x7f
   const MSBALL = ~REST
@@ -45,7 +45,7 @@ export const encodeVarint = (num, offset = 0) => {
   return { res, length: offset - oldOffset + 1 }
 }
 
-export const varIntLength = value => {
+export const varIntLength = (value: number) => {
   const N1 = Math.pow(2, 7)
   const N2 = Math.pow(2, 14)
   const N3 = Math.pow(2, 21)
