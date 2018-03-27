@@ -24,7 +24,7 @@ describe('HD keys derivation', () => {
     const identity = identityFor(masterPrivKey)({ role: Role.User, index: 5 })
     expect(identity.address).toBe('mqQt5iKft7ZNuTfdCVMxwuzc2RK9DwcyFz')
   })
-  it('signs transaction', () => {
+  it('signs hash for an AbstractIdentity', () => {
     const masterPrivKeyForSign =
       'tprv8ZgxMBicQKsPdoj3tQG8Z2bzNsCTsk9heayJQA1pQStVx2hLEyVwx6gfHZ2p4dSzbvaEw7qrDXnX54vTVbkLghZcB24TXuj1ADXPUCvyfcy'
     // prettier-ignore
