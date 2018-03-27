@@ -59,15 +59,17 @@ const loopInit = async (db: BcoreDB, id: BcoreID, pool: BCPool) =>
     })
     .then(loopReady(db, pool))
 
-const defOpts: Options = {}
 export const makeBcoreCEV = async (db: BcoreDB, id: BcoreID, opts?: Options): Promise<BcoreCEV> => {
+  const defOpts: Options = {}
   opts = {
     ...opts,
     ...defOpts,
   }
   const pool = await Pool(opts.pool)
 
-  return loopInit(db, id, pool).then(() => ({}))
+  return loopInit(db, id, pool).then(() => ({
+    pool,
+  }))
 
   // const imprintingHDKey = id.derivePrivateKey(imprintingHDPath)
   // const imprintingAddress = base58AddrByPrivKey(imprintingHDKey)

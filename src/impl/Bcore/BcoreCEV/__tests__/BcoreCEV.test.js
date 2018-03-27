@@ -9,4 +9,4 @@ const db = {
 }
 const pkFile = __dirname + '/PrivK'
 console.log(pkFile)
-cev.makeBcoreCEV(db, id.BcoreID({ pkFile }), { pool: { logLevel: 'warning' } })
+cev = cev.makeBcoreCEV(db, id.BcoreID({ pkFile }), { pool: { logLevel: 'warning' } }).catch(err => console.error(err))
