@@ -1,10 +1,10 @@
 import { Role } from '../../types/data/Identity'
 import { ImprintingContract, OrchestrationContract } from './../../types/data/Contract'
-import { BCPool, Options as PoolOptions, Pool } from './BcoreCEV/Pool'
-import { base58AddrByPrivKey, Base58Address } from './BcoreID/HD'
-import { BcoreCEV } from './types/BcoreCEV'
-import { BcoreDB } from './types/BcoreDB'
-import { BcoreID } from './types/BcoreID'
+import { BCPool, Options as PoolOptions, Pool } from './BcoinCEV/Pool'
+import { base58AddrByPrivKey, Base58Address } from './BcoinID/HD'
+import { BcoinCEV } from './types/BcoinCEV'
+import { BcoinDB } from './types/BcoinDB'
+import { BcoinID } from './types/BcoinID'
 export interface Options {
   pool?: PoolOptions
 }
@@ -29,9 +29,9 @@ const waitForAddressBlock = async (pool: BCPool, address: Base58Address) =>
     pool.sync(true)
   })
 
-const loopReady = (db: BcoreDB, pool: BCPool) => () => ({})
+const loopReady = (db: BcoinDB, pool: BCPool) => () => ({})
 
-const loopInit = async (db: BcoreDB, id: BcoreID, pool: BCPool) =>
+const loopInit = async (db: BcoinDB, id: BcoinID, pool: BCPool) =>
   /*const imprintingPromise = */
   db
     .getImprinting()
@@ -59,7 +59,7 @@ const loopInit = async (db: BcoreDB, id: BcoreID, pool: BCPool) =>
     })
     .then(loopReady(db, pool))
 
-export const makeBcoreCEV = async (db: BcoreDB, id: BcoreID, opts?: Options): Promise<BcoreCEV> => {
+export const makeBcoinCEV = async (db: BcoinDB, id: BcoinID, opts?: Options): Promise<BcoinCEV> => {
   const defOpts: Options = {}
   opts = {
     ...opts,
