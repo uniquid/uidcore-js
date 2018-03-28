@@ -1,9 +1,9 @@
 import LokiConstructor from 'lokijs'
 import { AbstractIdentity, Role } from '../../types/data/Identity'
 import { Contract, ImprintingContract, OrchestrationContract, RoleContract } from './../../types/data/Contract'
-import { BcoreDB } from './types/BcoreDB'
+import { BcoinDB } from './types/BcoinDB'
 
-export const makeBcoreDB = (): BcoreDB => {
+export const makeBcoinDB = (): BcoinDB => {
   const db = new LokiConstructor('db.json')
   const contracts = db.addCollection<Contract>('contracts')
 
@@ -38,6 +38,6 @@ export const makeBcoreDB = (): BcoreDB => {
     storeOrchestration,
     getOrchestration,
     storeCtr,
-    findCtr: findCtr as BcoreDB['findCtr'],
+    findCtr: findCtr as BcoinDB['findCtr'],
   }
 }

@@ -1,2 +1,2 @@
 import { DB } from '../../../types/layers/DB'
-export interface BcoreDB extends DB {}
+export interface BcoinDB extends DB {}

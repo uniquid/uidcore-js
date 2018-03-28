@@ -2,7 +2,7 @@ import { Buffer } from 'buffer'
 // tslint:disable-next-line:no-unused-vars
 import { AbstractIdentity, Identity, Role } from '../../../types/data/Identity'
 import { ID } from '../../../types/layers/ID'
-import { BcoreAbstractIdentity, BcoreIdentity } from './../types/data/BcoreIdentity'
+import { BcoinAbstractIdentity, BcoinIdentity } from './../types/data/BcoinIdentity'
 // tslint:disable-next-line:no-require-imports
 // const secp256k1 = require('bcoin/lib/crypto/secp256k1')
 // tslint:disable-next-line:no-require-imports
@@ -45,7 +45,7 @@ export const derivePrivateKey = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey): 
 }
 
 export const signFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey): ID['signFor'] => (
-  abstrId: BcoreAbstractIdentity<Role>,
+  abstrId: BcoinAbstractIdentity<Role>,
   hash: Buffer
 ): Buffer => {
   const isForProvider = abstrId.role === Role.Provider
@@ -92,8 +92,8 @@ export const base58AddrByPrivKey = (privkey: BcoinHDPrivateKey) => {
 }
 
 export const identityFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => <R extends Role>(
-  abstrId: BcoreAbstractIdentity<R>
-): BcoreIdentity<R> => {
+  abstrId: BcoinAbstractIdentity<R>
+): BcoinIdentity<R> => {
   const { role, index } = abstrId
   const isForProvider = role === Role.Provider
   const rolePath = isForProvider ? '0' : '1'

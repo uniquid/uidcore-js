@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import * as hd from './BcoreID/HD'
-import { BcoreID as BcoreIDType } from './types/BcoreID'
+import * as hd from './BcoinID/HD'
+import { BcoinID as BcoinIDType } from './types/BcoinID'
 // tslint:disable-next-line:no-require-imports
 const BcoinPrivateKey = require('bcoin/lib/hd/private')
 
@@ -11,7 +11,7 @@ export type Options = {
 const defOpts: Options = {
   pkFile: path.join(process.cwd(), 'PrivK'),
 }
-export const BcoreID = (opts?: Options): BcoreIDType => {
+export const BcoinID = (opts?: Options): BcoinIDType => {
   opts = {
     ...defOpts,
     ...opts,
