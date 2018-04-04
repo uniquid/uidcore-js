@@ -5,7 +5,7 @@ import { BcoinID as BcoinIDType } from './types/BcoinID'
 // tslint:disable-next-line:no-require-imports
 const BcoinPrivateKey = require('bcoin/lib/hd/private')
 
-export type Options = {
+export interface Options {
   pkFile?: string
   privateKey?: string
 }
@@ -23,15 +23,12 @@ export const BcoinID = (opts?: Options): BcoinIDType => {
   } else if (opts.pkFile) {
     const privateKeyFilePath = opts.pkFile
     const exists = fs.existsSync(privateKeyFilePath)
-    // console.log(exists)
     if (exists) {
       privateKeyBase58 = fs.readFileSync(privateKeyFilePath, 'UTF8')
     } else {
       privateKeyBase58 = BcoinPrivateKey.generate().toBase58()
       fs.writeFileSync(privateKeyFilePath, privateKeyBase58, { encoding: 'UTF8' })
     }
-    // const bcoinPrivateKey = BcoinPrivateKey.fromBase58(privateKeyBase58)
-    // console.log(bcoinPrivateKey.xprivkey())
   } else {
     throw TypeError('Shouldnt happen')
   }
@@ -42,7 +39,3 @@ export const BcoinID = (opts?: Options): BcoinIDType => {
     derivePrivateKey: hd.derivePrivateKey(privateKeyBase58),
   }
 }
-
-/**
- * http://bcoin.io/guides/generate-address.html
- */

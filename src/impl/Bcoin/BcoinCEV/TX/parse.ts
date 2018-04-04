@@ -1,3 +1,4 @@
+import { rawHexStringToIntArray } from './../../utils/hex'
 import { decodeVarInt, encodeVarint } from './varint'
 const VERSION_LENGTH = 4
 const TX_HASH_LENGTH = 32
@@ -19,26 +20,9 @@ export interface InputObj {
   seq: number[]
 }
 
-export const rawTxStringToIntArray = (raw: string) => {
-  const rawHexStrArray: string[] = []
-  let idx = 0
-  while (idx < raw.length) {
-    // tslint:disable-next-line:no-magic-numbers
-    rawHexStrArray.push(Array.prototype.slice.call(raw, idx, (idx += 2)).join(''))
-  }
-
-  // tslint:disable-next-line:no-magic-numbers
-  return rawHexStrArray.map(hex => parseInt(hex, 16))
-}
-const padHex = (hex: string) => (hex.length === 1 ? `0${hex}` : hex)
-export const intArrayToRawTxString = (tx: number[]) =>
-  tx
-    // tslint:disable-next-line:no-magic-numbers
-    .map(n => padHex(n.toString(16)))
-    .join('')
 export const parseTx = (raw: number[] | string): TXObj => {
   if ('string' === typeof raw) {
-    raw = rawTxStringToIntArray(raw)
+    raw = rawHexStringToIntArray(raw)
   }
   let _ = splitList(raw, 0)
 
