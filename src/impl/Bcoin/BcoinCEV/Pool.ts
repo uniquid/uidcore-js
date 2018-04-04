@@ -33,10 +33,6 @@ export const Pool = async (opts?: Options): Promise<BCPool> => {
   const poolLogger = new bcoin.logger({
     level: opts.logLevel,
   })
-  // const wallLogger = new bcoin.logger({
-  //   level: opts.logLevel,
-  // })
-  // const wallDBLogger = new bcoin.logger({ level: opts.logLevel })
 
   const chain = bcoin.chain({ logger: chainLogger, db: 'leveldb', location: opts.dbFolder, spv: true })
   const pool = new bcoin.pool({

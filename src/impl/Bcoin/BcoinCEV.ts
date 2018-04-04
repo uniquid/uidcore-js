@@ -12,14 +12,12 @@ const imprintingHDPath = [0, 0, 0, 0]
 
 const waitForAddressBlock = async (pool: BCPool, address: Base58Address) =>
   new Promise((resolve, reject) => {
-    console.log('watching', address)
+    // console.log('watching', address)
     pool.stopSync()
     pool.unwatch()
     pool.watchAddress(address)
     const listener = (block: any, entry: any) => {
-      // console.log('..block')
       if (block.txs.length) {
-        console.log('\n\n\n\nreceived BLOCK', block)
         pool.removeListener('block', listener)
         resolve(block)
       }
@@ -32,16 +30,15 @@ const waitForAddressBlock = async (pool: BCPool, address: Base58Address) =>
 const loopReady = (db: BcoinDB, pool: BCPool) => () => ({})
 
 const loopInit = async (db: BcoinDB, id: BcoinID, pool: BCPool) =>
-  /*const imprintingPromise = */
   db
     .getImprinting()
     .then(async impr => {
       if (!impr) {
         const imprintingHDKey = id.derivePrivateKey(imprintingHDPath)
         const imprintingAddress = base58AddrByPrivKey(imprintingHDKey)
-        console.log('await impr')
+        // console.log('await impr')
         await waitForAddressBlock(pool, imprintingAddress)
-        console.log('--  impr')
+        // console.log('--  impr')
 
         return db.storeImprinting({ imprinting: true } as ImprintingContract)
       }
@@ -50,9 +47,9 @@ const loopInit = async (db: BcoinDB, id: BcoinID, pool: BCPool) =>
     .then(async orch => {
       if (!orch) {
         const orchestrationAddress = id.identityFor({ role: Role.Provider, index: 0 }).address
-        console.log('await orch')
+        // console.log('await orch')
         await waitForAddressBlock(pool, orchestrationAddress)
-        console.log('--- orch')
+        // console.log('--- orch')
 
         return db.storeOrchestration({ orchestration: true } as OrchestrationContract)
       }
@@ -70,22 +67,4 @@ export const makeBcoinCEV = async (db: BcoinDB, id: BcoinID, opts?: Options): Pr
   return loopInit(db, id, pool).then(() => ({
     pool,
   }))
-
-  // const imprintingHDKey = id.derivePrivateKey(imprintingHDPath)
-  // const imprintingAddress = base58AddrByPrivKey(imprintingHDKey)
-
-  // const orchestrationAddress = id.identityFor({ role: Role.Provider, index: 0 }).address
-  // console.log(imprintingAddress, orchestrationAddress)
-  // pool.watchAddress(orchestrationAddress)
-  // pool.watchAddress(imprintingAddress)
-  // pool.on('block', (block: any, entry: any) => {
-  //   // console.log('..block')
-  //   if (block.txs.length) {
-  //     console.log('\n\n\n\nreceived BLOCK', block)
-  //   }
-  // })
-
-  // pool.on('tx', (block: any, entry: any) => {
-  //   console.log('TX', block, entry)
-  // })
 }
