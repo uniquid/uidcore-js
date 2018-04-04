@@ -11,7 +11,7 @@ describe('HD keys derivation', () => {
   it('derive Private Key', () => {
     const derivedPrivkey = derivePrivateKey(masterPrivKey)([0, 1, 1])
     expect(derivedPrivkey.toBase58()).toBe(
-      'tprv8knzXLyzXNU2S5ccu2F2y8LYqK4YDjrD4uoaC6froKRTig9nn5jjSTVPAsqsQcmkyayA5ooih3eRJv7jqfxMCK8gbNGhCPxC5rctSTcgUhi'
+      'tprv8mTK23nwj29zt2fizqTMR2zCQhE94xoVdRZbuJ6XNKpb9P79jnNjsejP8CLJoSsJPcxZmA3SVxhHgW5ndpNUyessuCmKwKW3xvqQcx2xohx'
     )
   })
   it('derive ProviderIdentity', () => {
@@ -25,6 +25,7 @@ describe('HD keys derivation', () => {
     expect(identity.address).toBe('mqQt5iKft7ZNuTfdCVMxwuzc2RK9DwcyFz')
   })
   it('signs hash for an AbstractIdentity', () => {
+    // https://github.com/uniquid/uidcore-c/blob/master/tests.c#L50
     const masterPrivKeyForSign =
       'tprv8ZgxMBicQKsPdoj3tQG8Z2bzNsCTsk9heayJQA1pQStVx2hLEyVwx6gfHZ2p4dSzbvaEw7qrDXnX54vTVbkLghZcB24TXuj1ADXPUCvyfcy'
     // prettier-ignore
@@ -36,27 +37,11 @@ describe('HD keys derivation', () => {
     const abstrId = {
       role: Role.Provider,
       index: 17,
-      ext: '0',
+      ext: '0' as '0',
     }
 
     // tslint:disable-next-line:no-magic-numbers
-    const result = signFor(masterPrivKeyForSign)(abstrId, hash)
+    const result = signFor(masterPrivKeyForSign)(abstrId, hash, false)
     expect(result.toString('hex')).toBe(expected.toString('hex'))
   })
 })
-
-/**
- * for CEV ;)
- * it('signs transaction', () => {
- *
- *   //  orchestration tank-c-1
- *   // {"sender":"mhtGWdgq2gnrNvaxFA2rXNAPypsv9ECfuc","body":{"method":30,"id":746339918,"params":"{\"tx\":\"010000000136c5a79de0dac41a7c1e9c4d5c833c7633ab540451443909a7d9f9bc758e60d8000000004847304402207fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a002207fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a001ffffffff0410270000000000001976a914f5ec6511ca44bab954bb1d6c97e55f5b7178941d88ac0000000000000000536a4c50000000004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000030750000000000001976a914f5ec6511ca44bab954bb1d6c97e55f5b7178941d88acf07e0e00000000001976a9140fc863841cf1ec7fcadf8364c33c32187c87d9da88ac00000000\",\"paths\":[\"0/0/0\"]}"}}
- *   // {"sender":"mq2jvM52UirEKs14T9g9qoVH9C4rWnAzBX","body":{"result":"0 - 2164fa1d4257a353140c8b219bf0aa711943eef3d013a7b5be38e40bea34ff94","error":0,"id":746339918}}
- *
- *   const masterPrivKeyForSign =
- *     'tprv8ZgxMBicQKsPfK9E21aFhEzxnyKFZqyMPHRGTv3eDdwvQsYgDATubZVURBdnwp2WhtwyxC2u6XnhQDaPEzZs99yn9vBpaHgZYyQ3whp1sfR'
- *   const rawtx =
- *     '010000000136c5a79de0dac41a7c1e9c4d5c833c7633ab540451443909a7d9f9bc758e60d8000000004847304402207fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a002207fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a001ffffffff0410270000000000001976a914f5ec6511ca44bab954bb1d6c97e55f5b7178941d88ac0000000000000000536a4c50000000004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000030750000000000001976a914f5ec6511ca44bab954bb1d6c97e55f5b7178941d88acf07e0e00000000001976a9140fc863841cf1ec7fcadf8364c33c32187c87d9da88ac00000000'
- *   const expected = '2164fa1d4257a353140c8b219bf0aa711943eef3d013a7b5be38e40bea34ff94' // ( `0 - ${expected}` )
- *
- */

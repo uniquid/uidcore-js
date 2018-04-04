@@ -1,14 +1,16 @@
 import { Buffer } from 'buffer'
 // tslint:disable-next-line:no-unused-vars
 import { AbstractIdentity, Identity, Role } from '../../../types/data/Identity'
-import { ID } from '../../../types/layers/ID'
+// import { ID } from '../../../types/layers/ID'
+// import { intArrayToRawTxString } from './../BcoinCEV/TX/parse'
 import { BcoinAbstractIdentity, BcoinIdentity } from './../types/data/BcoinIdentity'
 // tslint:disable-next-line:no-require-imports
 // const secp256k1 = require('bcoin/lib/crypto/secp256k1')
 // tslint:disable-next-line:no-require-imports
 const crypto = require('bcoin/lib/crypto')
+// const secp256k1 = crypto.secp256k1
 // tslint:disable-next-line:no-require-imports
-const secp256k1 = require('secp256k1')
+const secp256k1 = require('elliptic').ec('secp256k1')
 // tslint:disable-next-line:no-require-imports
 const base58 = require('bcoin/lib/utils/base58')
 // tslint:disable-next-line:no-require-imports
@@ -27,12 +29,14 @@ export type BcoinHDPrivateKey = {
 export type BcoinHDPublicKey = { publicKey: PublicKey }
 export type PublicKey = Buffer
 export type PrivateKey = Buffer
-
-const BASE_PATH = ['m', "44'", "0'"]
-export type DerivePrivateKey = (subPath: (string | number)[]) => BcoinHDPrivateKey
+export type HDPath = (string | number)[]
+const BASE_PATH: HDPath = ['m', "44'", "0'", 0]
+export type DerivePrivateKey = (subPath: HDPath) => BcoinHDPrivateKey
 export const derivePrivateKey = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey): DerivePrivateKey => (
-  subPath: (string | number)[]
+  subPath: HDPath
 ) => {
+  // console.log('bip32ExtMasterPrivateKey', bip32ExtMasterPrivateKey)
+  // console.log('derivePrivateKey for subPath', subPath.join('/'), 'full path', [...BASE_PATH, ...subPath].join('/'))
   const masterPrivateKey: BcoinHDPrivateKey = BcoinPrivateKey.fromBase58(bip32ExtMasterPrivateKey)
   const derivedPrivkey = masterPrivateKey.derivePath([...BASE_PATH, ...subPath].join('/'))
   // // 0 - Having a private ECDSA key
@@ -44,19 +48,25 @@ export const derivePrivateKey = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey): 
   return derivedPrivkey
 }
 
-export const signFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey): ID['signFor'] => (
+export const signFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (
   abstrId: BcoinAbstractIdentity<Role>,
-  hash: Buffer
-): Buffer => {
+  hash: Buffer,
+  // // tslint:disable-next-line:no-inferrable-types
+  der = false
+) => {
+  // console.log('signFor', abstrId)
   const isForProvider = abstrId.role === Role.Provider
   const rolePath = isForProvider ? 0 : 1
   const extOrInt = abstrId.ext || (isForProvider ? '1' : '0')
-  const subPath = [0, rolePath, extOrInt, abstrId.index]
+  const subPath = [rolePath, extOrInt, abstrId.index]
+  // console.log('signFor subPath', subPath)
   const privK = derivePrivateKey(bip32ExtMasterPrivateKey)(subPath)
+  const res = secp256k1.sign(hash, privK.privateKey, { canonical: true })
+  // console.log('res', res)
 
-  const res = secp256k1.sign(hash, privK.privateKey)
-
-  return res.signature
+  // tslint:disable-next-line:no-magic-numbers
+  return der ? res.toDER() as Buffer : Buffer.concat([res.r.toBuffer(), res.s.toBuffer()], 64)
+  // return res.r.toBuffer() as Buffer
 }
 
 export const base58AddrByPrivKey = (privkey: BcoinHDPrivateKey) => {
@@ -98,7 +108,7 @@ export const identityFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => <R 
   const isForProvider = role === Role.Provider
   const rolePath = isForProvider ? '0' : '1'
   const extOrInt = abstrId.ext || (isForProvider ? '1' : '0')
-  const subPath = [0, rolePath, extOrInt, index]
+  const subPath = [rolePath, extOrInt, index]
   const derivedPrivkey = derivePrivateKey(bip32ExtMasterPrivateKey)(subPath)
   const address = base58AddrByPrivKey(derivedPrivkey)
 

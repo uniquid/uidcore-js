@@ -36,7 +36,10 @@ export const intArrayToRawTxString = (tx: number[]) =>
     // tslint:disable-next-line:no-magic-numbers
     .map(n => padHex(n.toString(16)))
     .join('')
-export const parseTx = (raw: number[]): TXObj => {
+export const parseTx = (raw: number[] | string): TXObj => {
+  if ('string' === typeof raw) {
+    raw = rawTxStringToIntArray(raw)
+  }
   let _ = splitList(raw, 0)
 
   _ = splitList(_.tail, VERSION_LENGTH)
@@ -88,5 +91,7 @@ export const formatTx = (txObj: TXObj) => {
   }, [] as number[])
   const { res: varintNumberOfInputs } = encodeVarint(inputs.length)
 
-  return version.concat(varintNumberOfInputs).concat(flattenedInputs).concat(tail)
+  const result = version.concat(varintNumberOfInputs).concat(flattenedInputs).concat(tail)
+
+  return result
 }

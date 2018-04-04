@@ -6,7 +6,8 @@ import { BcoinID as BcoinIDType } from './types/BcoinID'
 const BcoinPrivateKey = require('bcoin/lib/hd/private')
 
 export type Options = {
-  pkFile: string
+  pkFile?: string
+  privateKey?: string
 }
 const defOpts: Options = {
   pkFile: path.join(process.cwd(), 'PrivK'),
@@ -16,18 +17,24 @@ export const BcoinID = (opts?: Options): BcoinIDType => {
     ...defOpts,
     ...opts,
   }
-  const privateKeyFilePath = opts.pkFile
-  const exists = fs.existsSync(privateKeyFilePath)
-  console.log(exists)
   let privateKeyBase58: hd.Bip32Base58PrivKey
-  if (exists) {
-    privateKeyBase58 = fs.readFileSync(privateKeyFilePath, 'UTF8')
+  if (opts.privateKey) {
+    privateKeyBase58 = opts.privateKey
+  } else if (opts.pkFile) {
+    const privateKeyFilePath = opts.pkFile
+    const exists = fs.existsSync(privateKeyFilePath)
+    // console.log(exists)
+    if (exists) {
+      privateKeyBase58 = fs.readFileSync(privateKeyFilePath, 'UTF8')
+    } else {
+      privateKeyBase58 = BcoinPrivateKey.generate().toBase58()
+      fs.writeFileSync(privateKeyFilePath, privateKeyBase58, { encoding: 'UTF8' })
+    }
+    // const bcoinPrivateKey = BcoinPrivateKey.fromBase58(privateKeyBase58)
+    // console.log(bcoinPrivateKey.xprivkey())
   } else {
-    privateKeyBase58 = BcoinPrivateKey.generate().toBase58()
-    fs.writeFileSync(privateKeyFilePath, privateKeyBase58, { encoding: 'UTF8' })
+    throw TypeError('Shouldnt happen')
   }
-  const bcoinPrivateKey = BcoinPrivateKey.fromBase58(privateKeyBase58)
-  console.log(bcoinPrivateKey.xprivkey())
 
   return {
     signFor: hd.signFor(privateKeyBase58),
