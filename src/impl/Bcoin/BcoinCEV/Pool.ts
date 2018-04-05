@@ -1,3 +1,5 @@
+import { Base58Address } from '../BcoinID/HD'
+
 // tslint:disable-next-line:no-require-imports
 const bcoin = require('bcoin')
 bcoin.networks.uq = Object.assign({}, bcoin.networks.regtest, {
@@ -20,7 +22,7 @@ const defOpts: Options = {
   seeds: ['52.225.217.168', '52.167.211.151', '52.225.218.133'],
 }
 export interface BCPool {
-  [k: string]: any
+  waitForAddressBlock(address: string): Promise<{}>
 }
 export const Pool = async (opts?: Options): Promise<BCPool> => {
   opts = {
@@ -46,6 +48,27 @@ export const Pool = async (opts?: Options): Promise<BCPool> => {
   await poolLogger.open()
   await pool.open()
   await pool.connect()
+  const waitForAddressBlock = async (address: Base58Address) =>
+    new Promise((resolve, reject) => {
+      // console.log('watching', address)
+      pool.stopSync()
+      pool.unwatch()
+      pool.watchAddress(address)
+      const listener = (block: any, entry: any) => {
+        if (block.txs.length) {
+          pool.removeListener('block', listener)
+          resolve(block)
+        }
+      }
+      pool.on('block', listener)
+      pool.startSync()
+      pool.sync(true)
+    })
+  // const watchIdentities = async <R extends Role>(identity: Identity<R>) => {
+  //   return waitForAddressBlock()
+  // }
 
-  return pool
+  return {
+    waitForAddressBlock,
+  }
 }

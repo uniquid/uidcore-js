@@ -1,31 +1,14 @@
-import { Role } from '../../types/data/Identity'
 import { ImprintingContract, OrchestrationContract } from './../../types/data/Contract'
 import { BCPool, Options as PoolOptions, Pool } from './BcoinCEV/Pool'
-import { base58AddrByPrivKey, Base58Address } from './BcoinID/HD'
+import { base58AddrByPrivKey } from './BcoinID/HD'
 import { BcoinCEV } from './types/BcoinCEV'
 import { BcoinDB } from './types/BcoinDB'
 import { BcoinID } from './types/BcoinID'
 export interface Options {
   pool?: PoolOptions
 }
-const imprintingHDPath = [0, 0, 0, 0]
-
-const waitForAddressBlock = async (pool: BCPool, address: Base58Address) =>
-  new Promise((resolve, reject) => {
-    // console.log('watching', address)
-    pool.stopSync()
-    pool.unwatch()
-    pool.watchAddress(address)
-    const listener = (block: any, entry: any) => {
-      if (block.txs.length) {
-        pool.removeListener('block', listener)
-        resolve(block)
-      }
-    }
-    pool.on('block', listener)
-    pool.startSync()
-    pool.sync(true)
-  })
+const imprintingHDPath = [0, 0, 0]
+const orchestrationHDPath = [0, 1, 0]
 
 const loopReady = (db: BcoinDB, pool: BCPool) => () => ({})
 
@@ -33,23 +16,29 @@ const loopInit = async (db: BcoinDB, id: BcoinID, pool: BCPool) =>
   db
     .getImprinting()
     .then(async impr => {
+      console.log(`---------------------------------------------------------- FOUND IMPR`, impr)
       if (!impr) {
         const imprintingHDKey = id.derivePrivateKey(imprintingHDPath)
         const imprintingAddress = base58AddrByPrivKey(imprintingHDKey)
-        // console.log('await impr')
-        await waitForAddressBlock(pool, imprintingAddress)
-        // console.log('--  impr')
+        console.log(`---------------------------------------------------------- await IMPR ${imprintingAddress}`)
+        const block = await pool.waitForAddressBlock(imprintingAddress)
+        console.log(`---------------------------------------------------------- got IMPR ${imprintingAddress}`, block)
 
         return db.storeImprinting({ imprinting: true } as ImprintingContract)
       }
     })
     .then(db.getOrchestration)
     .then(async orch => {
+      console.log(`---------------------------------------------------------- FOUND ORCH`, orch)
       if (!orch) {
-        const orchestrationAddress = id.identityFor({ role: Role.Provider, index: 0 }).address
-        // console.log('await orch')
-        await waitForAddressBlock(pool, orchestrationAddress)
-        // console.log('--- orch')
+        const orchestrationHDKey = id.derivePrivateKey(orchestrationHDPath)
+        const orchestrationAddress = base58AddrByPrivKey(orchestrationHDKey)
+        console.log(`---------------------------------------------------------- await ORCH ${orchestrationAddress}`)
+        const block = await pool.waitForAddressBlock(orchestrationAddress)
+        console.log(
+          `---------------------------------------------------------- got ORCH ${orchestrationAddress}`,
+          block
+        )
 
         return db.storeOrchestration({ orchestration: true } as OrchestrationContract)
       }
