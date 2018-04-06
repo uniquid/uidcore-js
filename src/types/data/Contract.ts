@@ -4,18 +4,26 @@ export interface AbstractContract {
   contractor: IdAddress
 }
 
-export interface RoleContract<R extends Role> extends AbstractContract {
+export interface AbstractRoleContract<R extends Role> extends AbstractContract {
   identity: AbstractIdentity<R>
   revoker: IdAddress
   payload: string
 }
 
+export interface ProviderContract extends AbstractRoleContract<Role.Provider> {
+  nextProviderAddress: IdAddress
+}
+
+export interface UserContract extends AbstractRoleContract<Role.User> {}
+
 export interface ImprintingContract extends AbstractContract {
   imprinting: true
+  imprintingAddress: IdAddress
 }
 
-export interface OrchestrationContract extends RoleContract<Role.Provider> {
+export interface OrchestrationContract extends ProviderContract {
   orchestration: true
 }
+export type RoleContract = UserContract | ProviderContract
 
-export type Contract = RoleContract<Role> | ImprintingContract | OrchestrationContract
+export type Contract = RoleContract | ImprintingContract | OrchestrationContract

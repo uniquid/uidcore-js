@@ -11,7 +11,12 @@ export const makeBcoinDB = (): Promise<BcoinDB> =>
       autoloadCallback: () => {
         const contracts = db.addCollection<Contract>('contracts')
 
-        const getImprinting = () => Promise.resolve(contracts.findOne({ imprinting: true }) as ImprintingContract)
+        const getImprinting = () =>
+          Promise.resolve(
+            contracts.findOne({
+              imprinting: true,
+            }) as ImprintingContract | undefined
+          )
 
         const storeImprinting = (ctr: ImprintingContract) => {
           return getImprinting().then(imprCtr => {
@@ -23,7 +28,11 @@ export const makeBcoinDB = (): Promise<BcoinDB> =>
         }
 
         const getOrchestration = () =>
-          Promise.resolve(contracts.findOne({ orchestration: true }) as OrchestrationContract)
+          Promise.resolve(
+            contracts.findOne({
+              orchestration: true,
+            }) as OrchestrationContract | undefined
+          )
 
         const storeOrchestration = (ctr: OrchestrationContract) => {
           return getOrchestration().then(orchCtr => {
@@ -34,7 +43,7 @@ export const makeBcoinDB = (): Promise<BcoinDB> =>
           })
         }
 
-        const storeCtr = (ctr: RoleContract<Role>) => Promise.resolve((contracts.insert(ctr), void 0))
+        const storeCtr = (ctr: RoleContract) => Promise.resolve((contracts.insert(ctr), void 0))
         const findCtr = <R extends Role>(identity: AbstractIdentity<R>) => Promise.resolve(contracts.find({ identity }))
 
         resolve({

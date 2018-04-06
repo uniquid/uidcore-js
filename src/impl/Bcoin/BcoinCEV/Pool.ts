@@ -1,4 +1,4 @@
-import { Base58Address } from '../BcoinID/HD'
+import { IdAddress } from '../../../types/data/Identity'
 
 // tslint:disable-next-line:no-require-imports
 const bcoin = require('bcoin')
@@ -22,7 +22,7 @@ const defOpts: Options = {
   seeds: ['52.225.217.168', '52.167.211.151', '52.225.218.133'],
 }
 export interface BCPool {
-  waitForAddressBlock(address: string): Promise<{}>
+  watchAddresses(addresses: IdAddress[]): Promise<{}[]>
 }
 export const Pool = async (opts?: Options): Promise<BCPool> => {
   opts = {
@@ -48,27 +48,24 @@ export const Pool = async (opts?: Options): Promise<BCPool> => {
   await poolLogger.open()
   await pool.open()
   await pool.connect()
-  const waitForAddressBlock = async (address: Base58Address) =>
-    new Promise((resolve, reject) => {
-      // console.log('watching', address)
-      pool.stopSync()
-      pool.unwatch()
-      pool.watchAddress(address)
+  const watchAddresses = (addresses: IdAddress[]) =>
+    new Promise<BCTX[]>((resolve, reject) => {
+      addresses.forEach(address => pool.watchAddress(address))
       const listener = (block: any, entry: any) => {
         if (block.txs.length) {
+          pool.stopSync()
+          pool.unwatch()
           pool.removeListener('block', listener)
-          resolve(block)
+          resolve(block.txs)
         }
       }
       pool.on('block', listener)
       pool.startSync()
       pool.sync(true)
     })
-  // const watchIdentities = async <R extends Role>(identity: Identity<R>) => {
-  //   return waitForAddressBlock()
-  // }
 
   return {
-    waitForAddressBlock,
+    watchAddresses,
   }
 }
+export type BCTX = any
