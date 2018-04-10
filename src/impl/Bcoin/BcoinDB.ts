@@ -1,43 +1,85 @@
-import LokiConstructor from 'lokijs'
-import { AbstractIdentity, Role } from '../../types/data/Identity'
-import { Contract, ImprintingContract, OrchestrationContract, RoleContract } from './../../types/data/Contract'
+import * as LokiConstructor from 'lokijs'
+import { Role } from '../../types/data/Identity'
+import {
+  Contract,
+  ImprintingContract,
+  OrchestrationContract,
+  ProviderContract,
+  RoleContract,
+  UserContract,
+} from './../../types/data/Contract'
 import { BcoinDB } from './types/BcoinDB'
 
-export const makeBcoinDB = (): BcoinDB => {
-  const db = new LokiConstructor('db.json')
-  const contracts = db.addCollection<Contract>('contracts')
+export const makeBcoinDB = (): Promise<BcoinDB> =>
+  new Promise((resolve, reject) => {
+    const db = new LokiConstructor('db.json', {
+      autoload: true,
+      autosave: true,
+      autoloadCallback: () => {
+        const contracts = db.addCollection<Contract>('contracts')
 
-  const getImprinting = () => Promise.resolve(contracts.find({ imprinting: true })[0] as ImprintingContract)
+        const getImprinting = () =>
+          Promise.resolve(
+            contracts.findOne({
+              imprinting: true,
+            }) as ImprintingContract | undefined
+          )
 
-  const storeImprinting = (ctr: ImprintingContract) => {
-    if (getImprinting()) {
-      throw new TypeError('Already imprinted')
-    }
-    contracts.insert(ctr)
+        const storeImprinting = (ctr: ImprintingContract) => {
+          return getImprinting().then(imprCtr => {
+            if (imprCtr) {
+              throw new TypeError('Already imprinted')
+            }
+            contracts.insert(ctr)
+          })
+        }
 
-    return Promise.resolve()
-  }
+        const getOrchestration = () =>
+          Promise.resolve(
+            contracts.findOne({
+              orchestration: true,
+            }) as OrchestrationContract | undefined
+          )
 
-  const getOrchestration = () => Promise.resolve(contracts.find({ orchestration: true })[0] as OrchestrationContract)
+        const storeOrchestration = (ctr: OrchestrationContract) => {
+          return getOrchestration().then(orchCtr => {
+            if (orchCtr) {
+              throw new TypeError('Already orchestrated')
+            }
+            contracts.insert(ctr)
+          })
+        }
 
-  const storeOrchestration = (ctr: OrchestrationContract) => {
-    if (getOrchestration()) {
-      throw new TypeError('Already orchestrated')
-    }
-    contracts.insert(ctr)
+        const storeCtr = (ctr: RoleContract) => Promise.resolve((contracts.insert(ctr), void 0))
 
-    return Promise.resolve()
-  }
+        const getLastUserContractIdentity = () =>
+          (((contracts.find({ 'identity.role': Role.User } as any) as UserContract[]).sort(
+            (ctr1, ctr2) => ctr2.identity.index - ctr1.identity.index
+          )[0] as UserContract) || {
+            identity: {
+              role: Role.User,
+              index: 0,
+            },
+          }).identity
+        const getLastProviderContractIdentity = () =>
+          (((contracts.find({ 'identity.role': Role.Provider } as any) as ProviderContract[]).sort(
+            (ctr1, ctr2) => ctr2.identity.index - ctr1.identity.index
+          )[0] as ProviderContract) || {
+            identity: {
+              role: Role.Provider,
+              index: -1,
+            },
+          }).identity
 
-  const storeCtr = (ctr: RoleContract<Role>) => Promise.resolve((contracts.insert(ctr), void 0))
-  const findCtr = <R extends Role>(identity: AbstractIdentity<R>) => Promise.resolve(contracts.find({ identity }))
-
-  return {
-    storeImprinting,
-    getImprinting,
-    storeOrchestration,
-    getOrchestration,
-    storeCtr,
-    findCtr: findCtr as BcoinDB['findCtr'],
-  }
-}
+        resolve({
+          storeImprinting,
+          getImprinting,
+          storeOrchestration,
+          getOrchestration,
+          storeCtr,
+          getLastUserContractIdentity,
+          getLastProviderContractIdentity,
+        })
+      },
+    })
+  })

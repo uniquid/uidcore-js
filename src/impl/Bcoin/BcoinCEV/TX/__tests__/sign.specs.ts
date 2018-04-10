@@ -2,7 +2,7 @@ import { BcoinID } from './../../../BcoinID'
 import { sign } from './../sign'
 
 describe('sign TX', () => {
-  it('signs transaction', () => {
+  it('signs transaction', async () => {
     //  orchestration tank-c-1
     // {"sender":"mhtGWdgq2gnrNvaxFA2rXNAPypsv9ECfuc","body":{"method":30,"id":746339918,"params":"{\"tx\":\"010000000136c5a79de0dac41a7c1e9c4d5c833c7633ab540451443909a7d9f9bc758e60d8000000004847304402207fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a002207fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a001ffffffff0410270000000000001976a914f5ec6511ca44bab954bb1d6c97e55f5b7178941d88ac0000000000000000536a4c50000000004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000030750000000000001976a914f5ec6511ca44bab954bb1d6c97e55f5b7178941d88acf07e0e00000000001976a9140fc863841cf1ec7fcadf8364c33c32187c87d9da88ac00000000\",\"paths\":[\"0/0/0\"]}"}}
     // {"sender":"mq2jvM52UirEKs14T9g9qoVH9C4rWnAzBX","body":{"result":"0 - 2164fa1d4257a353140c8b219bf0aa711943eef3d013a7b5be38e40bea34ff94","error":0,"id":746339918}}
@@ -12,11 +12,11 @@ describe('sign TX', () => {
       'tprv8ZgxMBicQKsPfK9E21aFhEzxnyKFZqyMPHRGTv3eDdwvQsYgDATubZVURBdnwp2WhtwyxC2u6XnhQDaPEzZs99yn9vBpaHgZYyQ3whp1sfR'
     const expected = '2164fa1d4257a353140c8b219bf0aa711943eef3d013a7b5be38e40bea34ff94' // ( `0 - ${expected}` )
     const paths = ['0/0/0'].map(p => p.split('/'))
-    const id = BcoinID({ privateKey: masterPrivKeyForSign })
+    const id = await BcoinID({ privateKey: masterPrivKeyForSign })
     const result = sign(id)(unsignedRawTX, paths)
     expect(result).toEqual(expected)
   })
-  it('signs transaction', () => {
+  it('signs transaction', async () => {
     //  orchestration tank-c-100
     // {"sender":"mwoWz7maqFQgXU1Dk1oCGk7geeACpf6dcs","body":{"method":30,"id":1385577669,"params":"{\"tx\":\"0100000001eefaf2940cfcd15a8c18727a0f83ec44849318e329d62f3b84a6b186f72c0e3b000000004847304402207fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a002207fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a001ffffffff0410270000000000001976a914853711887a6279268212c2323e54c00d2c8f809688ac0000000000000000536a4c50000000004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000030750000000000001976a914853711887a6279268212c2323e54c00d2c8f809688acf07e0e00000000001976a9147638f2498957582602020dce44a6a8587be97f3988ac00000000\",\"paths\":[\"0/0/0\"]}"}}
     // {"sender":"mhZxrEYTvGxqq1ZyxN9euemErkBWA8jjGU","body":{"result":"0 - f45e14de75a77d2f825821d4b2078aca10f7dbf90ba1452d7f3fd7c3e2cdbc67","error":0,"id":1385577669}}
@@ -26,7 +26,7 @@ describe('sign TX', () => {
       'tprv8ZgxMBicQKsPfAmRaLKv2ZFyPpkVSVhiUf1471WNDyA5afKeTmzwTRyi1oT8gVzT86oQJpWqnDWYtK9aKKHNar7bbSQHW8dCboKamaueJP2'
     const expected = 'f45e14de75a77d2f825821d4b2078aca10f7dbf90ba1452d7f3fd7c3e2cdbc67' // ( `0 - ${expected}` )
     const paths = ['0/0/0'].map(p => p.split('/'))
-    const id = BcoinID({ privateKey: masterPrivKeyForSign })
+    const id = await BcoinID({ privateKey: masterPrivKeyForSign })
     const result = sign(id)(unsignedRawTX, paths)
     expect(result).toEqual(expected)
   })

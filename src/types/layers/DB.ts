@@ -7,6 +7,7 @@ export interface DB {
   // invalidateImprinting(): Promise<void>
   storeOrchestration(ctr: OrchestrationContract): Promise<void>
   getOrchestration(): Promise<OrchestrationContract | void>
-  storeCtr(ctr: RoleContract<Role>): Promise<void>
-  findCtr<R extends Role>(as: AbstractIdentity<R>): Promise<RoleContract<R>[]>
+  storeCtr(ctr: RoleContract): Promise<void>
+  getLastUserContractIdentity(): AbstractIdentity<Role.User>
+  getLastProviderContractIdentity(): AbstractIdentity<Role.Provider>
 }
