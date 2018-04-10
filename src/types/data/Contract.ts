@@ -1,3 +1,4 @@
+import { ProviderContract } from './Contract'
 import { AbstractIdentity, IdAddress, Role } from './Identity'
 export interface AbstractContract {
   received: number
@@ -11,7 +12,7 @@ export interface AbstractRoleContract<R extends Role> extends AbstractContract {
 }
 
 export interface ProviderContract extends AbstractRoleContract<Role.Provider> {
-  nextProviderAddress: IdAddress
+  // nextProviderAddress: IdAddress
 }
 
 export interface UserContract extends AbstractRoleContract<Role.User> {}
@@ -25,5 +26,4 @@ export interface OrchestrationContract extends ProviderContract {
   orchestration: true
 }
 export type RoleContract = UserContract | ProviderContract
-
 export type Contract = RoleContract | ImprintingContract | OrchestrationContract

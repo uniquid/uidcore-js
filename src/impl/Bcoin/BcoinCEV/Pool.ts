@@ -46,26 +46,34 @@ export const Pool = async (opts?: Options): Promise<BCPool> => {
 
   await chainLogger.open()
   await poolLogger.open()
+
   await pool.open()
   await pool.connect()
-  const watchAddresses = (addresses: IdAddress[]) =>
-    new Promise<BCTX[]>((resolve, reject) => {
+  const watchAddresses = async (addresses: IdAddress[]) => {
+    return new Promise<BCTX[]>((resolve, reject) => {
+      console.log(`WATCH: ${addresses}`)
       addresses.forEach(address => pool.watchAddress(address))
       const listener = (block: any, entry: any) => {
         if (block.txs.length) {
           pool.stopSync()
+          // pool.disconnect()
+          // pool.close()
           pool.unwatch()
           pool.removeListener('block', listener)
           resolve(block.txs)
         }
       }
+
       pool.on('block', listener)
       pool.startSync()
       pool.sync(true)
     })
+  }
 
   return {
     watchAddresses,
   }
 }
-export type BCTX = any
+export interface BCTX {
+  [k: string]: any
+}

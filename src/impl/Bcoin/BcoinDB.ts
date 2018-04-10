@@ -1,5 +1,6 @@
 import * as LokiConstructor from 'lokijs'
-import { AbstractIdentity, Role } from '../../types/data/Identity'
+import { Role } from '../../types/data/Identity'
+import { ProviderContract, UserContract } from './../../../typings/types/data/Contract.d'
 import { Contract, ImprintingContract, OrchestrationContract, RoleContract } from './../../types/data/Contract'
 import { BcoinDB } from './types/BcoinDB'
 
@@ -44,7 +45,29 @@ export const makeBcoinDB = (): Promise<BcoinDB> =>
         }
 
         const storeCtr = (ctr: RoleContract) => Promise.resolve((contracts.insert(ctr), void 0))
-        const findCtr = <R extends Role>(identity: AbstractIdentity<R>) => Promise.resolve(contracts.find({ identity }))
+
+        const getLastUserContractIdentity = () =>
+          Promise.resolve(
+            (((contracts.find({ 'identity.role': Role.User } as any) as UserContract[]).sort(
+              (ctr1, ctr2) => ctr2.identity.index - ctr1.identity.index
+            )[0] as UserContract) || {
+              identity: {
+                role: Role.User,
+                index: 0,
+              },
+            }).identity
+          ).then(x => (console.log(x), x))
+        const getLastProviderContractIdentity = () =>
+          Promise.resolve(
+            (((contracts.find({ 'identity.role': Role.Provider } as any) as ProviderContract[]).sort(
+              (ctr1, ctr2) => ctr2.identity.index - ctr1.identity.index
+            )[0] as ProviderContract) || {
+              identity: {
+                role: Role.Provider,
+                index: -1,
+              },
+            }).identity
+          ).then(x => (console.log(x), x))
 
         resolve({
           storeImprinting,
@@ -52,7 +75,8 @@ export const makeBcoinDB = (): Promise<BcoinDB> =>
           storeOrchestration,
           getOrchestration,
           storeCtr,
-          findCtr: findCtr as BcoinDB['findCtr'],
+          getLastUserContractIdentity,
+          getLastProviderContractIdentity,
         })
       },
     })
