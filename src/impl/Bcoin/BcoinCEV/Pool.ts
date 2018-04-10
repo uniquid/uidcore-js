@@ -49,11 +49,13 @@ export const Pool = async (opts?: Options): Promise<BCPool> => {
 
   await pool.open()
   await pool.connect()
-  const watchAddresses = async (addresses: IdAddress[]) => {
-    return new Promise<BCTX[]>((resolve, reject) => {
-      console.log(`WATCH: ${addresses}`)
+  const watchAddresses = async (addresses: IdAddress[]) =>
+    new Promise<BCTX[]>((resolve, reject) => {
+      console.log(`WATCH: `, addresses.reduce((s, a, i) => `${s}\n${i} : ${a}`, ''))
       addresses.forEach(address => pool.watchAddress(address))
       const listener = (block: any, entry: any) => {
+        console.log(`BLOCK: ${block.toJSON().hash}`, block.txs)
+
         if (block.txs.length) {
           pool.stopSync()
           // pool.disconnect()
@@ -68,7 +70,6 @@ export const Pool = async (opts?: Options): Promise<BCPool> => {
       pool.startSync()
       pool.sync(true)
     })
-  }
 
   return {
     watchAddresses,

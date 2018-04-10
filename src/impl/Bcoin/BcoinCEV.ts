@@ -18,53 +18,51 @@ export interface Options {
 const imprintingHDPath = [0, 0, 0]
 const orchestrationHDPath = [0, 1, 0]
 
-const loopReady = (db: BcoinDB, pool: BCPool, id: BcoinID) => async (): Promise<any> =>
-  Promise.all([await db.getLastProviderContractIdentity(), await db.getLastUserContractIdentity()])
-    .then(identities =>
-      identities
-        .map(identity => [
-          { ...identity, index: identity.index + 1 },
-          // { ...identity, index: identity.index + 2 },
-          // { ...identity, index: identity.index + 3 },
-        ])
-        .reduce((allids, ids) => allids.concat(ids), [])
-        .map(id.identityFor)
-        .map(identity => identity.address)
-    )
-    .then(async nextWatchaddresses => {
-      const txs = await pool.watchAddresses(nextWatchaddresses)
-      console.log(txs)
-      txs
-        .filter(isContractTX)
-        .reduce<Promise<void>>(
-          (reducingPromise, tx) =>
-            reducingPromise.then(async () => {
-              const lastProviderIdentity = await db.getLastProviderContractIdentity()
-              const lastUserIdentity = await db.getLastUserContractIdentity()
-              const nextProviderIdentity = id.identityFor({
-                role: lastProviderIdentity.role,
-                index: lastProviderIdentity.index + 1,
-              })
-              const nextUserIdentity = id.identityFor({
-                role: lastUserIdentity.role,
-                index: lastUserIdentity.index + 1,
-              })
-              let maybeCtr
-              if (getChangeAddress(tx) === nextProviderIdentity.address) {
-                maybeCtr = convertToRoleContract(nextProviderIdentity, tx)
-              } else if (getUserAddress(tx) === nextUserIdentity.address) {
-                maybeCtr = convertToRoleContract(nextUserIdentity, tx)
-              }
-              // })
-              // .then(maybeCtr => {
-              if (maybeCtr) {
-                return db.storeCtr(maybeCtr)
-              }
-            }),
-          Promise.resolve()
-        )
-        .then(loopReady(db, pool, id))
+const loopReady = (db: BcoinDB, pool: BCPool, id: BcoinID) => (): void => {
+  const [providerIdentities, userIdentities] = [
+    db.getLastProviderContractIdentity(),
+    db.getLastUserContractIdentity(),
+  ].map(lastIdentity =>
+    [
+      // tslint:disable-next-line:no-magic-numbers
+      { ...lastIdentity, index: lastIdentity.index + 1 },
+      // tslint:disable-next-line:no-magic-numbers
+      { ...lastIdentity, index: lastIdentity.index + 2 },
+      // tslint:disable-next-line:no-magic-numbers
+      { ...lastIdentity, index: lastIdentity.index + 3 },
+      // tslint:disable-next-line:no-magic-numbers
+      { ...lastIdentity, index: lastIdentity.index + 4 },
+      // tslint:disable-next-line:no-magic-numbers
+      { ...lastIdentity, index: lastIdentity.index + 5 },
+    ].map(id.identityFor)
+  )
+
+  const [providerAddresses, userAddresses] = [providerIdentities, userIdentities].map(identities =>
+    identities.map(identity => identity.address)
+  )
+
+  const nextWatchaddresses = providerAddresses.concat(userAddresses)
+  pool
+    .watchAddresses(nextWatchaddresses)
+    .then(txs => {
+      txs.filter(isContractTX).forEach(tx => {
+        const txProviderAddress = getChangeAddress(tx)
+        const txUserAddress = getUserAddress(tx)
+        const providerIndex = providerAddresses.indexOf(txProviderAddress)
+        const userIndex = userAddresses.indexOf(txUserAddress)
+        if (providerIndex > -1) {
+          const providerCtr = convertToRoleContract(providerIdentities[providerIndex], tx)
+          db.storeCtr(providerCtr).catch(error => console.error('LoopReady storeCtr providerCtr Error', error))
+        }
+        if (userIndex > -1) {
+          const userCtr = convertToRoleContract(userIdentities[userIndex], tx)
+          db.storeCtr(userCtr).catch(error => console.error('LoopReady storeCtr userCtr Error', error))
+        }
+      })
+      loopReady(db, pool, id)()
     })
+    .catch(error => console.error('LoopReady Error', error))
+}
 
 const ensureImprinting = (db: BcoinDB, id: BcoinID, pool: BCPool) =>
   db.getImprinting().then(async shallBeImprintingContract => {
@@ -74,7 +72,7 @@ const ensureImprinting = (db: BcoinDB, id: BcoinID, pool: BCPool) =>
     while (!shallBeImprintingContract) {
       const txs = await pool.watchAddresses([imprintingAddress])
       console.log(`---------------------------------------------------------- got IMPR ${imprintingAddress}`, txs)
-      shallBeImprintingContract = await convertToImprintingContract(imprintingAddress, txs)
+      shallBeImprintingContract = convertToImprintingContract(imprintingAddress, txs)
       if (shallBeImprintingContract) {
         await db.storeImprinting(shallBeImprintingContract)
       }
@@ -91,7 +89,7 @@ const ensureOrchestration = (db: BcoinDB, id: BcoinID, pool: BCPool) => (imprint
       console.log(`---------------------------------------------------------- ORCH `, shallBeOrchestrationContract)
       const txs = await pool.watchAddresses([orchestrationAddress])
       console.log(`---------------------------------------------------------- got ORCH ${orchestrationAddress}`, txs)
-      shallBeOrchestrationContract = await convertToOrchestrationContract(imprintingContract, orchestrationAddress, txs)
+      shallBeOrchestrationContract = convertToOrchestrationContract(imprintingContract, orchestrationAddress, txs)
       if (shallBeOrchestrationContract) {
         await db.storeOrchestration(shallBeOrchestrationContract)
       }
