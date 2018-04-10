@@ -10,6 +10,7 @@ import {
 import { Role } from './../../../../types/data/Identity'
 import { BcoinIdentity } from './../../types/data/BcoinIdentity'
 
+// tslint:disable:no-use-before-declare
 export const convertToImprintingContract = (imprintingAddress: IdAddress, txs: BCTX[]): ImprintingContract | void => {
   const imprTx = txs.find(isImprintingTX(imprintingAddress))
 
