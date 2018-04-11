@@ -4,53 +4,32 @@ import { BCPool, Pool } from './BcoinCEV/Pool'
 import {
   convertToImprintingContract,
   convertToOrchestrationContract,
-  convertToRoleContract,
-  getChangeAddress,
-  getUserAddress,
-  isContractTX,
+  getRoleContracts,
 } from './BcoinCEV/TX/txContracts'
 import { BcoinCEV } from './types/BcoinCEV'
 import { BcoinDB } from './types/BcoinDB'
 import { BcoinID } from './types/BcoinID'
 
 const loopReady = (db: BcoinDB, pool: BCPool, id: BcoinID, watchahead: number) => {
-  const [providerIdentities, userIdentities] = [
-    db.getLastProviderContractIdentity(),
-    db.getLastUserContractIdentity(),
-  ].map(lastIdentity => {
-    const identities = []
-    for (let offset = 1; offset <= watchahead; offset++) {
-      const waIdentity = id.identityFor({ ...lastIdentity, index: lastIdentity.index + offset })
-      identities.push(waIdentity)
-    }
+  const nextWatchIdentities = [db.getLastProviderContractIdentity(), db.getLastUserContractIdentity()]
+    .map(lastIdentity => {
+      const identities = []
+      for (let offset = 1; offset <= watchahead; offset++) {
+        const waIdentity = id.identityFor({ ...lastIdentity, index: lastIdentity.index + offset })
+        identities.push(waIdentity)
+      }
 
-    return identities
-  })
-
-  const [providerAddresses, userAddresses] = [providerIdentities, userIdentities].map(identities =>
-    identities.map(identity => identity.address)
-  )
-
-  const nextWatchaddresses = providerAddresses.concat(userAddresses)
-  pool
-    .watchAddresses(nextWatchaddresses)
-    .then(txs => {
-      txs.filter(isContractTX).forEach(tx => {
-        const txProviderAddress = getChangeAddress(tx)
-        const txUserAddress = getUserAddress(tx)
-        const providerIndex = providerAddresses.indexOf(txProviderAddress)
-        const userIndex = userAddresses.indexOf(txUserAddress)
-        if (providerIndex > -1) {
-          const providerCtr = convertToRoleContract(providerIdentities[providerIndex], tx)
-          db.storeCtr(providerCtr)
-        }
-        if (userIndex > -1) {
-          const userCtr = convertToRoleContract(userIdentities[userIndex], tx)
-          db.storeCtr(userCtr)
-        }
-      })
-      loopReady(db, pool, id, watchahead)
+      return identities
     })
+    .reduce((a, b) => a.concat(b))
+
+  const nextWatchAddresses = nextWatchIdentities.map(identity => identity.address)
+
+  pool
+    .watchAddresses(nextWatchAddresses)
+    .then(getRoleContracts(nextWatchIdentities))
+    .then(contracts => contracts.forEach(db.storeCtr))
+    .then(() => loopReady(db, pool, id, watchahead))
     .catch(error => console.error('LoopReady Error', error))
 }
 
