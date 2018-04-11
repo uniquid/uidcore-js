@@ -1,4 +1,5 @@
 import * as LokiConstructor from 'lokijs'
+import * as path from 'path'
 import { Role } from '../../types/data/Identity'
 import {
   Contract,
@@ -10,9 +11,12 @@ import {
 } from './../../types/data/Contract'
 import { BcoinDB } from './types/BcoinDB'
 
-export const makeBcoinDB = (): Promise<BcoinDB> =>
+export interface Options {
+  home: string
+}
+export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
   new Promise((resolve, reject) => {
-    const db = new LokiConstructor('db.json', {
+    const db = new LokiConstructor(path.join(opts.home, 'db.json'), {
       autoload: true,
       autosave: true,
       autoloadCallback: () => {
