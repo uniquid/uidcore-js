@@ -1,4 +1,5 @@
-import { IdAddress } from '../../../../types/data/Identity'
+import { IdAddress, Identity } from '../../../../types/data/Identity'
+import { BcoinIdentity } from '../../types/data/BcoinIdentity'
 import { BCTX } from '../Pool'
 import {
   ImprintingContract,
@@ -8,9 +9,19 @@ import {
   UserContract,
 } from './../../../../types/data/Contract'
 import { Role } from './../../../../types/data/Identity'
-import { BcoinIdentity } from './../../types/data/BcoinIdentity'
-
 // tslint:disable:no-use-before-declare
+
+export const getRoleContracts = (identities: Identity<Role>[]) => (txs: BCTX[]) =>
+  txs.filter(isContractTX).reduce<RoleContract[]>((contracts, tx) => {
+    const identity = identities.find(id => id.address === getChangeAddress(tx) || id.address === getUserAddress(tx))
+    if (identity) {
+      const providerCtr = convertToRoleContract(identity, tx)
+      contracts.push(providerCtr)
+    }
+
+    return contracts
+  }, [])
+
 export const convertToImprintingContract = (imprintingAddress: IdAddress, txs: BCTX[]): ImprintingContract | void => {
   const imprTx = txs.find(isImprintingTX(imprintingAddress))
 
@@ -31,7 +42,6 @@ export const convertToOrchestrationContract = (
   const imprintingAddress = imprintingContract.imprintingAddress
   const orchTx = txs.filter(isContractTX).find(isOrchestrationTX(orchestrationAddress, imprintingAddress))
   if (orchTx) {
-    // tslint:disable-next-line:no-magic-numbers
     const revoker = getRevokerAddress(orchTx)
     const orchestrationIdentity: BcoinIdentity<Role.Provider> = {
       address: imprintingAddress,
@@ -40,7 +50,6 @@ export const convertToOrchestrationContract = (
       ext: '1',
     }
     const user = getUserAddress(orchTx)
-    // const nextProviderAddress = getChangeAddress(orchTx)
     const payload = getPayload(orchTx)
 
     return {
@@ -49,11 +58,9 @@ export const convertToOrchestrationContract = (
       received: new Date().valueOf(),
       contractor: user,
       revoker,
-      // nextProviderAddress,
       payload,
     }
   }
-  // return { orchestration: true }
 }
 export interface ConvertToRoleContract {
   (identity: BcoinIdentity<Role.User>, tx: BCTX): UserContract

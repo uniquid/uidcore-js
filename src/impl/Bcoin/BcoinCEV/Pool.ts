@@ -18,7 +18,7 @@ export interface Options {
 }
 
 export interface BCPool {
-  watchAddresses(addresses: IdAddress[]): Promise<{}[]>
+  watchAddresses(addresses: IdAddress[]): Promise<BCTX[]>
 }
 export const Pool = async (opts: Options): Promise<BCPool> => {
   const chainLogger = new bcoin.logger({
