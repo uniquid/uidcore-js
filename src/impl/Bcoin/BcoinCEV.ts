@@ -13,24 +13,19 @@ import { BcoinCEV } from './types/BcoinCEV'
 import { BcoinDB } from './types/BcoinDB'
 import { BcoinID } from './types/BcoinID'
 
-const loopReady = (db: BcoinDB, pool: BCPool, id: BcoinID) => (): void => {
+const loopReady = (db: BcoinDB, pool: BCPool, id: BcoinID, watchahead: number) => {
   const [providerIdentities, userIdentities] = [
     db.getLastProviderContractIdentity(),
     db.getLastUserContractIdentity(),
-  ].map(lastIdentity =>
-    [
-      // tslint:disable-next-line:no-magic-numbers
-      { ...lastIdentity, index: lastIdentity.index + 1 },
-      // tslint:disable-next-line:no-magic-numbers
-      { ...lastIdentity, index: lastIdentity.index + 2 },
-      // tslint:disable-next-line:no-magic-numbers
-      { ...lastIdentity, index: lastIdentity.index + 3 },
-      // tslint:disable-next-line:no-magic-numbers
-      { ...lastIdentity, index: lastIdentity.index + 4 },
-      // tslint:disable-next-line:no-magic-numbers
-      { ...lastIdentity, index: lastIdentity.index + 5 },
-    ].map(id.identityFor)
-  )
+  ].map(lastIdentity => {
+    const identities = []
+    for (let offset = 1; offset <= watchahead; offset++) {
+      const waIdentity = id.identityFor({ ...lastIdentity, index: lastIdentity.index + offset })
+      identities.push(waIdentity)
+    }
+
+    return identities
+  })
 
   const [providerAddresses, userAddresses] = [providerIdentities, userIdentities].map(identities =>
     identities.map(identity => identity.address)
@@ -54,7 +49,7 @@ const loopReady = (db: BcoinDB, pool: BCPool, id: BcoinID) => (): void => {
           db.storeCtr(userCtr)
         }
       })
-      loopReady(db, pool, id)()
+      loopReady(db, pool, id, watchahead)
     })
     .catch(error => console.error('LoopReady Error', error))
 }
@@ -93,12 +88,15 @@ const ensureOrchestration = (db: BcoinDB, id: BcoinID, pool: BCPool) => async (
   return shallBeOrchestrationContract
 }
 
-const start = async (db: BcoinDB, id: BcoinID, pool: BCPool) =>
-  ensureImprinting(db, id, pool).then(ensureOrchestration(db, id, pool)).then(loopReady(db, pool, id))
+const start = async (db: BcoinDB, id: BcoinID, pool: BCPool, opts: Options) =>
+  ensureImprinting(db, id, pool)
+    .then(ensureOrchestration(db, id, pool))
+    .then(() => loopReady(db, pool, id, opts.watchahead))
 export interface Options {
   home: string
   logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam'
   seeds: string[]
+  watchahead: number
 }
 export const makeBcoinCEV = async (db: BcoinDB, id: BcoinID, opts: Options): Promise<BcoinCEV> => {
   const pool = await Pool({
@@ -107,7 +105,7 @@ export const makeBcoinCEV = async (db: BcoinDB, id: BcoinID, opts: Options): Pro
     seeds: opts.seeds,
   })
 
-  return start(db, id, pool).then(() => ({
+  return start(db, id, pool, opts).then(() => ({
     pool,
   }))
 }
