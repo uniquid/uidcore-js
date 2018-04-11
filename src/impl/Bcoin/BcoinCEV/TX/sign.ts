@@ -11,7 +11,7 @@ const crypto = require('bcoin/lib/crypto')
 
 const inputSignerFor = (id: BcoinID, txObj: TXObj) => (path: HDPath, pathIndex: number): InputObj => {
   const originalInput = txObj.inputs[pathIndex]
-  const publicKey = id.derivePrivateKey(path).toPublic().publicKey
+  const publicKey = id.publicKeyAtPath(path)
 
   const localInputs = txObj.inputs.map((currScriptInput, currScriptInputIndex) => {
     if (currScriptInputIndex === pathIndex) {

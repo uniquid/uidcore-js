@@ -9,13 +9,9 @@ import {
   getUserAddress,
   isContractTX,
 } from './BcoinCEV/TX/txContracts'
-import { base58AddrByPrivKey } from './BcoinID/HD'
 import { BcoinCEV } from './types/BcoinCEV'
 import { BcoinDB } from './types/BcoinDB'
 import { BcoinID } from './types/BcoinID'
-
-const imprintingHDPath = [0, 0, 0]
-const orchestrationHDPath = [0, 1, 0]
 
 const loopReady = (db: BcoinDB, pool: BCPool, id: BcoinID) => (): void => {
   const [providerIdentities, userIdentities] = [
@@ -66,8 +62,7 @@ const loopReady = (db: BcoinDB, pool: BCPool, id: BcoinID) => (): void => {
 const ensureImprinting = (db: BcoinDB, id: BcoinID, pool: BCPool) =>
   db.getImprinting().then(async shallBeImprintingContract => {
     console.log(`---------------------------------------------------------- IMPR `, shallBeImprintingContract)
-    const imprintingHDKey = id.derivePrivateKey(imprintingHDPath)
-    const imprintingAddress = base58AddrByPrivKey(imprintingHDKey)
+    const imprintingAddress = id.getImprintingAddress()
     while (!shallBeImprintingContract) {
       const txs = await pool.watchAddresses([imprintingAddress])
       console.log(`---------------------------------------------------------- got IMPR ${imprintingAddress}`, txs)
@@ -82,8 +77,7 @@ const ensureImprinting = (db: BcoinDB, id: BcoinID, pool: BCPool) =>
 
 const ensureOrchestration = (db: BcoinDB, id: BcoinID, pool: BCPool) => (imprintingContract: ImprintingContract) =>
   db.getOrchestration().then(async shallBeOrchestrationContract => {
-    const orchestrationHDKey = id.derivePrivateKey(orchestrationHDPath)
-    const orchestrationAddress = base58AddrByPrivKey(orchestrationHDKey)
+    const orchestrationAddress = id.getOrchestrateAddress()
     while (!shallBeOrchestrationContract) {
       console.log(`---------------------------------------------------------- ORCH `, shallBeOrchestrationContract)
       const txs = await pool.watchAddresses([orchestrationAddress])
