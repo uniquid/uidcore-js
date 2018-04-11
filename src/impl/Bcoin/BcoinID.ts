@@ -24,6 +24,8 @@ export const BcoinID = (opts: Options): Promise<BcoinIDType> =>
     resolve({
       signFor: hd.signFor(privateKeyBase58),
       identityFor: hd.identityFor(privateKeyBase58),
-      derivePrivateKey: hd.derivePrivateKey(privateKeyBase58),
+      getImprintingAddress: hd.getImprintingAddress(privateKeyBase58),
+      getOrchestrateAddress: hd.getOrchestrateAddress(privateKeyBase58),
+      publicKeyAtPath: hd.publicKeyAtPath(privateKeyBase58),
     })
   })

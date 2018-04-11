@@ -24,10 +24,10 @@ export type PublicKey = Buffer
 export type PrivateKey = Buffer
 export type HDPath = (string | number)[]
 const BASE_PATH: HDPath = ['m', "44'", "0'", 0]
-export type DerivePrivateKey = (subPath: HDPath) => BcoinHDPrivateKey
-export const derivePrivateKey = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey): DerivePrivateKey => (
-  subPath: HDPath
-) => {
+const imprintingHDPath = [0, 0, 0]
+const orchestrationHDPath = [0, 1, 0]
+// export type DerivePrivateKey = (subPath: HDPath) => BcoinHDPrivateKey
+const derivePrivateKey = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (subPath: HDPath) => {
   const masterPrivateKey: BcoinHDPrivateKey = BcoinPrivateKey.fromBase58(bip32ExtMasterPrivateKey)
   const derivedPrivkey = masterPrivateKey.derivePath([...BASE_PATH, ...subPath].join('/'))
 
@@ -51,7 +51,7 @@ export const signFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (
   return der ? res.toDER() as Buffer : Buffer.concat([res.r.toBuffer(), res.s.toBuffer()], 64)
 }
 
-export const base58AddrByPrivKey = (privkey: BcoinHDPrivateKey) => {
+const base58AddrByPrivKey = (privkey: BcoinHDPrivateKey) => {
   /**
    * http://bcoin.io/guides/generate-address.html
    */
@@ -71,7 +71,18 @@ export const base58AddrByPrivKey = (privkey: BcoinHDPrivateKey) => {
 
   return address
 }
+export const getImprintingAddress = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => () => {
+  const imprintingHDKey = derivePrivateKey(bip32ExtMasterPrivateKey)(imprintingHDPath)
 
+  return base58AddrByPrivKey(imprintingHDKey)
+}
+export const getOrchestrateAddress = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => () => {
+  const orchestrationHDKey = derivePrivateKey(bip32ExtMasterPrivateKey)(orchestrationHDPath)
+
+  return base58AddrByPrivKey(orchestrationHDKey)
+}
+export const publicKeyAtPath = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (path: HDPath): PublicKey =>
+  derivePrivateKey(bip32ExtMasterPrivateKey)(path).toPublic().publicKey
 export const identityFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => <R extends Role>(
   abstrId: BcoinAbstractIdentity<R>
 ): BcoinIdentity<R> => {
