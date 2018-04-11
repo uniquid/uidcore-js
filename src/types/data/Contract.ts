@@ -9,6 +9,7 @@ export interface AbstractRoleContract<R extends Role> extends AbstractContract {
   identity: AbstractIdentity<R>
   revoker: IdAddress
   payload: string
+  revoked: number | null
 }
 
 export interface ProviderContract extends AbstractRoleContract<Role.Provider> {

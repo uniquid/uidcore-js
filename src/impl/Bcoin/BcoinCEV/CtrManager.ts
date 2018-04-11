@@ -1,14 +1,15 @@
 import { ImprintingContract } from './../../../types/data/Contract'
 import { BCPool } from './../BcoinCEV/Pool'
+import { BcoinDB } from './../types/BcoinDB'
+import { BcoinID } from './../types/BcoinID'
 import {
   convertToImprintingContract,
   convertToOrchestrationContract,
+  getRevokingAddresses,
   getRoleContracts,
-} from './../BcoinCEV/TX/txContracts'
-import { BcoinDB } from './../types/BcoinDB'
-import { BcoinID } from './../types/BcoinID'
+} from './TX/txContracts'
 
-const loopRoleContractWatch = (db: BcoinDB, pool: BCPool, id: BcoinID, watchahead: number) => {
+const loopRoleContractWatch = async (db: BcoinDB, pool: BCPool, id: BcoinID, watchahead: number) => {
   const nextWatchIdentities = [db.getLastProviderContractIdentity(), db.getLastUserContractIdentity()]
     .map(lastIdentity => {
       const identities = []
@@ -23,12 +24,23 @@ const loopRoleContractWatch = (db: BcoinDB, pool: BCPool, id: BcoinID, watchahea
 
   const nextWatchAddresses = nextWatchIdentities.map(identity => identity.address)
 
-  pool
-    .watchAddresses(nextWatchAddresses)
-    .then(getRoleContracts(nextWatchIdentities))
-    .then(contracts => contracts.forEach(db.storeCtr))
-    .then(() => loopRoleContractWatch(db, pool, id, watchahead))
-    .catch(error => console.error('LoopReady Error', error))
+  const watchingRevokingAddresses = db.getActiveRoleContracts().map(ctr => ctr.revoker)
+  console.log(`watchingRevokingAddresses: `, watchingRevokingAddresses.reduce((s, a, i) => `${s}\n${i} : ${a}`, ''))
+  console.log(`nextWatchAddresses: `, nextWatchAddresses.reduce((s, a, i) => `${s}\n${i} : ${a}`, ''))
+  const txs = await pool.watchAddresses(nextWatchAddresses.concat(watchingRevokingAddresses))
+  const newContracts = getRoleContracts(nextWatchIdentities)(txs)
+  console.log(`\nNEW Role Contracts: ${newContracts.length} `)
+  console.log(newContracts.reduce((s, c) => `${s}${c.identity.role}[${c.identity.index}] -> ${c.contractor}\n`, ''))
+  newContracts.forEach(db.storeCtr)
+  const revokingAddresses = getRevokingAddresses(watchingRevokingAddresses)(txs)
+  console.log(`\nREVOKING Addresses: ${revokingAddresses.length}`)
+  console.log(revokingAddresses.reduce((s, a) => `${s}${a}\n`, ''))
+  revokingAddresses.forEach(db.revokeContract)
+  try {
+    await loopRoleContractWatch(db, pool, id, watchahead)
+  } catch (err) {
+    console.error('loopRoleContractWatch ERROR:', err)
+  }
 }
 
 const ensureImprinting = async (db: BcoinDB, id: BcoinID, pool: BCPool) => {
