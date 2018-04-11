@@ -12,9 +12,7 @@ import { base58AddrByPrivKey } from './BcoinID/HD'
 import { BcoinCEV } from './types/BcoinCEV'
 import { BcoinDB } from './types/BcoinDB'
 import { BcoinID } from './types/BcoinID'
-export interface Options {
-  pool?: PoolOptions
-}
+
 const imprintingHDPath = [0, 0, 0]
 const orchestrationHDPath = [0, 1, 0]
 
@@ -100,9 +98,11 @@ const ensureOrchestration = (db: BcoinDB, id: BcoinID, pool: BCPool) => (imprint
 
 const start = async (db: BcoinDB, id: BcoinID, pool: BCPool) =>
   ensureImprinting(db, id, pool).then(ensureOrchestration(db, id, pool)).then(loopReady(db, pool, id))
-
+export interface Options {
+  pool?: PoolOptions
+}
+const defOpts: Options = {}
 export const makeBcoinCEV = async (db: BcoinDB, id: BcoinID, opts?: Options): Promise<BcoinCEV> => {
-  const defOpts: Options = {}
   opts = {
     ...opts,
     ...defOpts,
