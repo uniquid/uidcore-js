@@ -2,12 +2,12 @@ import { ImprintingContract, OrchestrationContract, RoleContract } from '../data
 import { AbstractIdentity, Role } from '../data/Identity'
 
 export interface DB {
-  storeImprinting(ctr: ImprintingContract): Promise<void>
-  getImprinting(): Promise<ImprintingContract | void>
+  storeImprinting(ctr: ImprintingContract): void
+  getImprinting(): ImprintingContract | void
   // invalidateImprinting(): Promise<void>
-  storeOrchestration(ctr: OrchestrationContract): Promise<void>
-  getOrchestration(): Promise<OrchestrationContract | void>
-  storeCtr(ctr: RoleContract): Promise<void>
+  storeOrchestration(ctr: OrchestrationContract): void
+  getOrchestration(): OrchestrationContract | void
+  storeCtr(ctr: RoleContract): void
   getLastUserContractIdentity(): AbstractIdentity<Role.User>
   getLastProviderContractIdentity(): AbstractIdentity<Role.Provider>
 }

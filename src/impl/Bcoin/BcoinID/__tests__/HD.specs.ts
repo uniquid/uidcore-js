@@ -1,6 +1,6 @@
 import { Role } from '../../../../types/data/Identity'
 
-import { derivePrivateKey, identityFor, signFor } from '../HD'
+import { identityFor, signFor } from '../HD'
 
 // import { randomBytes } from 'crypto'
 
@@ -8,12 +8,12 @@ const masterPrivKey =
   'tprv8ZgxMBicQKsPd7Uf69XL1XwhmjHopUGep8GuEiJDZmbQz6o58LninorQAfcKZWARbtRtfnLcJ5MQ2AtHcQJCCRUcMRvmDUjyEmNUWwx8UbK'
 
 describe('HD keys derivation', () => {
-  it('derive Private Key', () => {
-    const derivedPrivkey = derivePrivateKey(masterPrivKey)([0, 1, 1])
-    expect(derivedPrivkey.toBase58()).toBe(
-      'tprv8mTK23nwj29zt2fizqTMR2zCQhE94xoVdRZbuJ6XNKpb9P79jnNjsejP8CLJoSsJPcxZmA3SVxhHgW5ndpNUyessuCmKwKW3xvqQcx2xohx'
-    )
-  })
+  // it('derive Private Key', () => {
+  //   const derivedPrivkey = derivePrivateKey(masterPrivKey)([0, 1, 1])
+  //   expect(derivedPrivkey.toBase58()).toBe(
+  //     'tprv8mTK23nwj29zt2fizqTMR2zCQhE94xoVdRZbuJ6XNKpb9P79jnNjsejP8CLJoSsJPcxZmA3SVxhHgW5ndpNUyessuCmKwKW3xvqQcx2xohx'
+  //   )
+  // })
   it('derive ProviderIdentity', () => {
     // m/44'/0'/0/0/1/5
     const identity = identityFor(masterPrivKey)({ role: Role.Provider, index: 5 })
