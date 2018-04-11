@@ -12,23 +12,15 @@ bcoin.networks.uq = Object.assign({}, bcoin.networks.regtest, {
 bcoin.set('uq')
 
 export interface Options {
-  logLevel?: 'error' | 'warning' | 'info' | 'debug' | 'spam'
-  dbFolder?: string
-  seeds?: string[]
+  logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam'
+  dbFolder: string
+  seeds: string[]
 }
-const defOpts: Options = {
-  logLevel: 'spam',
-  dbFolder: 'chain_db',
-  seeds: ['52.225.217.168', '52.167.211.151', '52.225.218.133'],
-}
+
 export interface BCPool {
   watchAddresses(addresses: IdAddress[]): Promise<{}[]>
 }
-export const Pool = async (opts?: Options): Promise<BCPool> => {
-  opts = {
-    ...defOpts,
-    ...opts,
-  }
+export const Pool = async (opts: Options): Promise<BCPool> => {
   const chainLogger = new bcoin.logger({
     level: opts.logLevel,
   })

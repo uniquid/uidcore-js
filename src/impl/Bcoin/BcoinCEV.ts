@@ -1,5 +1,6 @@
+import * as path from 'path'
 import { ImprintingContract } from './../../types/data/Contract'
-import { BCPool, Options as PoolOptions, Pool } from './BcoinCEV/Pool'
+import { BCPool, Pool } from './BcoinCEV/Pool'
 import {
   convertToImprintingContract,
   convertToOrchestrationContract,
@@ -99,15 +100,16 @@ const ensureOrchestration = (db: BcoinDB, id: BcoinID, pool: BCPool) => (imprint
 const start = async (db: BcoinDB, id: BcoinID, pool: BCPool) =>
   ensureImprinting(db, id, pool).then(ensureOrchestration(db, id, pool)).then(loopReady(db, pool, id))
 export interface Options {
-  pool?: PoolOptions
+  home: string
+  logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam'
+  seeds: string[]
 }
-const defOpts: Options = {}
-export const makeBcoinCEV = async (db: BcoinDB, id: BcoinID, opts?: Options): Promise<BcoinCEV> => {
-  opts = {
-    ...opts,
-    ...defOpts,
-  }
-  const pool = await Pool(opts.pool)
+export const makeBcoinCEV = async (db: BcoinDB, id: BcoinID, opts: Options): Promise<BcoinCEV> => {
+  const pool = await Pool({
+    dbFolder: path.join(opts.home, 'chain.db'),
+    logLevel: opts.logLevel,
+    seeds: opts.seeds,
+  })
 
   return start(db, id, pool).then(() => ({
     pool,
