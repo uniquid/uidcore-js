@@ -13,7 +13,7 @@ import { Role } from './../../../../types/data/Identity'
 
 export const getRoleContracts = (identities: Identity<Role>[]) => (txs: BCTX[]) =>
   txs.filter(isContractTX).reduce<RoleContract[]>((contracts, tx) => {
-    const identity = identities.find(id => id.address === getChangeAddress(tx) || id.address === getUserAddress(tx))
+    const identity = identities.find(id => id.address === getProviderAddress(tx) || id.address === getUserAddress(tx))
     if (identity) {
       const providerCtr = convertToRoleContract(identity, tx)
       contracts.push(providerCtr)
@@ -47,7 +47,7 @@ export const convertToOrchestrationContract = (
       address: imprintingAddress,
       role: Role.Provider,
       index: 0,
-      ext: '1',
+      ext: '0',
     }
     const user = getUserAddress(orchTx)
     const payload = getPayload(orchTx)
