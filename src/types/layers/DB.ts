@@ -12,4 +12,5 @@ export interface DB {
   getLastProviderContractIdentity(): AbstractIdentity<Role.Provider>
   getActiveRoleContracts(): RoleContract[]
   revokeContract(revoker: IdAddress): void
+  getPayload(abstrId: AbstractIdentity<Role>): RoleContract['payload']
 }
