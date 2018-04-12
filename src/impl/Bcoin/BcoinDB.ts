@@ -1,6 +1,6 @@
 import * as LokiConstructor from 'lokijs'
 import * as path from 'path'
-import { Role } from '../../types/data/Identity'
+import { IdAddress, Role } from '../../types/data/Identity'
 import {
   Contract,
   ImprintingContract,
@@ -57,6 +57,18 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
           (ctr1, ctr2) => ctr2.identity.index - ctr1.identity.index
         )[0] as ProviderContract) || { identity: { role: Role.Provider, index: -1 } }).identity
 
+      const getActiveRoleContracts = () =>
+        contracts.find({
+          revoked: null,
+          orchestration: { $ne: true },
+        }) as RoleContract[]
+
+      const revokeContract = (revoker: IdAddress) => {
+        const ctr = contracts.findOne({ revoked: null, revoker, orchestration: { $ne: true } }) as RoleContract
+        ctr.revoked = new Date().valueOf()
+        contracts.update(ctr)
+      }
+
       const bcoinDB: BcoinDB = {
         storeImprinting,
         getImprinting,
@@ -65,6 +77,8 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
         storeCtr,
         getLastUserContractIdentity,
         getLastProviderContractIdentity,
+        getActiveRoleContracts,
+        revokeContract,
       }
       resolve(bcoinDB)
     }

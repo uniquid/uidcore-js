@@ -12,7 +12,7 @@ import { Role } from './../../../../types/data/Identity'
 // tslint:disable:no-use-before-declare
 
 export const getRoleContracts = (identities: Identity<Role>[]) => (txs: BCTX[]) =>
-  txs.filter(isContractTX).reduce<RoleContract[]>((contracts, tx) => {
+  txs.filter(isContractTX()).reduce<RoleContract[]>((contracts, tx) => {
     const identity = identities.find(id => id.address === getProviderAddress(tx) || id.address === getUserAddress(tx))
     if (identity) {
       const providerCtr = convertToRoleContract(identity, tx)
@@ -40,7 +40,7 @@ export const convertToOrchestrationContract = (
   txs: BCTX[]
 ): OrchestrationContract | void => {
   const imprintingAddress = imprintingContract.imprintingAddress
-  const orchTx = txs.filter(isContractTX).find(isOrchestrationTX(orchestrationAddress, imprintingAddress))
+  const orchTx = txs.filter(isContractTX(true)).find(isOrchestrationTX(orchestrationAddress, imprintingAddress))
   if (orchTx) {
     const revoker = getRevokerAddress(orchTx)
     const orchestrationIdentity: BcoinIdentity<Role.Provider> = {
@@ -59,6 +59,7 @@ export const convertToOrchestrationContract = (
       contractor: user,
       revoker,
       payload,
+      revoked: null,
     }
   }
 }
@@ -72,17 +73,42 @@ export const convertToRoleContract = (identity: BcoinIdentity<Role>, tx: BCTX): 
   const isProviderIdentity = identity.role === Role.Provider
   const contractor = isProviderIdentity ? getUserAddress(tx) : getProviderAddress(tx)
   const payload = getPayload(tx)
-  const contract = { identity, received: new Date().valueOf(), contractor, revoker, payload }
+  const contract = {
+    identity,
+    received: new Date().valueOf(),
+    contractor,
+    revoker,
+    payload,
+    revoked: null,
+  }
   if (identity.role === Role.Provider) {
     return contract as ProviderContract
   } else {
     return contract as UserContract
   }
 }
+export const getRevokingAddresses = (revokingAddresses: IdAddress[]) => (txs: BCTX[]) => {
+  const txInputAddresses = txs
+    // .map(tx => (console.log('------------------tx.inputs', tx.inputs), tx))
+    .map(tx => (tx.inputs as any[]).map(base58))
+    .reduce((addresses, inputAddr) => addresses.concat(inputAddr), [])
 
-export const isContractTX = (tx: BCTX) => {
-  return true
+  return revokingAddresses.filter(revokingAddress => txInputAddresses.includes(revokingAddress))
 }
+
+export const isContractTX = (orchestration = false) => (
+  tx: BCTX // tslint:disable-next-line:no-magic-numbers
+) =>
+  // tslint:disable-next-line:no-magic-numbers
+  (tx.inputs.length === 1 || tx.inputs.length === 2) &&
+  // tslint:disable-next-line:no-magic-numbers
+  (orchestration || tx.outputs.length === 4) &&
+  tx.outputs[1].script &&
+  tx.outputs[1].script.code &&
+  tx.outputs[1].script.code[1] &&
+  tx.outputs[1].script.code[1].data &&
+  // tslint:disable-next-line:no-magic-numbers
+  tx.outputs[1].script.code[1].data.length === 80
 
 export const isImprintingTX = (imprintingAddress: IdAddress) => (tx: BCTX) =>
   !!tx.outputs.find((output: any) => base58(output) === imprintingAddress)

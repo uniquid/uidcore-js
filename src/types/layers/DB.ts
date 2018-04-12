@@ -1,5 +1,5 @@
 import { ImprintingContract, OrchestrationContract, RoleContract } from '../data/Contract'
-import { AbstractIdentity, Role } from '../data/Identity'
+import { AbstractIdentity, IdAddress, Role } from '../data/Identity'
 
 export interface DB {
   storeImprinting(ctr: ImprintingContract): void
@@ -10,4 +10,6 @@ export interface DB {
   storeCtr(ctr: RoleContract): void
   getLastUserContractIdentity(): AbstractIdentity<Role.User>
   getLastProviderContractIdentity(): AbstractIdentity<Role.Provider>
+  getActiveRoleContracts(): RoleContract[]
+  revokeContract(revoker: IdAddress): void
 }
