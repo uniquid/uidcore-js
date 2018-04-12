@@ -9,6 +9,7 @@ import {
   RoleContract,
   UserContract,
 } from './../../types/data/Contract'
+import { AbstractIdentity } from './../../types/data/Identity'
 import { BcoinDB } from './types/BcoinDB'
 
 export interface Options {
@@ -68,6 +69,8 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
         ctr.revoked = new Date().valueOf()
         contracts.update(ctr)
       }
+      const getPayload = (absId: AbstractIdentity<Role>) =>
+        [contracts.findOne({ identity: absId } as any) as RoleContract].map(ctr => ctr.payload)[0]
 
       const bcoinDB: BcoinDB = {
         storeImprinting,
@@ -79,6 +82,7 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
         getLastProviderContractIdentity,
         getActiveRoleContracts,
         revokeContract,
+        getPayload,
       }
       resolve(bcoinDB)
     }

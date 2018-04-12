@@ -1,8 +1,7 @@
 import * as path from 'path'
+import { CEV } from '../../types/layers/CEV'
 import { startContractManager } from './BcoinCEV/CtrManager'
 import { Pool } from './BcoinCEV/Pool'
-
-import { BcoinCEV } from './types/BcoinCEV'
 import { BcoinDB } from './types/BcoinDB'
 import { BcoinID } from './types/BcoinID'
 
@@ -12,12 +11,10 @@ export interface Options {
   seeds: string[]
   watchahead: number
 }
-export const makeBcoinCEV = async (db: BcoinDB, id: BcoinID, opts: Options): Promise<BcoinCEV> => {
-  const pool = await Pool({
-    dbFolder: path.join(opts.home, 'chain.db'),
-    logLevel: opts.logLevel,
-    seeds: opts.seeds,
-  })
+export const makeBcoinCEV = (db: BcoinDB, id: BcoinID, opts: Options): CEV => {
+  Pool({ dbFolder: path.join(opts.home, 'chain.db'), logLevel: opts.logLevel, seeds: opts.seeds })
+    .then(pool => startContractManager(db, id, pool, opts.watchahead))
+    .catch(err => console.log('makeBcoinCEV ERROR', err))
 
-  return startContractManager(db, id, pool, opts.watchahead).then(() => ({ pool }))
+  return {}
 }
