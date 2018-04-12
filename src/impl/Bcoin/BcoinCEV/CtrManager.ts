@@ -36,11 +36,7 @@ const loopRoleContractWatch = async (db: BcoinDB, pool: BCPool, id: BcoinID, wat
   console.log(`\nREVOKING Addresses: ${revokingAddresses.length}`)
   console.log(revokingAddresses.reduce((s, a) => `${s}${a}\n`, ''))
   revokingAddresses.forEach(db.revokeContract)
-  try {
-    await loopRoleContractWatch(db, pool, id, watchahead)
-  } catch (err) {
-    console.error('loopRoleContractWatch ERROR:', err)
-  }
+  loopRoleContractWatch(db, pool, id, watchahead).catch(err => console.error('loopRoleContractWatch ERROR:', err))
 }
 
 const ensureImprinting = async (db: BcoinDB, id: BcoinID, pool: BCPool) => {
