@@ -119,7 +119,8 @@ export const getProviderAddress = (tx: any): IdAddress => base58(tx.inputs[0])
 // const getRechargeAddress = (tx: any): IdAddress | null => (tx.inputs.length > 1 ? base58(tx.inputs[1]) : null)
 
 export const getUserAddress = (tx: any): IdAddress => base58(tx.outputs[0])
-export const getPayload = (tx: any): string => (tx.outputs[1].script.code[1].data as Buffer).toString()
+export const getPayload = (tx: any): Buffer => tx.outputs[1].script.code[1].data as Buffer // .toString()
+
 // tslint:disable-next-line:no-magic-numbers
 export const getRevokerAddress = (tx: any): IdAddress => base58(tx.outputs[2])
 // tslint:disable-next-line:no-magic-numbers

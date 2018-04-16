@@ -1,4 +1,4 @@
-import { ImprintingContract, OrchestrationContract, RoleContract } from '../data/Contract'
+import { ImprintingContract, OrchestrationContract, ProviderContract, RoleContract } from '../data/Contract'
 import { AbstractIdentity, IdAddress, Role } from '../data/Identity'
 
 export interface DB {
@@ -13,4 +13,5 @@ export interface DB {
   getActiveRoleContracts(): RoleContract[]
   revokeContract(revoker: IdAddress): void
   getPayload(abstrId: AbstractIdentity<Role>): RoleContract['payload']
+  getContractForExternalUser(userAddr: IdAddress): ProviderContract | void
 }
