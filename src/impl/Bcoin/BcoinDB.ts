@@ -69,10 +69,17 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
         ctr.revoked = new Date().valueOf()
         contracts.update(ctr)
       }
+
       const getPayload = (absId: AbstractIdentity<Role>) =>
         [contracts.findOne({ identity: absId } as any) as RoleContract].map(ctr => ctr.payload)[0]
 
+      const getContractForExternalUser = (userAddr: IdAddress) =>
+        contracts.findOne(
+          { 'identity.role': Role.Provider, contractor: userAddr, revoked: null } as any
+        ) as ProviderContract
+
       const bcoinDB: BcoinDB = {
+        getContractForExternalUser,
         storeImprinting,
         getImprinting,
         storeOrchestration,

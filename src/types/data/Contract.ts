@@ -8,7 +8,7 @@ export interface AbstractContract {
 export interface AbstractRoleContract<R extends Role> extends AbstractContract {
   identity: AbstractIdentity<R>
   revoker: IdAddress
-  payload: string
+  payload: Buffer
   revoked: number | null
 }
 
