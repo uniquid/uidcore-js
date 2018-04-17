@@ -3,9 +3,13 @@ import { CH } from './../../../CH'
 import { AbstractIdentity, Role } from './../../../types/data/Identity'
 import { Handler, Method, Params, Request, Response } from './types'
 
+export const ERROR_NOT_IMPLEMENTED = 'Method not implemented'
+export const ERROR_NOT_ALLOWED = 'Not allowed'
 const bitmask = (payload: Buffer) =>
-  // tslint:disable-next-line:no-magic-numbers
-  Array.from(payload.slice(1, 19).reverse())
+  ((payload as any).data as number[])
+    // tslint:disable-next-line:no-magic-numbers
+    .slice(1, 19)
+    .reverse()
     // tslint:disable-next-line:no-magic-numbers
     .map(n => Array.from(n.toString(2).padStart(8, '0')))
     .reduce((a, b) => a.concat(b))
@@ -25,9 +29,18 @@ const manageRequest = (ch: CH, handlers: Handlers) => async <Nonce extends strin
   if (contract && verify(contract.payload, method)) {
     const providerIdentity = ch.identityFor(contract.identity)
     sender = providerIdentity.address
-    result = await handlers[method](providerIdentity, params)
+    const handler = handlers[method]
+    if (handler) {
+      try {
+        result = await handler(providerIdentity, params)
+      } catch (err) {
+        error = String(err)
+      }
+    } else {
+      error = ERROR_NOT_IMPLEMENTED
+    }
   } else {
-    error = 'Not allowed'
+    error = ERROR_NOT_ALLOWED
   }
 
   return {
