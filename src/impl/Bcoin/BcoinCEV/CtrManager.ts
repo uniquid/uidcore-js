@@ -67,6 +67,7 @@ const ensureOrchestration = (db: BcoinDB, id: BcoinID, pool: BCPool) => async (
     shallBeOrchestrationContract = convertToOrchestrationContract(imprintingContract, orchestrationAddress, txs)
     if (shallBeOrchestrationContract) {
       db.storeOrchestration(shallBeOrchestrationContract)
+      db.revokeContract(imprintingContract.revoker)
     }
   }
 

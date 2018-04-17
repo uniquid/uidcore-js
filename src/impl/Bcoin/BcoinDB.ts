@@ -49,12 +49,12 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
       const storeCtr = (ctr: RoleContract) => (contracts.insert(ctr), void 0)
 
       const getLastUserContractIdentity = () =>
-        (((contracts.find({ 'identity.role': Role.User, ext: '0' } as any) as UserContract[]).sort(
+        (((contracts.find({ 'identity.role': Role.User, 'identity.ext': '0' } as any) as UserContract[]).sort(
           (ctr1, ctr2) => ctr2.identity.index - ctr1.identity.index
         )[0] as UserContract) || { identity: { role: Role.User, index: 0 } }).identity
 
       const getLastProviderContractIdentity = () =>
-        (((contracts.find({ 'identity.role': Role.Provider, ext: '1' } as any) as ProviderContract[]).sort(
+        (((contracts.find({ 'identity.role': Role.Provider, 'identity.ext': '1' } as any) as ProviderContract[]).sort(
           (ctr1, ctr2) => ctr2.identity.index - ctr1.identity.index
         )[0] as ProviderContract) || { identity: { role: Role.Provider, index: -1 } }).identity
 

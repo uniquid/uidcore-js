@@ -15,7 +15,13 @@ export const getRoleContracts = (identities: Identity<Role>[]) => (txs: BCTX[]) 
   txs.filter(isContractTX()).reduce<RoleContract[]>((contracts, tx) => {
     const identity = identities.find(id => id.address === getProviderAddress(tx) || id.address === getUserAddress(tx))
     if (identity) {
-      const providerCtr = convertToRoleContract(identity, tx)
+      const providerCtr = convertToRoleContract(
+        {
+          ...identity,
+          ext: identity.role === Role.Provider ? '1' : '0',
+        },
+        tx
+      )
       contracts.push(providerCtr)
     }
 
@@ -28,9 +34,18 @@ export const convertToImprintingContract = (imprintingAddress: IdAddress, txs: B
   return imprTx
     ? {
         imprinting: true,
-        imprintingAddress,
+        identity: {
+          role: Role.Provider,
+          address: imprintingAddress,
+          index: 0,
+          ext: '0',
+        },
+        revoker: imprintingAddress,
+        revoked: null,
         received: new Date().valueOf(),
         contractor: getProviderAddress(imprTx),
+        // tslint:disable-next-line:no-magic-numbers
+        payload: Buffer.concat([Buffer.alloc(1), Buffer.alloc(28, 255), Buffer.alloc(61)], 80),
       }
     : void 0
 }
@@ -39,7 +54,7 @@ export const convertToOrchestrationContract = (
   orchestrationAddress: IdAddress,
   txs: BCTX[]
 ): OrchestrationContract | void => {
-  const imprintingAddress = imprintingContract.imprintingAddress
+  const imprintingAddress = imprintingContract.revoker
   const orchTx = txs.filter(isContractTX(true)).find(isOrchestrationTX(orchestrationAddress, imprintingAddress))
   if (orchTx) {
     const revoker = getRevokerAddress(orchTx)
