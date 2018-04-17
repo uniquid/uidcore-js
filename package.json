@@ -57,32 +57,22 @@
     }
   },
   "lint-staged": {
-    "src/**/*.{ts,tsx}": [
-      "npm run prettier:ts -- --write",
-      "ts:lint:fix",
-      "git add"
-    ]
+    "src/**/*.{ts,tsx}": ["npm run prettier:ts -- --write", "ts:lint:fix", "git add"]
   },
   "jest": {
-    "roots": [
-      "<rootDir>/src"
-    ],
+    "roots": ["<rootDir>/src"],
     "transform": {
       "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
+    "testRegex": ".*\\.specs\\.(ts|tsx|js)$",
+    "moduleFileExtensions": ["ts", "tsx", "js"],
     "mapCoverage": true,
     "coveragePathIgnorePatterns": [
       "<rootDir>/node_modules/",
       "<rootDir>/lib/",
       "<rootDir>/lib-esm/",
       "<rootDir>/umd/",
-      "<rootDir>/src/.*(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$"
+      "<rootDir>/src/.*(/__tests__/.*"
     ],
     "coverageThreshold": {
       "global": {
