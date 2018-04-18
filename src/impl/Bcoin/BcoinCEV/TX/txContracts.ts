@@ -4,6 +4,7 @@ import { BCTX } from '../Pool'
 import {
   ImprintingContract,
   OrchestrationContract,
+  Payload,
   ProviderContract,
   RoleContract,
   UserContract,
@@ -44,8 +45,7 @@ export const convertToImprintingContract = (imprintingAddress: IdAddress, txs: B
         revoked: null,
         received: new Date().valueOf(),
         contractor: getProviderAddress(imprTx),
-        // tslint:disable-next-line:no-magic-numbers
-        payload: Buffer.concat([Buffer.alloc(1), Buffer.alloc(28, 255), Buffer.alloc(61)], 80),
+        payload: [],
       }
     : void 0
 }
@@ -134,7 +134,7 @@ export const getProviderAddress = (tx: any): IdAddress => base58(tx.inputs[0])
 // const getRechargeAddress = (tx: any): IdAddress | null => (tx.inputs.length > 1 ? base58(tx.inputs[1]) : null)
 
 export const getUserAddress = (tx: any): IdAddress => base58(tx.outputs[0])
-export const getPayload = (tx: any): Buffer => tx.outputs[1].script.code[1].data as Buffer // .toString()
+export const getPayload = (tx: any): Payload => Array.from(tx.outputs[1].script.code[1].data as Buffer) // .toString()
 
 // tslint:disable-next-line:no-magic-numbers
 export const getRevokerAddress = (tx: any): IdAddress => base58(tx.outputs[2])

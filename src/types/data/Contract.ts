@@ -4,11 +4,11 @@ export interface AbstractContract {
   received: number
   contractor: IdAddress
 }
-
+export type Payload = number[]
 export interface AbstractRoleContract<R extends Role> extends AbstractContract {
   identity: AbstractIdentity<R>
   revoker: IdAddress
-  payload: Buffer
+  payload: Payload
   revoked: number | null
 }
 
