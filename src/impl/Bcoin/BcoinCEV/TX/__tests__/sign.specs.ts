@@ -13,7 +13,7 @@ describe('sign TX', () => {
     const paths = ['0/0/0'].map(p => p.split('/'))
     const id = await BcoinID({ home: path.join(__dirname, 'sign_home_test_1') })
     const result = sign(id)(unsignedRawTX, paths)
-    expect(result).toEqual(expected)
+    expect(result.txid).toEqual(expected)
   })
   it('signs transaction', async () => {
     //  orchestration tank-c-100
@@ -25,7 +25,7 @@ describe('sign TX', () => {
     const paths = ['0/0/0'].map(p => p.split('/'))
     const id = await BcoinID({ home: path.join(__dirname, 'sign_home_test_2') })
     const result = sign(id)(unsignedRawTX, paths)
-    expect(result).toEqual(expected)
+    expect(result.txid).toEqual(expected)
   })
 
   // TODO: splittare il codice di sign in sotto procedure: una può tornare la raw tx firmata per passare il seguente test

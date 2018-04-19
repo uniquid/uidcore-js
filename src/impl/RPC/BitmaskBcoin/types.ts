@@ -1,4 +1,4 @@
-import { AbstractIdentity, IdAddress, Role } from '../../../types/data/Identity'
+import { IdAddress } from '../../../types/data/Identity'
 
 export interface RequestBody<Nonce extends string> {
   method: Method
@@ -18,7 +18,7 @@ export interface Response<Nonce extends string> {
   sender: IdAddress
   body: ResponseBody<Nonce>
 }
-export type Handler = (identity: AbstractIdentity<Role.Provider>, params: Params) => Promise<Result> | Result
+export type Handler = (params: Params) => Promise<Result> | Result
 export type Method = number
 export type Params = string
 export type Result = string
