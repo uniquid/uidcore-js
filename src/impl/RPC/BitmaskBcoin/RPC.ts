@@ -1,7 +1,9 @@
 import { Payload } from '../../../types/data/Contract'
-import { CH } from './../../../CH'
+import { HDPath } from '../../Bcoin/BcoinID/HD'
+import { BcoinCEV } from '../../Bcoin/types/BcoinCEV'
+import { BcoinDB } from '../../Bcoin/types/BcoinDB'
+import { BcoinID } from '../../Bcoin/types/BcoinID'
 import { ImprintingContract } from './../../../types/data/Contract'
-import { AbstractIdentity, Role } from './../../../types/data/Identity'
 import {
   SYSTEM_RESERVED_RPC_FUNCS_BYTE_LENGTH,
   USER_DEFINED_RPC_FUNCS_BYTE_LENGTH,
@@ -27,21 +29,21 @@ const bitmask = (payload: Payload) =>
 
 const verify = (payload: Payload, method: Method) => bitmask(payload)[method]
 
-const manageRequest = (ch: CH, handlers: Handlers) => async <Nonce extends string>(
+const manageRequest = (db: BcoinDB, id: BcoinID, handlers: Handlers) => async <Nonce extends string>(
   request: Request<Nonce>
 ): Promise<Response<Nonce>> => {
   let result = ''
   let error = ''
   let sender = ''
   const { method, params } = request.body
-  const contract = ch.getContractForExternalUser(request.sender)
+  const contract = db.getContractForExternalUser(request.sender)
   if (contract && ((contract as ImprintingContract).imprinting || verify(contract.payload, method))) {
-    const providerIdentity = ch.identityFor(contract.identity)
+    const providerIdentity = id.identityFor(contract.identity)
     sender = providerIdentity.address
     const handler = handlers[method]
     if (handler) {
       try {
-        result = await handler(providerIdentity, params)
+        result = await handler(params)
       } catch (err) {
         error = String(err)
       }
@@ -63,14 +65,14 @@ const manageRequest = (ch: CH, handlers: Handlers) => async <Nonce extends strin
 }
 
 const ECHO_FN = 31
-const echo: Handler = (absIdentity: AbstractIdentity<Role.Provider>, what: Params) => what
+const echo: Handler = (what: Params) => what
 
 const SIGN_FN = 30
-const sign = (ch: CH): Handler => (absIdentity: AbstractIdentity<Role.Provider>, params: Params) => {
-  const paramsBuffer = Buffer.from(params, 'utf8')
-  const resultBuffer = ch.sign(absIdentity, paramsBuffer)
+const sign = (cev: BcoinCEV): Handler => async (params: Params) => {
+  const { tx, paths }: { tx: string; paths: string[] } = JSON.parse(params)
+  const hdPaths: HDPath[] = paths.map(str => str.split('/'))
 
-  return resultBuffer.toString('utf-8')
+  return await cev.sign(tx, hdPaths)
 }
 
 interface Handlers {
@@ -78,16 +80,16 @@ interface Handlers {
 }
 const MIN_USER_FUNC_BIT = 32
 const MAX_USER_FUNC_BIT = 143
-export const makeRPC = (commHelper: CH) => {
+export const makeRPC = (cev: BcoinCEV, db: BcoinDB, id: BcoinID) => {
   const handlers: Handlers = {}
   const register = (method: Method, handler: Handler) => (handlers[method] = handler)
-  register(SIGN_FN, sign(commHelper))
+  register(SIGN_FN, sign(cev))
   register(ECHO_FN, echo)
   const registerUserFunctionHandler = (method: Method, handler: Handler) =>
     method >= MIN_USER_FUNC_BIT && method <= MAX_USER_FUNC_BIT ? (handlers[method] = handler) : null
 
   return {
-    manageRequest: manageRequest(commHelper, handlers),
+    manageRequest: manageRequest(db, id, handlers),
     register: registerUserFunctionHandler,
   }
 }

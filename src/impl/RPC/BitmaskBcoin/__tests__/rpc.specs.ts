@@ -1,8 +1,10 @@
 import * as path from 'path'
+import { sign } from '../../../Bcoin/BcoinCEV/TX/sign'
+import { HDPath } from '../../../Bcoin/BcoinID/HD'
 import { makeRPC } from '../RPC'
-import { CH } from './../../../../CH'
 import { makeBcoinDB } from './../../../Bcoin/BcoinDB'
 import { BcoinID } from './../../../Bcoin/BcoinID'
+import { BcoinCEV } from './../../../Bcoin/types/BcoinCEV'
 import tests from './tests'
 describe('RPC', () => {
   tests.forEach(test =>
@@ -15,14 +17,14 @@ describe('RPC', () => {
       const idOpts = {
         home: path.join(scenarioDir, 'id_home'),
       }
-      const dbOpts = {
-        home: path.join(scenarioDir, 'db_home'),
-      }
+      const dbOpts = { home: path.join(scenarioDir, 'db_home') }
 
       return Promise.all([BcoinID(idOpts), makeBcoinDB(dbOpts)])
         .then(([id, db]) => {
-          const ch = CH({}, db, id)
-          const rpc = makeRPC(ch)
+          const mockCEV: BcoinCEV = {
+            sign: (txString: string, paths: HDPath[]) => Promise.resolve(sign(id)(txString, paths).txid),
+          }
+          const rpc = makeRPC(mockCEV, db, id)
 
           return rpc.manageRequest(test.request)
         })

@@ -71,7 +71,7 @@ const inputSignerFor = (id: BcoinID, txObj: TXObj) => (path: HDPath, pathIndex: 
   }
 }
 
-export const sign = (id: BcoinID) => (rawtx: string, paths: HDPath[], asString = false) => {
+export const sign = (id: BcoinID) => (rawtx: string, paths: HDPath[]) => {
   const txObj = parseTx(rawtx)
   if (txObj.inputs.length !== paths.length) {
     throw TypeError('Inputs and paths lengths should be equal')
@@ -79,7 +79,7 @@ export const sign = (id: BcoinID) => (rawtx: string, paths: HDPath[], asString =
   const inputSigner = inputSignerFor(id, txObj)
   const inputs = paths.map(inputSigner)
 
-  const signedTxObj = {
+  const signedTxObj: TXObj = {
     ...txObj,
     inputs,
   }
@@ -87,5 +87,5 @@ export const sign = (id: BcoinID) => (rawtx: string, paths: HDPath[], asString =
   const txid: Buffer = sha265.hash256(formatTx(signedTxObj))
   const txidReverse = Array.from(txid).reverse()
 
-  return intArrayToRawHexString(txidReverse)
+  return { txid: intArrayToRawHexString(txidReverse), signedTxObj }
 }

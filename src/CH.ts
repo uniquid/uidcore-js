@@ -17,7 +17,7 @@ export const CH = (cev: CEV, db: DB, id: ID): CH => {
   const identityFor = id.identityFor
 
   return {
-    // verify,
+    // verify, // verifies sender indentity
     identityFor,
     getContractForExternalUser,
     sign,
