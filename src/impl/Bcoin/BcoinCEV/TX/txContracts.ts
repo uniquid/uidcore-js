@@ -99,7 +99,7 @@ export const convertToRoleContract = (identity: BcoinIdentity<Role>, tx: BCTX): 
   if (identity.role === Role.Provider) {
     return contract as ProviderContract
   } else {
-    return contract as UserContract
+    return { ...contract, providerName: null } as UserContract
   }
 }
 export const getRevokingAddresses = (revokingAddresses: IdAddress[]) => (txs: BCTX[]) => {
