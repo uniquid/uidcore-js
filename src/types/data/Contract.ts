@@ -16,7 +16,9 @@ export interface ProviderContract extends AbstractRoleContract<Role.Provider> {
   // nextProviderAddress: IdAddress
 }
 
-export interface UserContract extends AbstractRoleContract<Role.User> {}
+export interface UserContract extends AbstractRoleContract<Role.User> {
+  providerName: string | null
+}
 
 export interface ImprintingContract extends ProviderContract {
   imprinting: true

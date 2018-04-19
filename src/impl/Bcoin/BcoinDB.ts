@@ -1,4 +1,4 @@
-import LokiConstructor from 'lokijs'
+import * as LokiConstructor from 'lokijs'
 import * as path from 'path'
 import { IdAddress, Role } from '../../types/data/Identity'
 import {
@@ -77,7 +77,14 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
         contracts.findOne(
           { 'identity.role': Role.Provider, contractor: userAddr, revoked: null } as any
         ) as ProviderContract
-
+      const findContractsWithUnresolvedProviderNames = () =>
+        contracts.find({ 'identity.role': Role.User, providerName: null } as any) as UserContract[]
+      const setProviderName = (providerAddress: IdAddress, providerName: string) => {
+        contracts.findAndUpdate(
+          { 'identity.role': Role.User, contractor: providerAddress } as any,
+          userContract => ((userContract as UserContract).providerName = providerName)
+        )
+      }
       const bcoinDB: BcoinDB = {
         getContractForExternalUser,
         storeImprinting,
@@ -90,6 +97,8 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
         getActiveRoleContracts,
         revokeContract,
         getPayload,
+        findContractsWithUnresolvedProviderNames,
+        setProviderName,
       }
       resolve(bcoinDB)
     }

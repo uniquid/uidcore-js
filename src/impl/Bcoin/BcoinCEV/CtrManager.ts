@@ -1,4 +1,5 @@
-import { ImprintingContract } from './../../../types/data/Contract'
+import { IdAddress } from '../../../types/data/Identity'
+import { ImprintingContract, RoleContract, UserContract } from './../../../types/data/Contract'
 import { BCPool } from './../BcoinCEV/Pool'
 import { BcoinDB } from './../types/BcoinDB'
 import { BcoinID } from './../types/BcoinID'
@@ -9,7 +10,14 @@ import {
   getRoleContracts,
 } from './TX/txContracts'
 
-const loopRoleContractWatch = async (db: BcoinDB, pool: BCPool, id: BcoinID, watchahead: number) => {
+type OnContracts = (ctrs: RoleContract[], revokingAddresses: IdAddress[]) => void
+const loopRoleContractWatch = async (
+  db: BcoinDB,
+  pool: BCPool,
+  id: BcoinID,
+  watchahead: number,
+  onContracts: OnContracts
+) => {
   const nextWatchIdentities = [db.getLastProviderContractIdentity(), db.getLastUserContractIdentity()]
     .map(lastIdentity => {
       const identities = []
@@ -36,7 +44,10 @@ const loopRoleContractWatch = async (db: BcoinDB, pool: BCPool, id: BcoinID, wat
   console.log(`\nREVOKING Addresses: ${revokingAddresses.length}`)
   console.log(revokingAddresses.reduce((s, a) => `${s}${a}\n`, ''))
   revokingAddresses.forEach(db.revokeContract)
-  loopRoleContractWatch(db, pool, id, watchahead).catch(err => console.error('loopRoleContractWatch ERROR:', err))
+  onContracts(newContracts, revokingAddresses)
+  loopRoleContractWatch(db, pool, id, watchahead, onContracts).catch(err =>
+    console.error('loopRoleContractWatch ERROR:', err)
+  )
 }
 
 const ensureImprinting = async (db: BcoinDB, id: BcoinID, pool: BCPool) => {
@@ -73,8 +84,46 @@ const ensureOrchestration = (db: BcoinDB, id: BcoinID, pool: BCPool) => async (
 
   return shallBeOrchestrationContract
 }
+const providerNameProcess = (db: BcoinDB, providerNameResolver: ProviderNameResolver) => {
+  let contractsWithUnresolvedProviderNames: UserContract[] = []
+  const trigger = () => {
+    contractsWithUnresolvedProviderNames = db.findContractsWithUnresolvedProviderNames()
+    next()
+  }
 
-export const startContractManager = async (db: BcoinDB, id: BcoinID, pool: BCPool, watchahead: number) =>
-  ensureImprinting(db, id, pool)
-    .then(ensureOrchestration(db, id, pool))
-    .then(() => loopRoleContractWatch(db, pool, id, watchahead))
+  return {
+    trigger,
+  }
+
+  function next() {
+    const contract = contractsWithUnresolvedProviderNames.shift()
+    if (contract) {
+      const cacheList = contractsWithUnresolvedProviderNames
+      const providerAddress = contract.contractor
+      providerNameResolver(providerAddress)
+        .then(providerName => db.setProviderName(providerAddress, providerName))
+        .catch(error => {
+          console.error('ProviderNameResolver Error', error)
+
+          cacheList.push(contract)
+        })
+        .then(() => (cacheList === contractsWithUnresolvedProviderNames ? next() : void 0))
+        .catch(console.error)
+    }
+  }
+}
+export type ProviderNameResolver = (providerAddress: IdAddress) => Promise<string>
+export const startContractManager = async (
+  db: BcoinDB,
+  id: BcoinID,
+  pool: BCPool,
+  watchahead: number,
+  providerNameResolver: ProviderNameResolver
+) =>
+  ensureImprinting(db, id, pool).then(ensureOrchestration(db, id, pool)).then(() => {
+    const { trigger } = providerNameProcess(db, providerNameResolver)
+    loopRoleContractWatch(db, pool, id, watchahead, trigger).catch(err =>
+      console.error('loopRoleContractWatch ERROR:', err)
+    )
+    trigger()
+  })
