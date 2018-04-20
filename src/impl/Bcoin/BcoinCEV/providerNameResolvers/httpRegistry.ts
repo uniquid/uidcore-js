@@ -8,7 +8,7 @@ export const fromHTTPRegistry = (baseUrl: string): ProviderNameResolver => provi
       {
         method: 'GET',
         url: `${baseUrl}/registry?providerAddress=${providerAddress}`,
-        json: true,
+        json: true
       },
       (err: any, resp: any, data: any) => {
         if (err) {

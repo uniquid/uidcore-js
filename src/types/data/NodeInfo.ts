@@ -3,7 +3,7 @@ import { AbstractIdentity, Role } from './Identity'
 export enum NodeState {
   Created = 'CREATED',
   Imprinted = 'IMPRINTED',
-  Orchestrated = 'ORCHESTRATED',
+  Orchestrated = 'ORCHESTRATED'
 }
 
 export interface AbstractNodeInfoData {

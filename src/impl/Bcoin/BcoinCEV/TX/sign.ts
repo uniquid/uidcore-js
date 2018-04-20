@@ -26,14 +26,14 @@ const inputSignerFor = (id: BcoinID, txObj: TXObj) => (path: HDPath, pathIndex: 
     } else {
       return {
         ...currScriptInput,
-        script: [],
+        script: []
       }
     }
   })
 
   const localTxObj = {
     ...txObj,
-    inputs: localInputs,
+    inputs: localInputs
   }
 
   // append hash code type
@@ -47,7 +47,7 @@ const inputSignerFor = (id: BcoinID, txObj: TXObj) => (path: HDPath, pathIndex: 
   const absId: BcoinAbstractIdentity<LocalRole> = {
     role,
     ext,
-    index,
+    index
   }
   const DERsignature = Buffer.from(id.signFor(absId, hash, true))
   const DERWithHashCode = Buffer.concat([DERsignature, Buffer.from([0x01])])
@@ -67,7 +67,7 @@ const inputSignerFor = (id: BcoinID, txObj: TXObj) => (path: HDPath, pathIndex: 
 
   return {
     ...originalInput,
-    script,
+    script
   }
 }
 
@@ -81,7 +81,7 @@ export const sign = (id: BcoinID) => (rawtx: string, paths: HDPath[]) => {
 
   const signedTxObj: TXObj = {
     ...txObj,
-    inputs,
+    inputs
   }
 
   const txid: Buffer = sha265.hash256(formatTx(signedTxObj))

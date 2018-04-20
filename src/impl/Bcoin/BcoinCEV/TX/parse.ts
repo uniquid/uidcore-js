@@ -6,7 +6,7 @@ const INPUT_INDEX_LENGTH = 4
 const SEQ_LENGTH = 4
 const splitList = <T>(list: T[], at: number) => ({
   head: list.slice(0, at),
-  tail: list.slice(at),
+  tail: list.slice(at)
 })
 export interface TXObj {
   version: number[]
@@ -53,14 +53,14 @@ export const parseTx = (raw: number[] | string): TXObj => {
       tx,
       index,
       script,
-      seq,
+      seq
     })
   }
 
   return {
     version,
     inputs,
-    tail: _.tail,
+    tail: _.tail
   }
 }
 

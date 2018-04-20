@@ -7,7 +7,7 @@ import {
   convertToImprintingContract,
   convertToOrchestrationContract,
   getRevokingAddresses,
-  getRoleContracts,
+  getRoleContracts
 } from './TX/txContracts'
 
 type OnContracts = (ctrs: RoleContract[], revokingAddresses: IdAddress[]) => void
@@ -92,7 +92,7 @@ const providerNameProcess = (db: BcoinDB, providerNameResolver: ProviderNameReso
   }
 
   return {
-    trigger,
+    trigger
   }
 
   function next() {

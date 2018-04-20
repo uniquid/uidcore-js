@@ -18,17 +18,17 @@ const tests: Test<string>[] = [
       body: {
         method: 31,
         params: 'abc',
-        id: 'echo4imprinter',
-      },
+        id: 'echo4imprinter'
+      }
     },
     response: {
       sender: 'mgofddcZaSpuoDiYxgPRVaYNNjsXbKKCsL',
       body: {
         result: 'abc',
         error: '',
-        id: 'echo4imprinter',
-      },
-    },
+        id: 'echo4imprinter'
+      }
+    }
   } as Test<'echo4imprinter'>,
 
   // unimplemented method for imprinter
@@ -40,17 +40,17 @@ const tests: Test<string>[] = [
       body: {
         method: 11,
         params: 'abc',
-        id: 'unimplementedMethod4imprinter',
-      },
+        id: 'unimplementedMethod4imprinter'
+      }
     },
     response: {
       sender: 'mgofddcZaSpuoDiYxgPRVaYNNjsXbKKCsL',
       body: {
         result: '',
         error: ERROR_NOT_IMPLEMENTED,
-        id: 'unimplementedMethod4imprinter',
-      },
-    },
+        id: 'unimplementedMethod4imprinter'
+      }
+    }
   } as Test<'unimplementedMethod4imprinter'>,
 
   // rejects ECHO for unknown
@@ -62,17 +62,17 @@ const tests: Test<string>[] = [
       body: {
         method: 31,
         params: 'abc',
-        id: 'reject echo',
-      },
+        id: 'reject echo'
+      }
     },
     response: {
       sender: '',
       body: {
         result: '',
         error: ERROR_NOT_ALLOWED,
-        id: 'reject echo',
-      },
-    },
+        id: 'reject echo'
+      }
+    }
   } as Test<'reject echo'>,
 
   // rejects unimplemented method for unknown
@@ -84,17 +84,17 @@ const tests: Test<string>[] = [
       body: {
         method: 11,
         params: 'xyz',
-        id: 'reject echo',
-      },
+        id: 'reject echo'
+      }
     },
     response: {
       sender: '',
       body: {
         result: '',
         error: ERROR_NOT_ALLOWED,
-        id: 'reject echo',
-      },
-    },
-  } as Test<'reject echo'>,
+        id: 'reject echo'
+      }
+    }
+  } as Test<'reject echo'>
 ]
 export default tests

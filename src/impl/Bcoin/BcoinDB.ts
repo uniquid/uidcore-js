@@ -7,7 +7,7 @@ import {
   OrchestrationContract,
   ProviderContract,
   RoleContract,
-  UserContract,
+  UserContract
 } from './../../types/data/Contract'
 import { AbstractIdentity } from './../../types/data/Identity'
 import { BcoinDB } from './types/BcoinDB'
@@ -20,7 +20,7 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
     const db = new LokiConstructor(path.join(opts.home, 'db.json'), {
       autoload: true,
       autosave: true,
-      autoloadCallback,
+      autoloadCallback
     })
 
     function autoloadCallback() {
@@ -61,7 +61,7 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
       const getActiveRoleContracts = () =>
         contracts.find({
           revoked: null,
-          orchestration: { $ne: true },
+          orchestration: { $ne: true }
         }) as RoleContract[]
 
       const revokeContract = (revoker: IdAddress) => {
@@ -98,7 +98,7 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
         revokeContract,
         getPayload,
         findContractsWithUnresolvedProviderNames,
-        setProviderName,
+        setProviderName
       }
       resolve(bcoinDB)
     }

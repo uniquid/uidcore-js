@@ -6,8 +6,8 @@ bcoin.networks.uq = Object.assign({}, bcoin.networks.regtest, {
   port: 19000,
   addressPrefix: bcoin.networks.testnet.addressPrefix,
   keyPrefix: Object.assign({}, bcoin.networks.testnet.keyPrefix, {
-    coinType: 0,
-  }),
+    coinType: 0
+  })
 })
 bcoin.set('uq')
 
@@ -23,10 +23,10 @@ export interface BCPool {
 }
 export const Pool = async (opts: Options): Promise<BCPool> => {
   const chainLogger = new bcoin.logger({
-    level: opts.logLevel,
+    level: opts.logLevel
   })
   const poolLogger = new bcoin.logger({
-    level: opts.logLevel,
+    level: opts.logLevel
   })
 
   const chain = bcoin.chain({ logger: chainLogger, db: 'leveldb', location: opts.dbFolder, spv: true })
@@ -34,7 +34,7 @@ export const Pool = async (opts: Options): Promise<BCPool> => {
     logger: poolLogger,
     seeds: opts.seeds,
     chain,
-    maxPeers: 8,
+    maxPeers: 8
   })
 
   await chainLogger.open()
@@ -66,7 +66,7 @@ export const Pool = async (opts: Options): Promise<BCPool> => {
 
   return {
     watchAddresses,
-    broadcast,
+    broadcast
   }
 }
 export interface BCTX {

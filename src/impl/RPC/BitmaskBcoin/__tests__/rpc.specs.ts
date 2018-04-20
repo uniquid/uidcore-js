@@ -15,14 +15,14 @@ describe('RPC', () => {
         sender: ${test.request.sender}`, () => {
       const scenarioDir = path.join(__dirname, 'scenarios', test.scenario)
       const idOpts = {
-        home: path.join(scenarioDir, 'id_home'),
+        home: path.join(scenarioDir, 'id_home')
       }
       const dbOpts = { home: path.join(scenarioDir, 'db_home') }
 
       return Promise.all([BcoinID(idOpts), makeBcoinDB(dbOpts)])
         .then(([id, db]) => {
           const mockCEV: BcoinCEV = {
-            sign: (txString: string, paths: HDPath[]) => Promise.resolve(sign(id)(txString, paths).txid),
+            sign: (txString: string, paths: HDPath[]) => Promise.resolve(sign(id)(txString, paths).txid)
           }
           const rpc = makeRPC(mockCEV, db, id)
 

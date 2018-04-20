@@ -7,7 +7,7 @@ import {
   Payload,
   ProviderContract,
   RoleContract,
-  UserContract,
+  UserContract
 } from './../../../../types/data/Contract'
 import { Role } from './../../../../types/data/Identity'
 // tslint:disable:no-use-before-declare
@@ -19,7 +19,7 @@ export const getRoleContracts = (identities: Identity<Role>[]) => (txs: BCTX[]) 
       const providerCtr = convertToRoleContract(
         {
           ...identity,
-          ext: identity.role === Role.Provider ? '1' : '0',
+          ext: identity.role === Role.Provider ? '1' : '0'
         },
         tx
       )
@@ -39,13 +39,13 @@ export const convertToImprintingContract = (imprintingAddress: IdAddress, txs: B
           role: Role.Provider,
           address: imprintingAddress,
           index: 0,
-          ext: '0',
+          ext: '0'
         },
         revoker: imprintingAddress,
         revoked: null,
         received: new Date().valueOf(),
         contractor: getProviderAddress(imprTx),
-        payload: [],
+        payload: []
       }
     : void 0
 }
@@ -62,7 +62,7 @@ export const convertToOrchestrationContract = (
       address: imprintingAddress,
       role: Role.Provider,
       index: 0,
-      ext: '0',
+      ext: '0'
     }
     const user = getUserAddress(orchTx)
     const payload = getPayload(orchTx)
@@ -74,7 +74,7 @@ export const convertToOrchestrationContract = (
       contractor: user,
       revoker,
       payload,
-      revoked: null,
+      revoked: null
     }
   }
 }
@@ -94,7 +94,7 @@ export const convertToRoleContract = (identity: BcoinIdentity<Role>, tx: BCTX): 
     contractor,
     revoker,
     payload,
-    revoked: null,
+    revoked: null
   }
   if (identity.role === Role.Provider) {
     return contract as ProviderContract
