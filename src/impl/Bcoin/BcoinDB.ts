@@ -1,4 +1,4 @@
-import * as LokiConstructor from 'lokijs'
+import LokiConstructor from 'lokijs'
 import * as path from 'path'
 import { IdAddress, Role } from '../../types/data/Identity'
 import {
