@@ -2,7 +2,7 @@ export type IdAddress = string
 export type IdIndex = number
 export enum Role {
   Provider = 'PROVIDER',
-  User = 'USER',
+  User = 'USER'
 }
 export interface AbstractIdentity<R extends Role> {
   role: R

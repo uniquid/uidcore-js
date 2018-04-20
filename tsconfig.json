@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "moduleResolution": "classic",
+    "moduleResolution": "node",
     "module": "commonjs",
     "target": "es5",
     "lib": [
@@ -24,8 +24,8 @@
     "sourceMap": true,
     "outDir": "lib",
     "declaration": true,
-    "declarationDir": "typings",
-    // "baseUrl": "src",
+    // "declarationDir": "typings",
+    "baseUrl": "src",
     "stripInternal": true
   },
   "include": [

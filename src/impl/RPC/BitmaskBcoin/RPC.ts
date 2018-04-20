@@ -7,7 +7,7 @@ import { ImprintingContract } from './../../../types/data/Contract'
 import {
   SYSTEM_RESERVED_RPC_FUNCS_BYTE_LENGTH,
   USER_DEFINED_RPC_FUNCS_BYTE_LENGTH,
-  VERSION_BYTE_LENGTH,
+  VERSION_BYTE_LENGTH
 } from './PayloadDef'
 import { Handler, Method, Params, Request, Response } from './types'
 
@@ -59,8 +59,8 @@ const manageRequest = (db: BcoinDB, id: BcoinID, handlers: Handlers) => async <N
     body: {
       result,
       error,
-      id: request.body.id,
-    },
+      id: request.body.id
+    }
   }
 }
 
@@ -90,6 +90,6 @@ export const makeRPC = (cev: BcoinCEV, db: BcoinDB, id: BcoinID) => {
 
   return {
     manageRequest: manageRequest(db, id, handlers),
-    register: registerUserFunctionHandler,
+    register: registerUserFunctionHandler
   }
 }

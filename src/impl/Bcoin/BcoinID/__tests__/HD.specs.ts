@@ -37,7 +37,7 @@ describe('HD keys derivation', () => {
     const abstrId = {
       role: Role.Provider,
       index: 17,
-      ext: '0' as '0',
+      ext: '0' as '0'
     }
 
     // tslint:disable-next-line:no-magic-numbers

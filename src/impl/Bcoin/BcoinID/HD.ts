@@ -96,6 +96,6 @@ export const identityFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => <R 
 
   return {
     ...abstrId,
-    address,
+    address
   }
 }

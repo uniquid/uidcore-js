@@ -37,6 +37,6 @@ export const makeBcoinCEV = (db: BcoinDB, id: BcoinID, opts: Options): BcoinCEV 
   }
 
   return {
-    sign,
+    sign
   }
 }

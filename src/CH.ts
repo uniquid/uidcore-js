@@ -21,6 +21,6 @@ export const CH = (cev: CEV, db: DB, id: ID): CH => {
     identityFor,
     getContractForExternalUser,
     sign,
-    getPayload,
+    getPayload
   }
 }
