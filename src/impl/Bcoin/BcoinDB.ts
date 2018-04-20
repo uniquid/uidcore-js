@@ -1,8 +1,6 @@
-import LokiConstructor from 'lokijs'
 import * as path from 'path'
 import { IdAddress, Role } from '../../types/data/Identity'
 import {
-  Contract,
   ImprintingContract,
   OrchestrationContract,
   ProviderContract,
@@ -12,6 +10,8 @@ import {
 import { AbstractIdentity } from './../../types/data/Identity'
 import { BcoinDB } from './types/BcoinDB'
 
+// tslint:disable-next-line:no-require-imports
+const LokiConstructor = require('lokijs')
 export interface Options {
   home: string
 }
@@ -24,7 +24,7 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
     })
 
     function autoloadCallback() {
-      const contracts = db.addCollection<Contract>('contracts')
+      const contracts = db.addCollection('contracts')
 
       const getImprinting = () => contracts.findOne({ imprinting: true }) as ImprintingContract | undefined
 
@@ -49,12 +49,12 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
       const storeCtr = (ctr: RoleContract) => (contracts.insert(ctr), void 0)
 
       const getLastUserContractIdentity = () =>
-        (((contracts.find({ 'identity.role': Role.User, 'identity.ext': '0' } as any) as UserContract[]).sort(
+        (((contracts.find({ 'identity.role': Role.User, 'identity.ext': '0' }) as UserContract[]).sort(
           (ctr1, ctr2) => ctr2.identity.index - ctr1.identity.index
         )[0] as UserContract) || { identity: { role: Role.User, index: 0 } }).identity
 
       const getLastProviderContractIdentity = () =>
-        (((contracts.find({ 'identity.role': Role.Provider, 'identity.ext': '1' } as any) as ProviderContract[]).sort(
+        (((contracts.find({ 'identity.role': Role.Provider, 'identity.ext': '1' }) as ProviderContract[]).sort(
           (ctr1, ctr2) => ctr2.identity.index - ctr1.identity.index
         )[0] as ProviderContract) || { identity: { role: Role.Provider, index: -1 } }).identity
 
@@ -71,18 +71,16 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
       }
 
       const getPayload = (absId: AbstractIdentity<Role>) =>
-        [contracts.findOne({ identity: absId } as any) as RoleContract].map(ctr => ctr.payload)[0]
+        [contracts.findOne({ identity: absId }) as RoleContract].map(ctr => ctr.payload)[0]
 
       const getContractForExternalUser = (userAddr: IdAddress) =>
-        contracts.findOne(
-          { 'identity.role': Role.Provider, contractor: userAddr, revoked: null } as any
-        ) as ProviderContract
+        contracts.findOne({ 'identity.role': Role.Provider, contractor: userAddr, revoked: null }) as ProviderContract
       const findContractsWithUnresolvedProviderNames = () =>
-        contracts.find({ 'identity.role': Role.User, providerName: null } as any) as UserContract[]
+        contracts.find({ 'identity.role': Role.User, providerName: null }) as UserContract[]
       const setProviderName = (providerAddress: IdAddress, providerName: string) => {
         contracts.findAndUpdate(
-          { 'identity.role': Role.User, contractor: providerAddress } as any,
-          userContract => ((userContract as UserContract).providerName = providerName)
+          { 'identity.role': Role.User, contractor: providerAddress },
+          (userContract: UserContract) => (userContract.providerName = providerName)
         )
       }
       const bcoinDB: BcoinDB = {
