@@ -1,14 +1,14 @@
 import { Request, Response } from '../types'
 import { ERROR_NOT_ALLOWED, ERROR_NOT_IMPLEMENTED } from './../RPC'
 
-export interface Test<Nonce extends string> {
+export interface Test {
   scenario: string
   description: string
-  request: Request<Nonce>
-  response: Response<Nonce>
+  request: Request
+  response: Response
 }
 
-const tests: Test<string>[] = [
+const tests: Test[] = [
   // ECHO for imprinter
   {
     scenario: 'imprinted-only',
@@ -29,7 +29,7 @@ const tests: Test<string>[] = [
         id: 'echo4imprinter'
       }
     }
-  } as Test<'echo4imprinter'>,
+  },
 
   // unimplemented method for imprinter
   {
@@ -51,7 +51,7 @@ const tests: Test<string>[] = [
         id: 'unimplementedMethod4imprinter'
       }
     }
-  } as Test<'unimplementedMethod4imprinter'>,
+  },
 
   // rejects ECHO for unknown
   {
@@ -73,7 +73,7 @@ const tests: Test<string>[] = [
         id: 'reject echo'
       }
     }
-  } as Test<'reject echo'>,
+  },
 
   // rejects unimplemented method for unknown
   {
@@ -95,6 +95,6 @@ const tests: Test<string>[] = [
         id: 'reject echo'
       }
     }
-  } as Test<'reject echo'>
+  }
 ]
 export default tests
