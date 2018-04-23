@@ -37,7 +37,6 @@ const derivePrivateKey = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (subP
 export const signFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (
   abstrId: BcoinAbstractIdentity<Role>,
   hash: Buffer,
-  // tslint:disable-next-line:no-inferrable-types
   der = false
 ) => {
   const isForProvider = abstrId.role === Role.Provider

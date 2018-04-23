@@ -1,22 +1,23 @@
 import { IdAddress } from '../../../types/data/Identity'
 
-export interface RequestBody<Nonce extends string> {
+export type Nonce = string
+export interface RequestBody {
   method: Method
   params: Params
   id: Nonce
 }
-export interface Request<Nonce extends string> {
+export interface Request {
   sender: IdAddress
-  body: RequestBody<Nonce>
+  body: RequestBody
 }
-export interface ResponseBody<Nonce extends string> {
+export interface ResponseBody {
   id: Nonce
   result: Result
   error: Error
 }
-export interface Response<Nonce extends string> {
+export interface Response {
   sender: IdAddress
-  body: ResponseBody<Nonce>
+  body: ResponseBody
 }
 export type Handler = (params: Params) => Promise<Result> | Result
 export type Method = number

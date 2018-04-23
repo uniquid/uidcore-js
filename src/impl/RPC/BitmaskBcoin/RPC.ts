@@ -29,9 +29,7 @@ const bitmask = (payload: Payload) =>
 
 const verify = (payload: Payload, method: Method) => bitmask(payload)[method]
 
-const manageRequest = (db: BcoinDB, id: BcoinID, handlers: Handlers) => async <Nonce extends string>(
-  request: Request<Nonce>
-): Promise<Response<Nonce>> => {
+const manageRequest = (db: BcoinDB, id: BcoinID, handlers: Handlers) => async (request: Request): Promise<Response> => {
   let result = ''
   let error = ''
   let sender = ''
@@ -80,7 +78,11 @@ interface Handlers {
 }
 const MIN_USER_FUNC_BIT = 32
 const MAX_USER_FUNC_BIT = 143
-export const makeRPC = (cev: BcoinCEV, db: BcoinDB, id: BcoinID) => {
+export interface RPC {
+  manageRequest(request: Request): Promise<Response>
+  register(method: number, handler: Handler): Handler | null
+}
+export const makeRPC = (cev: BcoinCEV, db: BcoinDB, id: BcoinID): RPC => {
   const handlers: Handlers = {}
   const register = (method: Method, handler: Handler) => (handlers[method] = handler)
   register(SIGN_FN, sign(cev))
