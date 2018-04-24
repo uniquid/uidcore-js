@@ -5,4 +5,5 @@ import { BcoinAbstractIdentity } from './data/BcoinIdentity'
 export interface BcoinID extends ID {
   signFor(abstrId: BcoinAbstractIdentity<Role>, hash: Buffer, der?: boolean): Buffer
   publicKeyAtPath(path: HDPath): PublicKey
+  getBaseXpub(): string
 }

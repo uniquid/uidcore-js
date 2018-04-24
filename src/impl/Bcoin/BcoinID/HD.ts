@@ -12,6 +12,7 @@ const BcoinPrivateKey = require('bcoin/lib/hd/private')
 export type AbstractIdentity<R extends Role> = AbstractIdentity<R>
 export type Identity<R extends Role> = Identity<R>
 export type Bip32Base58PrivKey = string
+export type Bip32Base58PubKey = string
 export type Base58Address = string
 export type BcoinHDPrivateKey = {
   privateKey: PrivateKey
@@ -19,7 +20,10 @@ export type BcoinHDPrivateKey = {
   toPublic(): BcoinHDPublicKey
   derivePath(path: string): BcoinHDPrivateKey
 }
-export type BcoinHDPublicKey = { publicKey: PublicKey }
+export type BcoinHDPublicKey = {
+  publicKey: PublicKey
+  toBase58(): Bip32Base58PubKey
+}
 export type PublicKey = Buffer
 export type PrivateKey = Buffer
 export type HDPath = (string | number)[]
@@ -80,6 +84,9 @@ export const getOrchestrateAddress = (bip32ExtMasterPrivateKey: Bip32Base58PrivK
 
   return base58AddrByPrivKey(orchestrationHDKey)
 }
+export const getBaseXpub = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (): string =>
+  derivePrivateKey(bip32ExtMasterPrivateKey)([]).toPublic().toBase58()
+
 export const publicKeyAtPath = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (path: HDPath): PublicKey =>
   derivePrivateKey(bip32ExtMasterPrivateKey)(path).toPublic().publicKey
 export const identityFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => <R extends Role>(
