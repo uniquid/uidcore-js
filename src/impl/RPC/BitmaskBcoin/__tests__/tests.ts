@@ -1,13 +1,13 @@
 import { Request, Response } from '../types'
-import { ERROR_NOT_ALLOWED, ERROR_NOT_IMPLEMENTED } from './../RPC'
+import { BLANK_RESULT, ERROR_METHOD_NOT_IMPLEMENTED, ERROR_NONE } from './../RPC'
 
+export const NO_RESPONSE = null
 export interface Test {
   scenario: string
   description: string
   request: Request
-  response: Response
+  response: Response | typeof NO_RESPONSE
 }
-
 const tests: Test[] = [
   // ECHO for imprinter
   {
@@ -25,7 +25,7 @@ const tests: Test[] = [
       sender: 'mgofddcZaSpuoDiYxgPRVaYNNjsXbKKCsL',
       body: {
         result: 'abc',
-        error: '',
+        error: ERROR_NONE,
         id: 'echo4imprinter'
       }
     }
@@ -46,8 +46,8 @@ const tests: Test[] = [
     response: {
       sender: 'mgofddcZaSpuoDiYxgPRVaYNNjsXbKKCsL',
       body: {
-        result: '',
-        error: ERROR_NOT_IMPLEMENTED,
+        result: BLANK_RESULT,
+        error: ERROR_METHOD_NOT_IMPLEMENTED,
         id: 'unimplementedMethod4imprinter'
       }
     }
@@ -65,14 +65,7 @@ const tests: Test[] = [
         id: 'reject echo'
       }
     },
-    response: {
-      sender: '',
-      body: {
-        result: '',
-        error: ERROR_NOT_ALLOWED,
-        id: 'reject echo'
-      }
-    }
+    response: NO_RESPONSE
   },
 
   // rejects unimplemented method for unknown
@@ -87,14 +80,7 @@ const tests: Test[] = [
         id: 'reject echo'
       }
     },
-    response: {
-      sender: '',
-      body: {
-        result: '',
-        error: ERROR_NOT_ALLOWED,
-        id: 'reject echo'
-      }
-    }
+    response: NO_RESPONSE
   }
 ]
 export default tests

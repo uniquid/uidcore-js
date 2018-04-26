@@ -23,4 +23,4 @@ export type Handler = (params: Params) => Promise<Result> | Result
 export type Method = number
 export type Params = string
 export type Result = string
-export type Error = string
+export type Error = number

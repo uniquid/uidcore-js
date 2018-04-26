@@ -31,6 +31,9 @@ describe('RPC', () => {
         .then(resp => {
           expect(resp).toEqual(test.response)
         })
+        .catch(() => {
+          expect(null).toEqual(test.response)
+        })
     })
   )
 })
