@@ -11,8 +11,10 @@ import {
 } from './PayloadDef'
 import { Handler, Method, Params, Request, Response } from './types'
 
-export const ERROR_NOT_IMPLEMENTED = 'Method not implemented'
-export const ERROR_NOT_ALLOWED = 'Not allowed'
+export const ERROR_METHOD_NOT_IMPLEMENTED = 5
+export const ERROR_NOT_AUTHORIZED = 4
+export const ERROR_NONE = 0
+export const BLANK_RESULT = ''
 const bitmask = (payload: Payload) =>
   payload
     .slice(
@@ -29,38 +31,41 @@ const bitmask = (payload: Payload) =>
 
 const verify = (payload: Payload, method: Method) => bitmask(payload)[method]
 
-const manageRequest = (db: BcoinDB, id: BcoinID, handlers: Handlers) => async (request: Request): Promise<Response> => {
-  let result = ''
-  let error = ''
-  let sender = ''
-  const { method, params } = request.body
-  const contract = db.getContractForExternalUser(request.sender)
-  if (contract && ((contract as ImprintingContract).imprinting || verify(contract.payload, method))) {
-    const providerIdentity = id.identityFor(contract.identity)
-    sender = providerIdentity.address
-    const handler = handlers[method]
-    if (handler) {
-      try {
-        result = await handler(params)
-      } catch (err) {
-        error = String(err)
+const manageRequest = (db: BcoinDB, id: BcoinID, handlers: Handlers) => (request: Request): Promise<Response> =>
+  new Promise(async (resolve, reject) => {
+    const { method, params } = request.body
+    const contract = db.getContractForExternalUser(request.sender)
+    if (contract) {
+      let error = ERROR_NONE
+      let result = BLANK_RESULT
+      const providerIdentity = id.identityFor(contract.identity)
+      const sender = providerIdentity.address
+      if ((contract as ImprintingContract).imprinting || verify(contract.payload, method)) {
+        const handler = handlers[method]
+        if (handler) {
+          try {
+            result = await handler(params)
+          } catch (err) {
+            result = String(err)
+          }
+        } else {
+          error = ERROR_METHOD_NOT_IMPLEMENTED
+        }
+      } else {
+        error = ERROR_NOT_AUTHORIZED
       }
-    } else {
-      error = ERROR_NOT_IMPLEMENTED
-    }
-  } else {
-    error = ERROR_NOT_ALLOWED
-  }
 
-  return {
-    sender,
-    body: {
-      result,
-      error,
-      id: request.body.id
+      resolve({
+        sender,
+        body: {
+          result,
+          error,
+          id: request.body.id
+        }
+      })
     }
-  }
-}
+    reject(`No contract for user:${request.sender}`)
+  })
 
 const ECHO_FN = 31
 const echo: Handler = (what: Params) => what
@@ -70,7 +75,7 @@ const sign = (cev: BcoinCEV): Handler => async (params: Params) => {
   const { tx, paths }: { tx: string; paths: string[] } = JSON.parse(params)
   const hdPaths: HDPath[] = paths.map(str => str.split('/'))
 
-  return await cev.sign(tx, hdPaths)
+  return await cev.sign(tx, hdPaths).then(txid => `0 - ${txid}`)
 }
 
 interface Handlers {

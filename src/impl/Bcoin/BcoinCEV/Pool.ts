@@ -1,4 +1,8 @@
 import { IdAddress } from '../../../types/data/Identity'
+import { TXObj } from './../../../../lib-esm/impl/Bcoin/BcoinCEV/TX/parse.d'
+import { formatTx } from './TX/parse'
+// tslint:disable-next-line:no-require-imports
+const Tx = require('bcoin/lib/primitives/tx')
 
 // tslint:disable-next-line:no-require-imports
 const bcoin = require('bcoin')
@@ -10,7 +14,8 @@ bcoin.networks.uq = Object.assign({}, bcoin.networks.regtest, {
   })
 })
 bcoin.set('uq')
-
+export const BROADCAST_WAIT_BEFORE_RESPONSE = 3000
+export const BROADCAST_TIMEOUT = 60000
 export interface Options {
   logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam'
   dbFolder: string
@@ -19,7 +24,7 @@ export interface Options {
 
 export interface BCPool {
   watchAddresses(addresses: IdAddress[]): Promise<BCTX[]>
-  broadcast(msg: any): Promise<void>
+  broadcast(txid: string, txObj: TXObj): Promise<void>
 }
 export const Pool = async (opts: Options): Promise<BCPool> => {
   const chainLogger = new bcoin.logger({
@@ -42,6 +47,7 @@ export const Pool = async (opts: Options): Promise<BCPool> => {
 
   await pool.open()
   await pool.connect()
+
   const watchAddresses = async (addresses: IdAddress[]) =>
     new Promise<BCTX[]>((resolve, reject) => {
       addresses.forEach(address => pool.watchAddress(address))
@@ -62,7 +68,14 @@ export const Pool = async (opts: Options): Promise<BCPool> => {
       pool.startSync()
       pool.sync(true)
     })
-  const broadcast = (msg: any) => pool.broadcast(msg) as Promise<void>
+
+  const broadcast = (txid: string, txObj: TXObj) =>
+    new Promise<void>(async (resolve, reject) => {
+      const rawTx = Buffer.from(formatTx(txObj))
+      const msg = Tx.fromRaw(rawTx)
+      setTimeout(() => reject('Broadcast timeout'), BROADCAST_TIMEOUT)
+      pool.broadcast(msg).then(() => setTimeout(resolve, BROADCAST_WAIT_BEFORE_RESPONSE), reject)
+    })
 
   return {
     watchAddresses,

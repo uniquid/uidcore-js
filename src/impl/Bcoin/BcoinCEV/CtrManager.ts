@@ -52,8 +52,11 @@ const loopRoleContractWatch = async (
 
 const ensureImprinting = async (db: BcoinDB, id: BcoinID, pool: BCPool) => {
   let shallBeImprintingContract = db.getImprinting()
-  console.log(`---------------------------------------------------------- IMPR `, shallBeImprintingContract)
   const imprintingAddress = id.getImprintingAddress()
+  console.log(
+    `---------------------------------------------------------- IMPR (${imprintingAddress}) `,
+    shallBeImprintingContract
+  )
   while (!shallBeImprintingContract) {
     const txs = await pool.watchAddresses([imprintingAddress])
     console.log(`---------------------------------------------------------- got IMPR ${imprintingAddress}`, txs)
@@ -72,7 +75,10 @@ const ensureOrchestration = (db: BcoinDB, id: BcoinID, pool: BCPool) => async (
   let shallBeOrchestrationContract = db.getOrchestration()
   const orchestrationAddress = id.getOrchestrateAddress()
   while (!shallBeOrchestrationContract) {
-    console.log(`---------------------------------------------------------- ORCH `, shallBeOrchestrationContract)
+    console.log(
+      `---------------------------------------------------------- ORCH (${orchestrationAddress}) `,
+      shallBeOrchestrationContract
+    )
     const txs = await pool.watchAddresses([orchestrationAddress])
     console.log(`---------------------------------------------------------- got ORCH ${orchestrationAddress}`, txs)
     shallBeOrchestrationContract = convertToOrchestrationContract(imprintingContract, orchestrationAddress, txs)
