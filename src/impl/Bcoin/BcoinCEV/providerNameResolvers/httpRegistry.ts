@@ -1,8 +1,16 @@
+import { IdAddress } from 'types/data/Identity'
 import { ProviderNameResolver } from '../CtrManager'
 // tslint:disable-next-line:no-require-imports
 const get = require('simple-get')
 
-export const fromHTTPRegistry = (baseUrl: string): ProviderNameResolver => providerAddress =>
+/**
+ * An implementation of {@link ProviderNameResolver} which queries a UQ Registry HTTP service
+ * for a provider name agains its ${IdAddress}
+ *
+ * @param {string} baseUrl the base Url of the Regisry service
+ * @returns {ProviderNameResolver}
+ */
+export const fromHTTPRegistry = (baseUrl: string): ProviderNameResolver => (providerAddress: IdAddress) =>
   new Promise((resolve, reject) => {
     get.concat(
       {

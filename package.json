@@ -57,15 +57,25 @@
     }
   },
   "lint-staged": {
-    "src/**/*.{ts,tsx}": ["npm run prettier:ts -- --write", "ts:lint:fix", "git add"]
+    "src/**/*.{ts,tsx}": [
+      "npm run prettier:ts -- --write",
+      "ts:lint:fix",
+      "git add"
+    ]
   },
   "jest": {
-    "roots": ["<rootDir>/src"],
+    "roots": [
+      "<rootDir>/src"
+    ],
     "transform": {
       "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": ".*\\.specs\\.(ts|tsx|js)$",
-    "moduleFileExtensions": ["ts", "tsx", "js"],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
     "mapCoverage": true,
     "coveragePathIgnorePatterns": [
       "<rootDir>/node_modules/",
@@ -109,9 +119,8 @@
     "tslint": "5.4.3",
     "tslint-config-prettier": "1.1.0",
     "tslint-config-standard": "6.0.1",
-    "tslint-react": "3.0.0",
-    "typedoc": "0.7.1",
-    "typescript": "2.7.2",
+    "typedoc": "latest",
+    "typescript": "latest",
     "uglify-js": "git://github.com/mishoo/UglifyJS2#harmony-v2.8.22",
     "validate-commit-msg": "2.12.2"
   }

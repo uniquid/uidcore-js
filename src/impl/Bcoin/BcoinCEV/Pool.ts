@@ -1,6 +1,5 @@
 import { IdAddress } from '../../../types/data/Identity'
-import { TXObj } from './../../../../lib-esm/impl/Bcoin/BcoinCEV/TX/parse.d'
-import { formatTx } from './TX/parse'
+import { formatTx, TXObj } from './TX/parse'
 // tslint:disable-next-line:no-require-imports
 const Tx = require('bcoin/lib/primitives/tx')
 
@@ -14,30 +13,74 @@ bcoin.networks.uq = Object.assign({}, bcoin.networks.regtest, {
   })
 })
 bcoin.set('uq')
-export const BROADCAST_WAIT_BEFORE_RESPONSE = 3000
-export const BROADCAST_TIMEOUT = 60000
+const BROADCAST_WAIT_BEFORE_RESPONSE = 3000
+const BROADCAST_TIMEOUT = 60000
+/**
+ * Options for constructing a BCPool
+ * @interface Options
+ * @export
+ */
 export interface Options {
-  logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam'
-  dbFolder: string
+  /**
+   * an array of Bitcoin Full Nodes' IPs
+   * used as initial seeds for the BC network
+   * @type {string[]}
+   * @memberof Options
+   */
   seeds: string[]
+  /**
+   * absolute path to folder for BC's Spv Storage
+   * @type {string}
+   * @memberof Options
+   */
+  dbFolder: string
+  logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam'
 }
-
+/**
+ * A Bcoin Pool wrapper for UQ {@link BcoinCEV} it handles Bitcoin Network net communication and exposes UQ related necessary functions
+ * @interface BCPool
+ * @export
+ */
 export interface BCPool {
+  /**
+   * When invoked, the pool is set in sync mode and waits for a block containing transactions involving the provided adrresses
+   *
+   * When such a block is being notified from network, transactions are resolved on the returning Promise
+   *
+   * The pool is then set asleep, unwatching everything and stopping sync
+   * @param {IdAddress[]} addresses the addresses to be watched
+   * @returns {Promise<BCTX[]>} a Promise of Transactions (Bcoin lib TX objects)
+   * @memberof BCPool
+   */
   watchAddresses(addresses: IdAddress[]): Promise<BCTX[]>
+  /**
+   * Broadcasts a transaction to the network
+   * @param {string} txid the transaction ID
+   * @param {TXObj} txObj the {@link TXObj} representing the transaction
+   * @returns {Promise<void>} The promise is rejected on BROADCAST_TIMEOUT(60secs), and on error occourring during broadcast
+   *
+   * if broadcasting succeeds BROADCAST_WAIT_BEFORE_RESPONSE(3secs) are waited before resolving Promise, to let the mempools digest the newly broadcasted TX
+   * @memberof BCPool
+   */
   broadcast(txid: string, txObj: TXObj): Promise<void>
 }
-export const Pool = async (opts: Options): Promise<BCPool> => {
+/**
+ * constructs a Pool
+ * @param {Options} options Options for constructing the Pool
+ * @returns {Promise<BCPool>}
+ */
+export const Pool = async (options: Options): Promise<BCPool> => {
   const chainLogger = new bcoin.logger({
-    level: opts.logLevel
+    level: options.logLevel
   })
   const poolLogger = new bcoin.logger({
-    level: opts.logLevel
+    level: options.logLevel
   })
 
-  const chain = bcoin.chain({ logger: chainLogger, db: 'leveldb', location: opts.dbFolder, spv: true })
+  const chain = bcoin.chain({ logger: chainLogger, db: 'leveldb', location: options.dbFolder, spv: true })
   const pool = new bcoin.pool({
     logger: poolLogger,
-    seeds: opts.seeds,
+    seeds: options.seeds,
     chain,
     maxPeers: 8
   })

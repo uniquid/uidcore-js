@@ -1,10 +1,10 @@
 import * as path from 'path'
 import { IdAddress, Role } from '../../types/data/Identity'
 import {
+  Contract,
   ImprintingContract,
   OrchestrationContract,
   ProviderContract,
-  RoleContract,
   UserContract
 } from './../../types/data/Contract'
 import { AbstractIdentity } from './../../types/data/Identity'
@@ -12,12 +12,28 @@ import { BcoinDB } from './types/BcoinDB'
 
 // tslint:disable-next-line:no-require-imports
 const LokiConstructor = require('lokijs')
+/**
+ * Options for constructing a {@link BcoinDB}
+ * @interface Options
+ * @export
+ */
 export interface Options {
+  /**
+   * absolute path to the {@link BcoinDB} home folder for file persistence
+   * @type {string}
+   * @memberof Options
+   */
   home: string
 }
-export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
+/**
+ * constructs a {@link BcoinDB}
+ * This implementation uses a LokiDB as persistence helper
+ * @param {Options} options Options
+ * @returns {Promise<BcoinDB>}
+ */
+export const makeBcoinDB = (options: Options): Promise<BcoinDB> =>
   new Promise((resolve, reject) => {
-    const db = new LokiConstructor(path.join(opts.home, 'db.json'), {
+    const db = new LokiConstructor(path.join(options.home, 'db.json'), {
       autoload: true,
       autosave: true,
       autoloadCallback
@@ -46,7 +62,7 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
         contracts.insert(ctr)
       }
 
-      const storeCtr = (ctr: RoleContract) => (contracts.insert(ctr), void 0)
+      const storeCtr = (ctr: Contract) => (contracts.insert(ctr), void 0)
 
       const getLastUserContractIdentity = () =>
         (((contracts.find({ 'identity.role': Role.User, 'identity.ext': '0' }) as UserContract[]).sort(
@@ -62,16 +78,16 @@ export const makeBcoinDB = (opts: Options): Promise<BcoinDB> =>
         contracts.find({
           revoked: null,
           orchestration: { $ne: true }
-        }) as RoleContract[]
+        }) as Contract[]
 
       const revokeContract = (revoker: IdAddress) => {
-        const ctr = contracts.findOne({ revoked: null, revoker, orchestration: { $ne: true } }) as RoleContract
+        const ctr = contracts.findOne({ revoked: null, revoker, orchestration: { $ne: true } }) as Contract
         ctr.revoked = new Date().valueOf()
         contracts.update(ctr)
       }
 
       const getPayload = (absId: AbstractIdentity<Role>) =>
-        [contracts.findOne({ identity: absId }) as RoleContract].map(ctr => ctr.payload)[0]
+        [contracts.findOne({ identity: absId }) as Contract].map(ctr => ctr.payload)[0]
 
       const getContractForExternalUser = (userAddr: IdAddress) =>
         contracts.findOne({ 'identity.role': Role.Provider, contractor: userAddr, revoked: null }) as ProviderContract
