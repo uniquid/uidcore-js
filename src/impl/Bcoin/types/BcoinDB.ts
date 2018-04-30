@@ -1,7 +1,9 @@
-import { IdAddress } from '../../../types/data/Identity'
 import { DB } from '../../../types/layers/DB'
-import { UserContract } from './../../../types/data/Contract'
-export interface BcoinDB extends DB {
-  findContractsWithUnresolvedProviderNames(): UserContract[]
-  setProviderName(providerAddress: IdAddress, providerName: string): void
-}
+/**
+ * DB implementation for BCoin
+ * it currently does not extend DB in any way
+ *
+ * @interface BcoinDB
+ * @extends {DB}
+ */
+export interface BcoinDB extends DB {}

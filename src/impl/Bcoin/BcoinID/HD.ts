@@ -26,10 +26,10 @@ export type BcoinHDPublicKey = {
 }
 export type PublicKey = Buffer
 export type PrivateKey = Buffer
-export type HDPath = (string | number)[]
-const BASE_PATH: HDPath = ['m', "44'", "0'", 0]
-const imprintingHDPath = [0, 0, 0]
-const orchestrationHDPath = [0, 1, 0]
+export type HDPath = (string)[]
+const BASE_PATH: HDPath = ['m', `44'`, `0'`, '0']
+const imprintingHDPath = ['0', '0', '0']
+const orchestrationHDPath = ['0', '1', '0']
 // export type DerivePrivateKey = (subPath: HDPath) => BcoinHDPrivateKey
 const derivePrivateKey = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (subPath: HDPath) => {
   const masterPrivateKey: BcoinHDPrivateKey = BcoinPrivateKey.fromBase58(bip32ExtMasterPrivateKey)
@@ -44,9 +44,9 @@ export const signFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (
   der = false
 ) => {
   const isForProvider = abstrId.role === Role.Provider
-  const rolePath = isForProvider ? 0 : 1
+  const rolePath = isForProvider ? '0' : '1'
   const extOrInt = abstrId.ext || (isForProvider ? '1' : '0')
-  const subPath = [rolePath, extOrInt, abstrId.index]
+  const subPath = [rolePath, extOrInt, `${abstrId.index}`]
   const privK = derivePrivateKey(bip32ExtMasterPrivateKey)(subPath)
   const res = secp256k1.sign(hash, privK.privateKey, { canonical: true })
 
@@ -96,7 +96,7 @@ export const identityFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => <R 
   const isForProvider = role === Role.Provider
   const rolePath = isForProvider ? '0' : '1'
   const extOrInt = abstrId.ext || (isForProvider ? '1' : '0')
-  const subPath = [rolePath, extOrInt, index]
+  const subPath = [rolePath, extOrInt, `${index}`]
   const derivedPrivkey = derivePrivateKey(bip32ExtMasterPrivateKey)(subPath)
   const address = base58AddrByPrivKey(derivedPrivkey)
 

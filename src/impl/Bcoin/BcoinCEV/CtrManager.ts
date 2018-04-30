@@ -1,5 +1,5 @@
 import { IdAddress } from '../../../types/data/Identity'
-import { ImprintingContract, RoleContract, UserContract } from './../../../types/data/Contract'
+import { Contract, ImprintingContract, UserContract } from './../../../types/data/Contract'
 import { BCPool } from './../BcoinCEV/Pool'
 import { BcoinDB } from './../types/BcoinDB'
 import { BcoinID } from './../types/BcoinID'
@@ -10,7 +10,7 @@ import {
   getRoleContracts
 } from './TX/txContracts'
 
-type OnContracts = (ctrs: RoleContract[], revokingAddresses: IdAddress[]) => void
+type OnContracts = (ctrs: Contract[], revokingAddresses: IdAddress[]) => void
 const loopRoleContractWatch = async (
   db: BcoinDB,
   pool: BCPool,
@@ -36,11 +36,11 @@ const loopRoleContractWatch = async (
   console.log(`watchingRevokingAddresses: `, watchingRevokingAddresses.reduce((s, a, i) => `${s}\n${i} : ${a}`, ''))
   console.log(`nextWatchAddresses: `, nextWatchAddresses.reduce((s, a, i) => `${s}\n${i} : ${a}`, ''))
   const txs = await pool.watchAddresses(nextWatchAddresses.concat(watchingRevokingAddresses))
-  const newContracts = getRoleContracts(nextWatchIdentities)(txs)
+  const newContracts = getRoleContracts(nextWatchIdentities, txs)
   console.log(`\nNEW Role Contracts: ${newContracts.length} `)
   console.log(newContracts.reduce((s, c) => `${s}${c.identity.role}[${c.identity.index}] -> ${c.contractor}\n`, ''))
   newContracts.forEach(db.storeCtr)
-  const revokingAddresses = getRevokingAddresses(watchingRevokingAddresses)(txs)
+  const revokingAddresses = getRevokingAddresses(watchingRevokingAddresses, txs)
   console.log(`\nREVOKING Addresses: ${revokingAddresses.length}`)
   console.log(revokingAddresses.reduce((s, a) => `${s}${a}\n`, ''))
   revokingAddresses.forEach(db.revokeContract)
@@ -119,6 +119,21 @@ const providerNameProcess = (db: BcoinDB, providerNameResolver: ProviderNameReso
   }
 }
 export type ProviderNameResolver = (providerAddress: IdAddress) => Promise<string>
+
+/**
+ * This starts the {@link BcoinCEV} main lifecycle process,
+ * when started it ensures node imprinting contract, then ensures node orchestration contract
+ *
+ * Ensureness is guaranteed by the presence of contracts in the {@link BcoinDB} persistence
+ * if not present pool should watch on respective {@link IdAddress addresses} waiting for contracts to come
+ *
+ * Then it loops in watching for node's user and provider {@link IdAddress}es for respective {@link Contract}s
+ * @param {BcoinDB} db a BcoinDB instance
+ * @param {BcoinID} id a BcoinID instance
+ * @param {BCPool} pool a BCPool instance
+ * @param {number} watchahead how many {@link IdAddress} to watch ahead the latest BIP32 index on user and provider {@link Contract}
+ * @param {ProviderNameResolver} providerNameResolver
+ */
 export const startContractManager = async (
   db: BcoinDB,
   id: BcoinID,

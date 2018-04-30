@@ -1,9 +1,9 @@
 import * as path from 'path'
-import { sign } from '../../../Bcoin/BcoinCEV/TX/sign'
+import { transactionSigner } from '../../../Bcoin/BcoinCEV/TX/sign'
 import { HDPath } from '../../../Bcoin/BcoinID/HD'
 import { makeRPC } from '../RPC'
 import { makeBcoinDB } from './../../../Bcoin/BcoinDB'
-import { BcoinID } from './../../../Bcoin/BcoinID'
+import { makeBcoinID } from './../../../Bcoin/BcoinID'
 import { BcoinCEV } from './../../../Bcoin/types/BcoinCEV'
 import tests from './tests'
 describe('RPC', () => {
@@ -19,10 +19,11 @@ describe('RPC', () => {
       }
       const dbOpts = { home: path.join(scenarioDir, 'db_home') }
 
-      return Promise.all([BcoinID(idOpts), makeBcoinDB(dbOpts)])
+      return Promise.all([makeBcoinID(idOpts), makeBcoinDB(dbOpts)])
         .then(([id, db]) => {
           const mockCEV: BcoinCEV = {
-            sign: (txString: string, paths: HDPath[]) => Promise.resolve(sign(id)(txString, paths).txid)
+            signRawTransaction: (txString: string, paths: HDPath[]) =>
+              Promise.resolve(transactionSigner(id, txString, paths).txid)
           }
           const rpc = makeRPC(mockCEV, db, id)
 

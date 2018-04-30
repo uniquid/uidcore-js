@@ -9,12 +9,20 @@ import {
   USER_DEFINED_RPC_FUNCS_BYTE_LENGTH,
   VERSION_BYTE_LENGTH
 } from './PayloadDef'
-import { Handler, Method, Params, Request, Response } from './types'
+import {
+  BLANK_RESULT,
+  Error,
+  ERROR_METHOD_NOT_IMPLEMENTED,
+  ERROR_NONE,
+  ERROR_NOT_AUTHORIZED,
+  Handler,
+  Method,
+  Params,
+  Request,
+  Response,
+  Result
+} from './types'
 
-export const ERROR_METHOD_NOT_IMPLEMENTED = 5
-export const ERROR_NOT_AUTHORIZED = 4
-export const ERROR_NONE = 0
-export const BLANK_RESULT = ''
 const bitmask = (payload: Payload) =>
   payload
     .slice(
@@ -36,8 +44,8 @@ const manageRequest = (db: BcoinDB, id: BcoinID, handlers: Handlers) => (request
     const { method, params } = request.body
     const contract = db.getContractForExternalUser(request.sender)
     if (contract) {
-      let error = ERROR_NONE
-      let result = BLANK_RESULT
+      let error: Error = ERROR_NONE
+      let result: Result = BLANK_RESULT
       const providerIdentity = id.identityFor(contract.identity)
       const sender = providerIdentity.address
       if ((contract as ImprintingContract).imprinting || verify(contract.payload, method)) {
@@ -54,15 +62,15 @@ const manageRequest = (db: BcoinDB, id: BcoinID, handlers: Handlers) => (request
       } else {
         error = ERROR_NOT_AUTHORIZED
       }
-
-      resolve({
+      const response: Response = {
         sender,
         body: {
           result,
           error,
           id: request.body.id
         }
-      })
+      }
+      resolve(response)
     }
     reject(`No contract for user:${request.sender}`)
   })
@@ -75,7 +83,7 @@ const sign = (cev: BcoinCEV): Handler => async (params: Params) => {
   const { tx, paths }: { tx: string; paths: string[] } = JSON.parse(params)
   const hdPaths: HDPath[] = paths.map(str => str.split('/'))
 
-  return await cev.sign(tx, hdPaths).then(txid => `0 - ${txid}`)
+  return await cev.signRawTransaction(tx, hdPaths).then(txid => `0 - ${txid}`)
 }
 
 interface Handlers {
