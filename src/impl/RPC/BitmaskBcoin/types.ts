@@ -1,3 +1,4 @@
+import { ProviderContract } from '../../../types/data/Contract'
 import { IdAddress } from '../../../types/data/Identity'
 
 export const BLANK_RESULT = ''
@@ -79,8 +80,10 @@ export interface Response {
   body: ResponseBody
 }
 export type Nonce = number
-export type Handler = (params: Params) => Promise<Result> | Result
+export type Handler = (params: Params, contract: ProviderContract) => Promise<Result> | Result
 export type Method = number
 export type Params = string
 export type Result = string
 export type Error = typeof ERROR_METHOD_NOT_IMPLEMENTED | typeof ERROR_NOT_AUTHORIZED | typeof ERROR_NONE
+
+export const isRequest = (msg: Request | Response): msg is Request => 'method' in msg.body

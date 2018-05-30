@@ -1,6 +1,7 @@
 import { ProviderContract } from './Contract'
 import { AbstractIdentity, IdAddress, Role } from './Identity'
 
+export type ProviderName = string
 export type Payload = number[]
 /**
  * The Base interface for Contracts
@@ -79,7 +80,7 @@ export interface UserContract extends AbstractContract<Role.User> {
    * @type {(string | null)}
    * @memberof UserContract
    */
-  providerName: string | null
+  providerName: ProviderName | null
 }
 
 /**
