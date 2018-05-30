@@ -18,7 +18,7 @@ const loopRoleContractWatch = async (
   watchahead: number,
   onContracts: OnContracts
 ) => {
-  const nextWatchIdentities = [db.getLastProviderContractIdentity(), db.getLastUserContractIdentity()]
+  const _nextWatchIdentities = [db.getLastProviderContractIdentity(), db.getLastUserContractIdentity()]
     .map(lastIdentity => {
       const identities = []
       for (let offset = 1; offset <= watchahead; offset++) {
@@ -29,6 +29,7 @@ const loopRoleContractWatch = async (
       return identities
     })
     .reduce((a, b) => a.concat(b))
+  const nextWatchIdentities = Array.from(new Set(_nextWatchIdentities))
 
   const nextWatchAddresses = nextWatchIdentities.map(identity => identity.address)
 
@@ -37,11 +38,11 @@ const loopRoleContractWatch = async (
   console.log(`nextWatchAddresses: `, nextWatchAddresses.reduce((s, a, i) => `${s}\n${i} : ${a}`, ''))
   const txs = await pool.watchAddresses(nextWatchAddresses.concat(watchingRevokingAddresses))
   const newContracts = getRoleContracts(nextWatchIdentities, txs)
-  console.log(`\nNEW Role Contracts: ${newContracts.length} `)
+  console.log(`\n++NEW Role Contracts: ${newContracts.length} `)
   console.log(newContracts.reduce((s, c) => `${s}${c.identity.role}[${c.identity.index}] -> ${c.contractor}\n`, ''))
   newContracts.forEach(db.storeCtr)
   const revokingAddresses = getRevokingAddresses(watchingRevokingAddresses, txs)
-  console.log(`\nREVOKING Addresses: ${revokingAddresses.length}`)
+  console.log(`\n--REVOKING Addresses: ${revokingAddresses.length}`)
   console.log(revokingAddresses.reduce((s, a) => `${s}${a}\n`, ''))
   revokingAddresses.forEach(db.revokeContract)
   onContracts(newContracts, revokingAddresses)

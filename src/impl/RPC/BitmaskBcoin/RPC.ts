@@ -52,7 +52,7 @@ const manageRequest = (db: BcoinDB, id: BcoinID, handlers: Handlers) => (request
         const handler = handlers[method]
         if (handler) {
           try {
-            result = await handler(params)
+            result = await handler(params, contract)
           } catch (err) {
             result = String(err)
           }

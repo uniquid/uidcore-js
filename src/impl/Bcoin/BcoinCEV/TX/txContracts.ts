@@ -20,7 +20,9 @@ import { Role } from './../../../../types/data/Identity'
  */
 export const getRoleContracts = (identities: Identity<Role>[], rawBcoinTxs: BCTX[]) =>
   rawBcoinTxs.filter(isContractTX()).reduce<Contract[]>((contracts, tx) => {
-    const identity = identities.find(id => id.address === getProviderAddress(tx) || id.address === getUserAddress(tx))
+    const identity = identities.find(
+      id => id.address === (id.role === Role.Provider ? getProviderAddress(tx) : getUserAddress(tx))
+    )
     if (identity) {
       const providerCtr = convertToRoleContract(
         {
@@ -149,7 +151,15 @@ export const getRevokingAddresses = (revokingAddresses: IdAddress[], rawBcoinTxs
     .map(tx => (tx.inputs as any[]).map(base58))
     .reduce((addresses, inputAddr) => addresses.concat(inputAddr), [])
 
-  return revokingAddresses.filter(revokingAddress => txInputAddresses.includes(revokingAddress)) as IdAddress[]
+  const presentRevokingAddresses = revokingAddresses.filter(revokingAddress =>
+    txInputAddresses.includes(revokingAddress)
+  ) as IdAddress[]
+  console.log('GET REVOKING:')
+  console.log('revokingAddresses:', revokingAddresses)
+  console.log('txInputAddresses:', txInputAddresses)
+  console.log('presentRevokingAddresses:', presentRevokingAddresses)
+
+  return presentRevokingAddresses
 }
 
 export const isContractTX = (orchestration = false) => (

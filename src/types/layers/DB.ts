@@ -53,7 +53,7 @@ export interface DB {
   storeCtr(ctr: Contract): void
 
   /**
-   * Gets latest stored UserContract
+   * Gets latest stored UserContract Identity
    *
    * @returns {AbstractIdentity<Role.User>}
    * @memberof DB
@@ -61,7 +61,7 @@ export interface DB {
   getLastUserContractIdentity(): AbstractIdentity<Role.User>
 
   /**
-   * Gets latest stored ProviderContract
+   * Gets latest stored ProviderContract Identity
    *
    * @returns {AbstractIdentity<Role.Provider>}
    * @memberof DB
@@ -109,6 +109,15 @@ export interface DB {
    * @memberof DB
    */
   findContractsWithUnresolvedProviderNames(): UserContract[]
+
+  /**
+   * retrieves active UserContracts whome providerName is {providerName}
+   *
+   * @param {string} providerName
+   * @returns {UserContract[]}
+   * @memberof DB
+   */
+  findUserContractsByProviderName(providerName: string): UserContract[]
 
   /**
    * updates a contract setting providerName on UserContract having providerAddress' contractor

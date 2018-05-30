@@ -36,6 +36,7 @@ export const makeBcoinDB = (options: Options): Promise<BcoinDB> =>
     const db = new LokiConstructor(path.join(options.home, 'db.json'), {
       autoload: true,
       autosave: true,
+      serializationMethod: 'pretty',
       autoloadCallback
     })
 
@@ -99,7 +100,11 @@ export const makeBcoinDB = (options: Options): Promise<BcoinDB> =>
           (userContract: UserContract) => (userContract.providerName = providerName)
         )
       }
+      const findUserContractsByProviderName = (providerName: string): UserContract[] =>
+        contracts.find({ 'identity.role': Role.User, providerName })
+
       const bcoinDB: BcoinDB = {
+        findUserContractsByProviderName,
         getContractForExternalUser,
         storeImprinting,
         getImprinting,
