@@ -1,3 +1,4 @@
+import { existsSync, mkdir } from 'fs'
 import * as path from 'path'
 import { IdAddress, Role } from '../../types/data/Identity'
 import {
@@ -33,6 +34,10 @@ export interface Options {
  */
 export const makeBcoinDB = (options: Options): Promise<BcoinDB> =>
   new Promise((resolve, reject) => {
+    if (!existsSync(options.home)) {
+      mkdir(options.home)
+    }
+
     const db = new LokiConstructor(path.join(options.home, 'db.json'), {
       autoload: true,
       autosave: true,

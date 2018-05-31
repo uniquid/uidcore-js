@@ -1,3 +1,4 @@
+import { existsSync, mkdir } from 'fs'
 import * as path from 'path'
 import { ProviderNameResolver, startContractManager } from './BcoinCEV/CtrManager'
 import { Pool } from './BcoinCEV/Pool'
@@ -48,6 +49,9 @@ export interface Options {
  * @returns {BcoinCEV}
  */
 export const makeBcoinCEV = (db: BcoinDB, id: BcoinID, options: Options): BcoinCEV => {
+  if (!existsSync(options.home)) {
+    mkdir(options.home)
+  }
   const poolPromise = Pool({
     dbFolder: path.join(options.home, 'chain.db'),
     logLevel: options.logLevel,
