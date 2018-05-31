@@ -1,3 +1,4 @@
+import { existsSync, mkdir } from 'fs'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as hd from './BcoinID/HD'
@@ -25,6 +26,9 @@ const PK_FILE_NAME = 'private.key'
  */
 export const makeBcoinID = (options: Options): Promise<BcoinID> =>
   new Promise((resolve, reject) => {
+    if (!existsSync(options.home)) {
+      mkdir(options.home)
+    }
     let privateKeyBase58: hd.Bip32Base58PrivKey
     const privateKeyFilePath = path.join(options.home, PK_FILE_NAME)
     const exists = fs.existsSync(privateKeyFilePath)
