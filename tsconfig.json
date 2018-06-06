@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "moduleResolution": "node",
-    "module": "esnext",
+    "module": "commonjs",
     "target": "es5",
     "lib": [
       // "dom",
@@ -11,17 +11,21 @@
     ],
     // "types": ["node"],
     "strict": true,
+    "strictNullChecks": true,
     "allowSyntheticDefaultImports": true,
-    "suppressImplicitAnyIndexErrors": true,
+    // "suppressImplicitAnyIndexErrors": true,
     "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
     "pretty": true,
+    "noImplicitAny": true,
     // "jsx": "react",
     // change this to any hyperscript like function that you're using
     // "jsxFactory": "React.createElement",
     "sourceMap": true,
     "outDir": "lib",
     "declaration": true,
-    "declarationDir": "typings",
+    // "declarationDir": "typings",
+    "baseUrl": "src",
     "stripInternal": true
   },
   "include": [
@@ -30,6 +34,6 @@
   "exclude": [
     "node_modules"
   ],
-  "compileOnSave": false,
-  "buildOnSave": false
+  "compileOnSave": true,
+  "buildOnSave": true
 }

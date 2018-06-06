@@ -1,0 +1,77 @@
+{
+  "filename": "/home/alec/uniquid/github/uidcore-js/private/lifecycletest/UID59d6821f579a/DB/db.json",
+  "collections": [
+    {
+      "name": "contracts",
+      "data": [
+        {
+          "imprinting": true,
+          "identity": { "role": "PROVIDER", "address": "mgofddcZaSpuoDiYxgPRVaYNNjsXbKKCsL", "index": 0, "ext": "0" },
+          "revoker": "mgofddcZaSpuoDiYxgPRVaYNNjsXbKKCsL",
+          "revoked": null,
+          "received": 1524046179411,
+          "contractor": "mu1NE35VDZi8jFkKiPZmnmhK1FEAwiBbbU",
+          "payload": [],
+          "meta": { "revision": 1, "created": 1524046179411, "version": 0, "updated": 1524046179772 },
+          "$loki": 1
+        }
+      ],
+      "idIndex": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "binaryIndices": {},
+      "constraints": null,
+      "uniqueNames": [],
+      "transforms": {},
+      "objType": "contracts",
+      "dirty": false,
+      "cachedIndex": null,
+      "cachedBinaryIndex": null,
+      "cachedData": null,
+      "adaptiveBinaryIndices": true,
+      "transactional": false,
+      "cloneObjects": false,
+      "cloneMethod": "parse-stringify",
+      "asyncListeners": false,
+      "disableMeta": false,
+      "disableChangesApi": true,
+      "disableDeltaChangesApi": true,
+      "autoupdate": false,
+      "serializableIndices": true,
+      "ttl": null,
+      "maxId": 10,
+      "DynamicViews": [],
+      "events": {
+        "insert": [null],
+        "update": [null],
+        "pre-insert": [],
+        "pre-update": [],
+        "close": [],
+        "flushbuffer": [],
+        "error": [],
+        "delete": [null],
+        "warning": [null]
+      },
+      "changes": []
+    }
+  ],
+  "databaseVersion": 1.5,
+  "engineVersion": 1.5,
+  "autosave": true,
+  "autosaveInterval": 5000,
+  "autosaveHandle": null,
+  "throttledSaves": true,
+  "options": {
+    "autoload": true,
+    "autosave": true,
+    "serializationMethod": "normal",
+    "destructureDelimiter": "$<\n",
+    "recursiveWait": true,
+    "recursiveWaitLimit": false,
+    "recursiveWaitLimitDuration": 2000,
+    "started": 1524046177852
+  },
+  "persistenceMethod": "fs",
+  "persistenceAdapter": null,
+  "verbose": false,
+  "events": { "init": [null], "loaded": [], "flushChanges": [], "close": [], "changes": [], "warning": [] },
+  "ENV": "NODEJS"
+}

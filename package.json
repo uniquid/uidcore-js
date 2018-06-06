@@ -2,7 +2,7 @@
   "name": "@uniquid/uidcore",
   "version": "0.0.1",
   "description": "Uniquid Core Js/Ts library",
-  "main": "umd/uidcore.js",
+  "main": "lib/index.js",
   "module": "lib/index.js",
   "es2015": "lib-esm/index.js",
   "typings": "typings/index.d.ts",
@@ -13,12 +13,12 @@
   "author": "Alessandro Giansanti",
   "license": "MIT",
   "engines": {
-    "node": ">=6.9"
+    "node": ">=8.1"
   },
   "scripts": {
     "cleanup": "shx rm -rf umd lib lib-esm lib-fesm typings coverage docs",
     "prebuild": "npm run cleanup && npm run verify",
-    "build": " tsc && tsc --target es2017 --outDir lib-esm && webpack && webpack --env.prod",
+    "build": " tsc && tsc --target es2017 --outDir lib-esm",
     "build:fesm:min": "uglifyjs lib-fesm/index.js --compress --mangle --source-map --output lib-fesm/index.min.js",
     "docs": "typedoc -p . --theme minimal --target 'es6' --excludeNotExported --excludePrivate --ignoreCompilerErrors --exclude \"**/src/**/__tests__/*.*\" --out docs src/",
     "test": "jest",
@@ -34,7 +34,7 @@
     "ts:style:fix": "npm run ts:format:fix && npm run ts:lint:fix",
     "verify": "npm run ts:style && npm test",
     "cz": "git-cz",
-    "prettier:ts": "prettier --single-quote --print-width 120 --trailing-comma es5 --no-semi --parser typescript",
+    "prettier:ts": "prettier --single-quote --print-width 120 --trailing-comma none --no-semi --parser typescript",
     "precommit": "lint-staged",
     "commitmsg": "validate-commit-msg",
     "prepush": "npm run ts:style && npm run test:only-changed",
@@ -70,7 +70,7 @@
     "transform": {
       "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "testRegex": ".*\\.specs\\.(ts|tsx|js)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -82,7 +82,7 @@
       "<rootDir>/lib/",
       "<rootDir>/lib-esm/",
       "<rootDir>/umd/",
-      "<rootDir>/src/.*(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$"
+      "<rootDir>/src/.*(/__tests__/.*"
     ],
     "coverageThreshold": {
       "global": {
@@ -93,7 +93,12 @@
       }
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "@types/lokijs": "1.5.2",
+    "bcoin": "1.0.0-beta.15",
+    "lokijs": "1.5.3",
+    "simple-get": "2.7.0"
+  },
   "devDependencies": {
     "@types/jest": "20.0.2",
     "@types/node": "7.0.31",
@@ -114,13 +119,9 @@
     "tslint": "5.4.3",
     "tslint-config-prettier": "1.1.0",
     "tslint-config-standard": "6.0.1",
-    "tslint-react": "3.0.0",
-    "typedoc": "0.7.1",
-    "typescript": "2.4.1",
+    "typedoc": "latest",
+    "typescript": "latest",
     "uglify-js": "git://github.com/mishoo/UglifyJS2#harmony-v2.8.22",
-    "uglifyjs-webpack-plugin": "0.4.5",
-    "validate-commit-msg": "2.12.2",
-    "webpack": "3.0.0",
-    "webpack-config-utils": "2.3.0"
+    "validate-commit-msg": "2.12.2"
   }
 }

@@ -3,7 +3,7 @@
 **/tsconfig.json
 tsconfig.*.json
 tslint.json
-**/webpack.config.js
+
 
 __tests__
 coverage
