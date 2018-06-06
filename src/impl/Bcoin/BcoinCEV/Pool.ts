@@ -1,4 +1,5 @@
 import { IdAddress } from '../../../types/data/Identity'
+import { BCTX } from './../../../../lib-esm/impl/Bcoin/BcoinCEV/Pool.d'
 import { formatTx, TXObj } from './TX/parse'
 // tslint:disable-next-line:no-require-imports
 const Tx = require('bcoin/lib/primitives/tx')
@@ -15,6 +16,7 @@ bcoin.networks.uq = Object.assign({}, bcoin.networks.regtest, {
 bcoin.set('uq')
 const BROADCAST_WAIT_BEFORE_RESPONSE = 3000
 const BROADCAST_TIMEOUT = 60000
+const WATCHADDRESS_WAIT_BEFORE_RESPONSE = 10000
 /**
  * Options for constructing a BCPool
  * @interface Options
@@ -91,33 +93,58 @@ export const Pool = async (options: Options): Promise<BCPool> => {
   await pool.open()
   await pool.connect()
 
+  let unlock = pool.locker.lock()
+  // tslint:disable-next-line:no-empty
+  let resolve = (_: BCTX[] | PromiseLike<BCTX[]> | undefined) => {}
+  let txs: BCTX[] = []
   const watchAddresses = async (addresses: IdAddress[]) =>
-    new Promise<BCTX[]>((resolve, reject) => {
-      addresses.forEach(address => pool.watchAddress(address))
-      const listener = (block: any, entry: any) => {
-        // console.log(`BLOCK: ${block.toJSON().hash}`, block.txs)
-
-        if (block.txs.length) {
-          pool.stopSync()
-          // pool.disconnect()
-          // pool.close()
-          pool.unwatch()
-          pool.removeListener('block', listener)
-          resolve(block.txs)
-        }
-      }
-
-      pool.on('block', listener)
-      pool.startSync()
-      pool.sync(true)
+    new Promise<BCTX[]>(async (_resolve, reject) => {
+      Array.from(new Set(addresses)).forEach(address => pool.watchAddress(address))
+      await unlock.then((_: any) => _())
+      await pool.startSync()
+      await pool.sync(true)
+      resolve = _resolve
     })
+  pool.on('tx', (tx: any) => {
+    console.log('----_TX------------')
+    console.log(tx.toJSON())
+    pool.watch(tx.toJSON().hash)
+    console.log('-------------------')
+  })
+
+  let scheduledResponse = false
+  const listener = (block: any, entry: any) => {
+    txs = txs.concat(block.txs)
+    if (block.txs.length && !scheduledResponse) {
+      console.log(
+        `*BLOCK with txs: ${block.toJSON().hash}`,
+        block.txs.map((tx: any) => tx.toJSON().hash),
+        `waits ${WATCHADDRESS_WAIT_BEFORE_RESPONSE}`
+      )
+      unlock = pool.locker.lock()
+      // pool.spvFilter.reset()
+      // pool.unwatch()
+      pool.stopSync()
+      if (!scheduledResponse) {
+        scheduledResponse = true
+        setTimeout(() => {
+          resolve(txs)
+          txs = []
+          // pool.removeListener('block', listener)
+          scheduledResponse = false
+        }, WATCHADDRESS_WAIT_BEFORE_RESPONSE)
+      }
+    }
+  }
+
+  pool.on('block', listener)
 
   const broadcast = (txid: string, txObj: TXObj) =>
-    new Promise<void>(async (resolve, reject) => {
+    new Promise<void>(async (_resolve, reject) => {
       const rawTx = Buffer.from(formatTx(txObj))
       const msg = Tx.fromRaw(rawTx)
       setTimeout(() => reject('Broadcast timeout'), BROADCAST_TIMEOUT)
-      pool.broadcast(msg).then(() => setTimeout(resolve, BROADCAST_WAIT_BEFORE_RESPONSE), reject)
+      pool.broadcast(msg).then(() => setTimeout(_resolve, BROADCAST_WAIT_BEFORE_RESPONSE), reject)
     })
 
   return {

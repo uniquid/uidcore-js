@@ -105,17 +105,14 @@ const providerNameProcess = (db: BcoinDB, providerNameResolver: ProviderNameReso
   function next() {
     const contract = contractsWithUnresolvedProviderNames.shift()
     if (contract) {
-      const cacheList = contractsWithUnresolvedProviderNames
       const providerAddress = contract.contractor
       providerNameResolver(providerAddress)
         .then(providerName => db.setProviderName(providerAddress, providerName))
         .catch(error => {
-          console.error('ProviderNameResolver Error', error)
-
-          cacheList.push(contract)
+          console.error(`ProviderNameResolver [${providerAddress}] Error`, error)
+          // tslint:disable-next-line:no-magic-numbers
+          setTimeout(trigger, 10000)
         })
-        .then(() => (cacheList === contractsWithUnresolvedProviderNames ? next() : void 0))
-        .catch(console.error)
     }
   }
 }
