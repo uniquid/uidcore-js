@@ -1,6 +1,6 @@
 {
   "name": "@uniquid/uidcore",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Uniquid Core Js/Ts library",
   "main": "lib/index.js",
   "module": "lib/index.js",
@@ -57,25 +57,15 @@
     }
   },
   "lint-staged": {
-    "src/**/*.{ts,tsx}": [
-      "npm run prettier:ts -- --write",
-      "ts:lint:fix",
-      "git add"
-    ]
+    "src/**/*.{ts,tsx}": ["npm run prettier:ts -- --write", "ts:lint:fix", "git add"]
   },
   "jest": {
-    "roots": [
-      "<rootDir>/src"
-    ],
+    "roots": ["<rootDir>/src"],
     "transform": {
       "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": ".*\\.specs\\.(ts|tsx|js)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
+    "moduleFileExtensions": ["ts", "tsx", "js"],
     "mapCoverage": true,
     "coveragePathIgnorePatterns": [
       "<rootDir>/node_modules/",
@@ -97,6 +87,7 @@
     "@types/lokijs": "1.5.2",
     "bcoin": "1.0.0-beta.15",
     "lokijs": "1.5.3",
+    "mqtt": "2.18.0",
     "simple-get": "2.7.0"
   },
   "devDependencies": {
