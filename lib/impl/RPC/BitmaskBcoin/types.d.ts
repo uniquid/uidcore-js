@@ -83,3 +83,7 @@ export declare type Params = string;
 export declare type Result = string;
 export declare type Error = typeof ERROR_METHOD_NOT_IMPLEMENTED | typeof ERROR_NOT_AUTHORIZED | typeof ERROR_NONE;
 export declare const isRequest: (msg: Request | Response) => msg is Request;
+export interface RPCHandler {
+    m: Method;
+    h: Handler;
+}

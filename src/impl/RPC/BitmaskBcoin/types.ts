@@ -87,3 +87,8 @@ export type Result = string
 export type Error = typeof ERROR_METHOD_NOT_IMPLEMENTED | typeof ERROR_NOT_AUTHORIZED | typeof ERROR_NONE
 
 export const isRequest = (msg: Request | Response): msg is Request => 'method' in msg.body
+
+export interface RPCHandler {
+  m: Method
+  h: Handler
+}
