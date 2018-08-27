@@ -25,7 +25,7 @@ export interface StdUQNode {
   id: BcoinID
   db: BcoinDB
 }
-export const DEFAULT_ANNOUNCE_TOPIC = 'UID/announce'
+export const DEFAULT_ANNOUNCE_TOPIC = 'UIDLitecoin/announce'
 export const DEFAULT_RPC_TIMEOUT = 10000
 export const standardUQNodeFactory = ({
   home,
@@ -47,7 +47,7 @@ export const standardUQNodeFactory = ({
   return Promise.all([dbProm, idProm]).then(([db, id]) => {
     const cevOpts: CEVOpts = {
       home: path.join(home, 'CEV'),
-      logLevel: 'warning',
+      logLevel: 'debug',
       seeds: bcSeeds,
       watchahead: 10,
       providerNameResolver: fromHTTPRegistry(registryUrl)
