@@ -6,14 +6,7 @@ const Tx = require('lcoin/lib/primitives/tx')
 
 // tslint:disable-next-line:no-require-imports
 const bcoin = require('lcoin')
-bcoin.networks.uq = Object.assign({}, bcoin.networks.regtest, {
-  port: 19000,
-  addressPrefix: bcoin.networks.testnet.addressPrefix,
-  keyPrefix: Object.assign({}, bcoin.networks.testnet.keyPrefix, {
-    coinType: 0
-  })
-})
-bcoin.set('uq')
+bcoin.set('testnet')
 const BROADCAST_WAIT_BEFORE_RESPONSE = 3000
 const BROADCAST_TIMEOUT = 60000
 const WATCHADDRESS_WAIT_BEFORE_RESPONSE = 10000
