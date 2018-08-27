@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = require("fs");
 const path = require("path");
 const CtrManager_1 = require("./BcoinCEV/CtrManager");
 const Pool_1 = require("./BcoinCEV/Pool");
@@ -12,6 +13,9 @@ const sign_1 = require("./BcoinCEV/TX/sign");
  * @returns {BcoinCEV}
  */
 exports.makeBcoinCEV = (db, id, options) => {
+    if (!fs_1.existsSync(options.home)) {
+        fs_1.mkdir(options.home);
+    }
     const poolPromise = Pool_1.Pool({
         dbFolder: path.join(options.home, 'chain.db'),
         logLevel: options.logLevel,

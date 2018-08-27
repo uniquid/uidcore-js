@@ -24,7 +24,7 @@ const rpcHandlers  = [
 // Use standard UQ node factory to create an UQ Node:   
 standardUQNodeFactory({
   home, // {string} path to the home folder for data persistence (folder must exist)
-  broker, // {string} url of the mqtt broker host (e.g. tcp://192.168.0.108:1883)
+  mqttHost, // {string} url of the mqtt broker host (e.g. tcp://192.168.0.108:1883)
   bcSeeds, // {string[]} array of string ips 
   registryUrl, // {string} the url of the UQ registry (e.g. http://192.168.0.108:8080)
   requestTimeout, // {number} millis to wait before an RPC request times out
@@ -51,4 +51,13 @@ error => {
   // initialization error
 })
 
+```
+### litecoin edition
+```
+home = "./data";
+mqttHost = "tcp://appliance4.uniquid.co:1883";
+bcSeeds = ["testnet-seed.litecointools.com","seed-b.litecoin.loshan.co.uk","dnsseed-testnet.thrasher.io"];
+registryUrl = "http://appliance4.uniquid.co:8080";
+requestTimeout = 10000;
+nodenamePrefix = 'MY-TANK-JS';
 ```

@@ -3,13 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const buffer_1 = require("buffer");
 const Identity_1 = require("../../../types/data/Identity");
 // tslint:disable-next-line:no-require-imports
-const crypto = require('bcoin/lib/crypto');
+const crypto = require('lcoin/lib/crypto');
 // tslint:disable-next-line:no-require-imports
 const secp256k1 = require('elliptic').ec('secp256k1');
 // tslint:disable-next-line:no-require-imports
-const base58 = require('bcoin/lib/utils/base58');
+const base58 = require('lcoin/lib/utils/base58');
 // tslint:disable-next-line:no-require-imports
-const BcoinPrivateKey = require('bcoin/lib/hd/private');
+const BcoinPrivateKey = require('lcoin/lib/hd/private');
 const BASE_PATH = ['m', `44'`, `0'`, '0'];
 const imprintingHDPath = ['0', '0', '0'];
 const orchestrationHDPath = ['0', '1', '0'];

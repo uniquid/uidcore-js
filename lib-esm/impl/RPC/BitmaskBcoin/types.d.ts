@@ -1,3 +1,4 @@
+import { ProviderContract } from '../../../types/data/Contract';
 import { IdAddress } from '../../../types/data/Identity';
 export declare const BLANK_RESULT = "";
 export declare const ERROR_METHOD_NOT_IMPLEMENTED = 5;
@@ -76,8 +77,13 @@ export interface Response {
     body: ResponseBody;
 }
 export declare type Nonce = number;
-export declare type Handler = (params: Params) => Promise<Result> | Result;
+export declare type Handler = (params: Params, contract: ProviderContract) => Promise<Result> | Result;
 export declare type Method = number;
 export declare type Params = string;
 export declare type Result = string;
 export declare type Error = typeof ERROR_METHOD_NOT_IMPLEMENTED | typeof ERROR_NOT_AUTHORIZED | typeof ERROR_NONE;
+export declare const isRequest: (msg: Request | Response) => msg is Request;
+export interface RPCHandler {
+    m: Method;
+    h: Handler;
+}

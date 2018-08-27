@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = require("fs");
 const fs = require("fs");
 const path = require("path");
 const hd = require("./BcoinID/HD");
 // tslint:disable-next-line:no-require-imports
-const BcoinPrivateKey = require('bcoin/lib/hd/private');
+const BcoinPrivateKey = require('lcoin/lib/hd/private');
 const PK_FILE_NAME = 'private.key';
 /**
  * constructs a {@link BcoinID}
@@ -12,6 +13,9 @@ const PK_FILE_NAME = 'private.key';
  * @returns {Promise<BcoinID>}
  */
 exports.makeBcoinID = (options) => new Promise((resolve, reject) => {
+    if (!fs_1.existsSync(options.home)) {
+        fs_1.mkdir(options.home);
+    }
     let privateKeyBase58;
     const privateKeyFilePath = path.join(options.home, PK_FILE_NAME);
     const exists = fs.existsSync(privateKeyFilePath);

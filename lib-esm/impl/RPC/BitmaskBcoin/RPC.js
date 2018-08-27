@@ -24,7 +24,7 @@ const manageRequest = (db, id, handlers) => (request) => new Promise(async (reso
             const handler = handlers[method];
             if (handler) {
                 try {
-                    result = await handler(params);
+                    result = await handler(params, contract);
                 }
                 catch (err) {
                     result = String(err);
