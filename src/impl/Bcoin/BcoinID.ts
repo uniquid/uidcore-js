@@ -4,7 +4,7 @@ import * as path from 'path'
 import * as hd from './BcoinID/HD'
 import { BcoinID } from './types/BcoinID'
 // tslint:disable-next-line:no-require-imports
-const BcoinPrivateKey = require('bcoin/lib/hd/private')
+const BcoinPrivateKey = require('lcoin/lib/hd/private')
 /**
  * Options for constructing a {@link BcoinID}
  * @interface Options

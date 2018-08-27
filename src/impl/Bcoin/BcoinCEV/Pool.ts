@@ -2,10 +2,10 @@ import { IdAddress } from '../../../types/data/Identity'
 import { BCTX } from './../../../../lib-esm/impl/Bcoin/BcoinCEV/Pool.d'
 import { formatTx, TXObj } from './TX/parse'
 // tslint:disable-next-line:no-require-imports
-const Tx = require('bcoin/lib/primitives/tx')
+const Tx = require('lcoin/lib/primitives/tx')
 
 // tslint:disable-next-line:no-require-imports
-const bcoin = require('bcoin')
+const bcoin = require('lcoin')
 bcoin.networks.uq = Object.assign({}, bcoin.networks.regtest, {
   port: 19000,
   addressPrefix: bcoin.networks.testnet.addressPrefix,

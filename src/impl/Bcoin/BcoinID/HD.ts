@@ -2,13 +2,13 @@ import { Buffer } from 'buffer'
 import { AbstractIdentity, Identity, Role } from '../../../types/data/Identity'
 import { BcoinAbstractIdentity, BcoinIdentity } from './../types/data/BcoinIdentity'
 // tslint:disable-next-line:no-require-imports
-const crypto = require('bcoin/lib/crypto')
+const crypto = require('lcoin/lib/crypto')
 // tslint:disable-next-line:no-require-imports
 const secp256k1 = require('elliptic').ec('secp256k1')
 // tslint:disable-next-line:no-require-imports
-const base58 = require('bcoin/lib/utils/base58')
+const base58 = require('lcoin/lib/utils/base58')
 // tslint:disable-next-line:no-require-imports
-const BcoinPrivateKey = require('bcoin/lib/hd/private')
+const BcoinPrivateKey = require('lcoin/lib/hd/private')
 export type AbstractIdentity<R extends Role> = AbstractIdentity<R>
 export type Identity<R extends Role> = Identity<R>
 export type Bip32Base58PrivKey = string

@@ -5,9 +5,9 @@ import { BcoinAbstractIdentity, ExtPath } from '../../types/data/BcoinIdentity'
 import { intArrayToRawHexString } from './../../utils/hex'
 import { formatTx, InputObj, parseTx, TXObj } from './parse'
 // tslint:disable-next-line:no-require-imports
-const sha265 = require('bcoin/lib/crypto/sha256')
+const sha265 = require('lcoin/lib/crypto/sha256')
 // tslint:disable-next-line:no-require-imports
-const crypto = require('bcoin/lib/crypto')
+const crypto = require('lcoin/lib/crypto')
 
 const inputSignerFor = (id: BcoinID, txObj: TXObj) => (path: HDPath, pathIndex: number): InputObj => {
   const originalInput = txObj.inputs[pathIndex]
