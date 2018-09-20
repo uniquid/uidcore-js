@@ -38,4 +38,14 @@ export interface BcoinID extends ID {
      * @memberof BcoinID
      */
     getBaseXpub(): string;
+    /**
+     * sign a message with Lite(Bit)Coni algorithm
+     * against the PK for abstractIdentity
+     *
+     * @param {string} message
+     * @param {BcoinAbstractIdentity<Role>} abstractIdentity
+     * @returns {Buffer}
+     * @memberof BcoinID
+     */
+    signMessage(message: string, abstractIdentity: BcoinAbstractIdentity<Role>): Buffer;
 }
