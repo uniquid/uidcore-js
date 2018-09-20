@@ -45,6 +45,7 @@ export const makeBcoinID = (options: Options): Promise<BcoinID> =>
       getImprintingAddress: hd.getImprintingAddress(privateKeyBase58),
       getOrchestrateAddress: hd.getOrchestrateAddress(privateKeyBase58),
       publicKeyAtPath: hd.publicKeyAtPath(privateKeyBase58),
-      getBaseXpub: hd.getBaseXpub(privateKeyBase58)
+      getBaseXpub: hd.getBaseXpub(privateKeyBase58),
+      signMessage: hd.signMessage(privateKeyBase58)
     })
   })
