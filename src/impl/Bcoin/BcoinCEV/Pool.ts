@@ -6,7 +6,13 @@ const Tx = require('lcoin/lib/primitives/tx')
 
 // tslint:disable-next-line:no-require-imports
 const bcoin = require('lcoin')
-bcoin.set('testnet')
+bcoin.networks.uqregtest = Object.assign({}, bcoin.networks.regtest, {
+  port: 19000,
+  addressPrefix: bcoin.networks.testnet.addressPrefix,
+  keyPrefix: Object.assign({}, bcoin.networks.testnet.keyPrefix, {
+    coinType: 0
+  })
+})
 const BROADCAST_WAIT_BEFORE_RESPONSE = 3000
 const BROADCAST_TIMEOUT = 60000
 const WATCHADDRESS_WAIT_BEFORE_RESPONSE = 10000
@@ -29,6 +35,13 @@ export interface Options {
    * @memberof Options
    */
   dbFolder: string
+
+  /**
+   * the network to connect to
+   * @type {string}
+   * @memberof Options
+   */
+  network: 'uqregtest' | 'main' | 'testnet' | 'regtest' | 'segnet3' | 'segnet4'
   logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam'
 }
 /**
@@ -65,6 +78,7 @@ export interface BCPool {
  * @returns {Promise<BCPool>}
  */
 export const Pool = async (options: Options): Promise<BCPool> => {
+  bcoin.set(options.network)
   const chainLogger = new bcoin.logger({
     level: options.logLevel
   })

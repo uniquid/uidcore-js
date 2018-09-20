@@ -1,4 +1,5 @@
 import { ProviderNameResolver } from './BcoinCEV/CtrManager';
+import { Options as PoolOptions } from './BcoinCEV/Pool';
 import { BcoinCEV } from './types/BcoinCEV';
 import { BcoinDB } from './types/BcoinDB';
 import { BcoinID } from './types/BcoinID';
@@ -34,6 +35,7 @@ export interface Options {
      */
     providerNameResolver: ProviderNameResolver;
     logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam';
+    network: PoolOptions['network'];
 }
 /**
  * constructs a {@link BcoinCEV}

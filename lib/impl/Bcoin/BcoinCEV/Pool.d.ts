@@ -19,6 +19,12 @@ export interface Options {
      * @memberof Options
      */
     dbFolder: string;
+    /**
+     * the network to connect to
+     * @type {string}
+     * @memberof Options
+     */
+    network: 'uqregtest' | 'main' | 'testnet' | 'regtest' | 'segnet3' | 'segnet4';
     logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam';
 }
 /**
