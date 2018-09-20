@@ -133,7 +133,7 @@ export const signMessage = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (
   message: string,
   abstractIdentity: BcoinAbstractIdentity<Role>
 ) => {
-  const messagePrefix = Buffer.from('\u0019Litecoin Signed Message:\n', 'utf8')
+  const messagePrefix = Buffer.from('\u0018Bitcoin Signed Message:\n', 'utf8')
   const messageVISize = varuint.encodingLength(message.length)
   const buffer = Buffer.allocUnsafe(messagePrefix.length + messageVISize + message.length)
   messagePrefix.copy(buffer, 0)
