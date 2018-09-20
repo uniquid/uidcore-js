@@ -155,11 +155,12 @@ export const signMessage = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (
 
   const derivedPK = derivePrivateKey(bip32ExtMasterPrivateKey)(subPath)
   const sigObj = secp256k1.sign(hs, derivedPK.privateKey)
-
   // tslint:disable-next-line:no-magic-numbers
-  sigObj.recovery += 4
+  sigObj.recoveryParam += 4
   // tslint:disable-next-line:no-magic-numbers
-  const _tsSigned = Buffer.concat([Buffer.alloc(1, sigObj.recovery + 27), sigObj.signature])
+  const signature = Buffer.concat([sigObj.r.toBuffer(), sigObj.s.toBuffer()], 64)
+  // tslint:disable-next-line:no-magic-numbers
+  const _tsSigned = Buffer.concat([Buffer.alloc(1, sigObj.recoveryParam + 27), signature])
 
   return _tsSigned
 }
