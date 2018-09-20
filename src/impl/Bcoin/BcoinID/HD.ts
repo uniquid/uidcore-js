@@ -154,7 +154,7 @@ export const signMessage = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (
    */
 
   const derivedPK = derivePrivateKey(bip32ExtMasterPrivateKey)(subPath)
-  const sigObj = secp256k1.sign(hs, derivedPK)
+  const sigObj = secp256k1.sign(hs, derivedPK.privateKey)
 
   // tslint:disable-next-line:no-magic-numbers
   sigObj.recovery += 4
