@@ -5,6 +5,16 @@ import * as hd from './BcoinID/HD'
 import { BcoinID } from './types/BcoinID'
 // tslint:disable-next-line:no-require-imports
 const BcoinPrivateKey = require('lcoin/lib/hd/private')
+// tslint:disable-next-line:no-require-imports
+const bcoin = require('lcoin')
+bcoin.networks.uqregtest = Object.assign({}, bcoin.networks.regtest, {
+  port: 19000,
+  addressPrefix: bcoin.networks.testnet.addressPrefix,
+  keyPrefix: Object.assign({}, bcoin.networks.testnet.keyPrefix, {
+    coinType: 0
+  })
+})
+
 /**
  * Options for constructing a {@link BcoinID}
  * @interface Options
@@ -17,6 +27,7 @@ export interface Options {
    * @memberof Options
    */
   home: string
+  network: 'uqregtest' | 'main' | 'testnet' | 'regtest' | 'segnet3' | 'segnet4'
 }
 const PK_FILE_NAME = 'private.key'
 /**
@@ -24,8 +35,10 @@ const PK_FILE_NAME = 'private.key'
  * @param {Options} options Options
  * @returns {Promise<BcoinID>}
  */
-export const makeBcoinID = (options: Options): Promise<BcoinID> =>
-  new Promise((resolve, reject) => {
+export const makeBcoinID = (options: Options): Promise<BcoinID> => {
+  bcoin.set(options.network)
+
+  return new Promise((resolve, reject) => {
     if (!existsSync(options.home)) {
       mkdir(options.home)
     }
@@ -49,3 +62,4 @@ export const makeBcoinID = (options: Options): Promise<BcoinID> =>
       signMessage: hd.signMessage(privateKeyBase58)
     })
   })
+}

@@ -1,7 +1,7 @@
 import { existsSync, mkdir } from 'fs'
 import * as path from 'path'
 import { ProviderNameResolver, startContractManager } from './BcoinCEV/CtrManager'
-import { Options as PoolOptions, Pool } from './BcoinCEV/Pool'
+import { Pool } from './BcoinCEV/Pool'
 import { transactionSigner } from './BcoinCEV/TX/sign'
 import { HDPath } from './BcoinID/HD'
 import { BcoinCEV } from './types/BcoinCEV'
@@ -40,7 +40,6 @@ export interface Options {
    */
   providerNameResolver: ProviderNameResolver
   logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam'
-  network: PoolOptions['network']
 }
 /**
  * constructs a {@link BcoinCEV}
@@ -56,8 +55,7 @@ export const makeBcoinCEV = (db: BcoinDB, id: BcoinID, options: Options): BcoinC
   const poolPromise = Pool({
     dbFolder: path.join(options.home, 'chain.db'),
     logLevel: options.logLevel,
-    seeds: options.seeds,
-    network: options.network
+    seeds: options.seeds
   })
   poolPromise
     .then(pool => startContractManager(db, id, pool, options.watchahead, options.providerNameResolver))

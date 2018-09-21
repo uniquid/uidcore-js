@@ -2,7 +2,7 @@ import * as path from 'path'
 import { makeBcoinCEV, Options as CEVOpts } from '../Bcoin/BcoinCEV'
 import { fromHTTPRegistry } from '../Bcoin/BcoinCEV/providerNameResolvers/httpRegistry'
 import { makeBcoinDB } from '../Bcoin/BcoinDB'
-import { makeBcoinID } from '../Bcoin/BcoinID'
+import { makeBcoinID, Options as IDOptions } from '../Bcoin/BcoinID'
 import { BcoinDB } from '../Bcoin/types/BcoinDB'
 import { BcoinID } from '../Bcoin/types/BcoinID'
 import { makeRPC } from '../RPC/BitmaskBcoin/RPC'
@@ -19,7 +19,7 @@ export interface Config {
   requestTimeout?: number
   announceTopic?: string
   nodenamePrefix?: string
-  network: CEVOpts['network']
+  network: IDOptions['network']
 }
 export interface StdUQNode {
   msgs: Messages
@@ -43,7 +43,7 @@ export const standardUQNodeFactory = ({
   const dbOpts = { home: path.join(home, 'DB') }
   const dbProm: Promise<BcoinDB> = makeBcoinDB(dbOpts)
 
-  const idOpts = { home: path.join(home, 'ID') }
+  const idOpts = { home: path.join(home, 'ID'), network }
   const idProm: Promise<BcoinID> = makeBcoinID(idOpts)
 
   return Promise.all([dbProm, idProm]).then(([db, id]) => {
@@ -52,8 +52,7 @@ export const standardUQNodeFactory = ({
       logLevel: 'debug',
       seeds: bcSeeds,
       watchahead: 10,
-      providerNameResolver: fromHTTPRegistry(registryUrl),
-      network
+      providerNameResolver: fromHTTPRegistry(registryUrl)
     }
     const nodenameOpts = { home: path.join(home, 'NODENAME'), prefix: nodenamePrefix }
     const nodename = getNodeName(nodenameOpts)

@@ -24,7 +24,6 @@ export interface Options {
      * @type {string}
      * @memberof Options
      */
-    network: 'uqregtest' | 'main' | 'testnet' | 'regtest' | 'segnet3' | 'segnet4';
     logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam';
 }
 /**

@@ -1,4 +1,4 @@
-import { Options as CEVOpts } from '../Bcoin/BcoinCEV';
+import { Options as IDOptions } from '../Bcoin/BcoinID';
 import { BcoinDB } from '../Bcoin/types/BcoinDB';
 import { BcoinID } from '../Bcoin/types/BcoinID';
 import { RPCHandler } from '../RPC/BitmaskBcoin/types';
@@ -12,7 +12,7 @@ export interface Config {
     requestTimeout?: number;
     announceTopic?: string;
     nodenamePrefix?: string;
-    network: CEVOpts['network'];
+    network: IDOptions['network'];
 }
 export interface StdUQNode {
     msgs: Messages;
