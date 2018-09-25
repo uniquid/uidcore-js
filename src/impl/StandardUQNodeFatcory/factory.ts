@@ -3,6 +3,7 @@ import { makeBcoinCEV, Options as CEVOpts } from '../Bcoin/BcoinCEV'
 import { fromHTTPRegistry } from '../Bcoin/BcoinCEV/providerNameResolvers/httpRegistry'
 import { makeBcoinDB } from '../Bcoin/BcoinDB'
 import { makeBcoinID, Options as IDOptions } from '../Bcoin/BcoinID'
+import { BcoinCEV } from '../Bcoin/types/BcoinCEV'
 import { BcoinDB } from '../Bcoin/types/BcoinDB'
 import { BcoinID } from '../Bcoin/types/BcoinID'
 import { makeRPC } from '../RPC/BitmaskBcoin/RPC'
@@ -25,6 +26,8 @@ export interface StdUQNode {
   msgs: Messages
   id: BcoinID
   db: BcoinDB
+  cev: BcoinCEV
+  nodename: string
 }
 export const DEFAULT_ANNOUNCE_TOPIC = 'UIDLitecoin/announce'
 export const DEFAULT_RPC_TIMEOUT = 10000

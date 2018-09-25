@@ -1,4 +1,5 @@
 import { Options as IDOptions } from '../Bcoin/BcoinID';
+import { BcoinCEV } from '../Bcoin/types/BcoinCEV';
 import { BcoinDB } from '../Bcoin/types/BcoinDB';
 import { BcoinID } from '../Bcoin/types/BcoinID';
 import { RPCHandler } from '../RPC/BitmaskBcoin/types';
@@ -18,6 +19,8 @@ export interface StdUQNode {
     msgs: Messages;
     id: BcoinID;
     db: BcoinDB;
+    cev: BcoinCEV;
+    nodename: string;
 }
 export declare const DEFAULT_ANNOUNCE_TOPIC = "UIDLitecoin/announce";
 export declare const DEFAULT_RPC_TIMEOUT = 10000;
