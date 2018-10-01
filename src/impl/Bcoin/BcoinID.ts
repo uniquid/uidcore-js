@@ -13,7 +13,7 @@ bcoin.networks.uqregtest = Object.assign({}, bcoin.networks.regtest, {
   keyPrefix: Object.assign({}, bcoin.networks.testnet.keyPrefix, {
     coinType: 0
   }),
-  seeds: ['52.225.217.168', '52.167.211.151', '52.225.218.133']
+  seeds: ['40.115.9.216','40.115.10.153','40.115.103.9']
 })
 
 /**
