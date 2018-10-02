@@ -14,9 +14,9 @@
     "node": ">=8.1"
   },
   "scripts": {
-    "build": "tsc --rootDir ./ -p tsconfig.json",
+    "build": "tsc -p tsconfig.json",
     "build:watch": "tsc -w",
-    "build:test": "tsc --rootDir ./ -p tsconfig.test.json",
+    "build:test": "tsc -p tsconfig.test.json",
     "clean": "rm -fr lib && rm -rf typings",
     "postinstall": "npm run build",
     "prebuild": "npm run clean",
@@ -63,7 +63,7 @@
     "lokijs": "1.5.3",
     "mqtt": "2.18.0",
     "simple-get": "2.7.0",
-    "typescript": "latest",
+    "typescript": "3.1.1",
     "varuint-bitcoin": "1.1.0"
   },
   "devDependencies": {
