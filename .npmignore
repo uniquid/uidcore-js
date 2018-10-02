@@ -1,7 +1,7 @@
 .*
 *.log
-**/tsconfig.json
-tsconfig.*.json
+# **/tsconfig.json
+# tsconfig.*.json
 tslint.json
 typings
 lib
