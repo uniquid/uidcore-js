@@ -60,7 +60,7 @@
   "dependencies": {
     "@types/jest": "latest",
     "@types/lokijs": "1.5.2",
-    "@types/node": "7.0.31",
+    "@types/node": "10.11.3",
     "lcoin": "1.0.0-beta.15",
     "lokijs": "1.5.3",
     "mqtt": "2.18.0",
