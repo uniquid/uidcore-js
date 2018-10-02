@@ -5,12 +5,7 @@
 node_modules
 
 coverage
-# lib
-# lib-esm
-# lib-fesm
-# umd
-# typings
-# docs
+lib
 
 private
 
