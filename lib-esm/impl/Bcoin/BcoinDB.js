@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = require("fs");
 const path = require("path");
 const Identity_1 = require("../../types/data/Identity");
 // tslint:disable-next-line:no-require-imports
@@ -11,9 +12,13 @@ const LokiConstructor = require('lokijs');
  * @returns {Promise<BcoinDB>}
  */
 exports.makeBcoinDB = (options) => new Promise((resolve, reject) => {
+    if (!fs_1.existsSync(options.home)) {
+        fs_1.mkdir(options.home);
+    }
     const db = new LokiConstructor(path.join(options.home, 'db.json'), {
         autoload: true,
         autosave: true,
+        serializationMethod: 'pretty',
         autoloadCallback
     });
     function autoloadCallback() {
@@ -52,7 +57,9 @@ exports.makeBcoinDB = (options) => new Promise((resolve, reject) => {
         const setProviderName = (providerAddress, providerName) => {
             contracts.findAndUpdate({ 'identity.role': Identity_1.Role.User, contractor: providerAddress }, (userContract) => (userContract.providerName = providerName));
         };
+        const findUserContractsByProviderName = (providerName) => contracts.find({ 'identity.role': Identity_1.Role.User, providerName });
         const bcoinDB = {
+            findUserContractsByProviderName,
             getContractForExternalUser,
             storeImprinting,
             getImprinting,

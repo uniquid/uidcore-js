@@ -24,6 +24,9 @@ export interface Config {
   prefix?: string
 }
 export const getNodeName = (config: Config) => {
+  if (!fs.existsSync(config.home)) {
+    fs.mkdir(config.home)
+  }
   const nodenameFilePath = path.join(config.home, NODE_NAME_FILE)
   const exists = fs.existsSync(nodenameFilePath)
   let nodename: string

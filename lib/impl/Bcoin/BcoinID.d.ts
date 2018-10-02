@@ -11,6 +11,7 @@ export interface Options {
      * @memberof Options
      */
     home: string;
+    network: 'uqregtest' | 'main' | 'testnet' | 'regtest' | 'segnet3' | 'segnet4';
 }
 /**
  * constructs a {@link BcoinID}

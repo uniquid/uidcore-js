@@ -25,3 +25,4 @@ export declare const getOrchestrateAddress: (bip32ExtMasterPrivateKey: string) =
 export declare const getBaseXpub: (bip32ExtMasterPrivateKey: string) => () => string;
 export declare const publicKeyAtPath: (bip32ExtMasterPrivateKey: string) => (path: string[]) => Buffer;
 export declare const identityFor: (bip32ExtMasterPrivateKey: string) => <R extends Role>(abstrId: BcoinAbstractIdentity<R>) => BcoinIdentity<R>;
+export declare const signMessage: (bip32ExtMasterPrivateKey: string) => (message: string, abstractIdentity: BcoinAbstractIdentity<Role>) => Buffer;

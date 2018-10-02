@@ -1,5 +1,4 @@
 import { IdAddress } from '../../../types/data/Identity';
-import { BCTX } from './../../../../lib-esm/impl/Bcoin/BcoinCEV/Pool.d';
 import { TXObj } from './TX/parse';
 /**
  * Options for constructing a BCPool
@@ -20,6 +19,11 @@ export interface Options {
      * @memberof Options
      */
     dbFolder: string;
+    /**
+     * the network to connect to
+     * @type {string}
+     * @memberof Options
+     */
     logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam';
 }
 /**

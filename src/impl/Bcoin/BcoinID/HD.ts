@@ -1,14 +1,20 @@
 import { Buffer } from 'buffer'
 import { AbstractIdentity, Identity, Role } from '../../../types/data/Identity'
 import { BcoinAbstractIdentity, BcoinIdentity } from './../types/data/BcoinIdentity'
+
 // tslint:disable-next-line:no-require-imports
-const crypto = require('bcoin/lib/crypto')
+const varuint = require('varuint-bitcoin')
+// tslint:disable-next-line:no-require-imports
+const sha265 = require('lcoin/lib/crypto/sha256')
+// tslint:disable-next-line:no-require-imports
+const crypto = require('lcoin/lib/crypto')
 // tslint:disable-next-line:no-require-imports
 const secp256k1 = require('elliptic').ec('secp256k1')
 // tslint:disable-next-line:no-require-imports
-const base58 = require('bcoin/lib/utils/base58')
+const base58 = require('lcoin/lib/utils/base58')
 // tslint:disable-next-line:no-require-imports
-const BcoinPrivateKey = require('bcoin/lib/hd/private')
+const BcoinPrivateKey = require('lcoin/lib/hd/private')
+
 export type AbstractIdentity<R extends Role> = AbstractIdentity<R>
 export type Identity<R extends Role> = Identity<R>
 export type Bip32Base58PrivKey = string
@@ -43,10 +49,18 @@ export const signFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (
   hash: Buffer,
   der = false
 ) => {
+  /**
+   * extract as (private?) function
+   * it is necessary in 3 functions here
+   */
   const isForProvider = abstrId.role === Role.Provider
   const rolePath = isForProvider ? '0' : '1'
   const extOrInt = abstrId.ext || (isForProvider ? '1' : '0')
   const subPath = [rolePath, extOrInt, `${abstrId.index}`]
+  /**
+   * ***
+   */
+
   const privK = derivePrivateKey(bip32ExtMasterPrivateKey)(subPath)
   const res = secp256k1.sign(hash, privK.privateKey, { canonical: true })
 
@@ -93,10 +107,19 @@ export const identityFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => <R 
   abstrId: BcoinAbstractIdentity<R>
 ): BcoinIdentity<R> => {
   const { role, index } = abstrId
+
+  /**
+   * extract as (private?) function
+   * it is necessary in 3 functions here
+   */
   const isForProvider = role === Role.Provider
   const rolePath = isForProvider ? '0' : '1'
   const extOrInt = abstrId.ext || (isForProvider ? '1' : '0')
   const subPath = [rolePath, extOrInt, `${index}`]
+  /**
+   * ***
+   */
+
   const derivedPrivkey = derivePrivateKey(bip32ExtMasterPrivateKey)(subPath)
   const address = base58AddrByPrivKey(derivedPrivkey)
 
@@ -104,4 +127,40 @@ export const identityFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => <R 
     ...abstrId,
     address
   }
+}
+
+export const signMessage = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (
+  message: string,
+  abstractIdentity: BcoinAbstractIdentity<Role>
+) => {
+  const messagePrefix = Buffer.from('\u0018Bitcoin Signed Message:\n', 'utf8')
+  const messageVISize = varuint.encodingLength(message.length)
+  const buffer = Buffer.allocUnsafe(messagePrefix.length + messageVISize + message.length)
+  messagePrefix.copy(buffer, 0)
+  varuint.encode(message.length, buffer, messagePrefix.length)
+  buffer.write(message, messagePrefix.length + messageVISize)
+  const hs = sha265.hash256(buffer)
+
+  /**
+   * extract as (private?) function
+   * it is necessary in 3 functions here
+   */
+  const isForProvider = abstractIdentity.role === Role.Provider
+  const rolePath = isForProvider ? '0' : '1'
+  const extOrInt = abstractIdentity.ext || (isForProvider ? '1' : '0')
+  const subPath = [rolePath, extOrInt, `${abstractIdentity.index}`]
+  /**
+   * ***
+   */
+
+  const derivedPK = derivePrivateKey(bip32ExtMasterPrivateKey)(subPath)
+  const sigObj = secp256k1.sign(hs, derivedPK.privateKey)
+  // tslint:disable-next-line:no-magic-numbers
+  sigObj.recoveryParam += 4
+  // tslint:disable-next-line:no-magic-numbers
+  const signature = Buffer.concat([sigObj.r.toBuffer(), sigObj.s.toBuffer()], 64)
+  // tslint:disable-next-line:no-magic-numbers
+  const _tsSigned = Buffer.concat([Buffer.alloc(1, sigObj.recoveryParam + 27), signature])
+
+  return _tsSigned
 }
