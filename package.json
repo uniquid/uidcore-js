@@ -14,9 +14,9 @@
     "node": ">=8.1"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc --rootDir ./ -p tsconfig.json",
     "build:watch": "tsc -w",
-    "build:test": "tsc -p tsconfig.test.json",
+    "build:test": "tsc --rootDir ./ -p tsconfig.test.json",
     "clean": "rm -fr lib && rm -rf typings",
     "postinstall": "npm run build",
     "prebuild": "npm run clean",
@@ -58,7 +58,9 @@
     }
   },
   "dependencies": {
+    "@types/jest": "latest",
     "@types/lokijs": "1.5.2",
+    "@types/node": "7.0.31",
     "lcoin": "1.0.0-beta.15",
     "lokijs": "1.5.3",
     "mqtt": "2.18.0",
@@ -67,8 +69,6 @@
     "varuint-bitcoin": "1.1.0"
   },
   "devDependencies": {
-    "@types/jest": "latest",
-    "@types/node": "7.0.31",
     "awesome-typescript-loader": "3.2.1",
     "irish-pub": "latest",
     "jest": "latest",
