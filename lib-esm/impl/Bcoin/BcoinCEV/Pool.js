@@ -6,7 +6,6 @@ const parse_1 = require("./TX/parse");
 const Tx = require('lcoin/lib/primitives/tx');
 // tslint:disable-next-line:no-require-imports
 const bcoin = require('lcoin');
-bcoin.set('testnet');
 const BROADCAST_WAIT_BEFORE_RESPONSE = 3000;
 const BROADCAST_TIMEOUT = 60000;
 const WATCHADDRESS_WAIT_BEFORE_RESPONSE = 10000;
@@ -22,7 +21,12 @@ exports.Pool = async (options) => {
     const poolLogger = new bcoin.logger({
         level: options.logLevel
     });
-    const chain = bcoin.chain({ logger: chainLogger, db: 'leveldb', location: options.dbFolder, spv: true });
+    const chain = bcoin.chain({
+        logger: chainLogger,
+        db: 'leveldb',
+        location: options.dbFolder,
+        spv: true
+    });
     const pool = new bcoin.pool({
         logger: poolLogger,
         seeds: options.seeds,

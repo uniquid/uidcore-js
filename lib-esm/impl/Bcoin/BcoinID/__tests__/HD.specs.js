@@ -13,12 +13,20 @@ describe('HD keys derivation', () => {
     // })
     it('derive ProviderIdentity', () => {
         // m/44'/0'/0/0/1/5
-        const identity = HD_1.identityFor(masterPrivKey)({ role: Identity_1.Role.Provider, index: 5, ext: '1' });
+        const identity = HD_1.identityFor(masterPrivKey)({
+            role: Identity_1.Role.Provider,
+            index: 5,
+            ext: '1'
+        });
         expect(identity.address).toBe('n26AHAeWe9NxTFmZ7DuDtCaBNMzfcKzPRA');
     });
     it('derive UserIdentity', () => {
         // m/44'/0'/0/1/0/5
-        const identity = HD_1.identityFor(masterPrivKey)({ role: Identity_1.Role.User, index: 5, ext: '0' });
+        const identity = HD_1.identityFor(masterPrivKey)({
+            role: Identity_1.Role.User,
+            index: 5,
+            ext: '0'
+        });
         expect(identity.address).toBe('mqQt5iKft7ZNuTfdCVMxwuzc2RK9DwcyFz');
     });
     it('signs hash for an AbstractIdentity', () => {

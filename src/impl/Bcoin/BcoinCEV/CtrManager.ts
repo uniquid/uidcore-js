@@ -22,7 +22,10 @@ const loopRoleContractWatch = async (
     .map(lastIdentity => {
       const identities = []
       for (let offset = 1; offset <= watchahead; offset++) {
-        const waIdentity = id.identityFor({ ...lastIdentity, index: lastIdentity.index + offset })
+        const waIdentity = id.identityFor({
+          ...lastIdentity,
+          index: lastIdentity.index + offset
+        })
         identities.push(waIdentity)
       }
 

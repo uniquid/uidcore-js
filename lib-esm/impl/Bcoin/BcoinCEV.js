@@ -14,7 +14,7 @@ const sign_1 = require("./BcoinCEV/TX/sign");
  */
 exports.makeBcoinCEV = (db, id, options) => {
     if (!fs_1.existsSync(options.home)) {
-        fs_1.mkdir(options.home);
+        fs_1.mkdirSync(options.home);
     }
     const poolPromise = Pool_1.Pool({
         dbFolder: path.join(options.home, 'chain.db'),

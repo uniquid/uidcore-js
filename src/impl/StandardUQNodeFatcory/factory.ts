@@ -57,13 +57,26 @@ export const standardUQNodeFactory = ({
       watchahead: 10,
       providerNameResolver: fromHTTPRegistry(registryUrl)
     }
-    const nodenameOpts = { home: path.join(home, 'NODENAME'), prefix: nodenamePrefix }
+    const nodenameOpts = {
+      home: path.join(home, 'NODENAME'),
+      prefix: nodenamePrefix
+    }
     const nodename = getNodeName(nodenameOpts)
-    const announceMessage = { topic: announceTopic, data: { name: nodename, xpub: id.getBaseXpub() } }
+    const announceMessage = {
+      topic: announceTopic,
+      data: { name: nodename, xpub: id.getBaseXpub() }
+    }
     const cev = makeBcoinCEV(db, id, cevOpts)
     const rpc = makeRPC(cev, db, id)
     const { identityFor } = id
-    const msgs: Messages = messages({ identityFor, announceMessage, mqttHost, rpc, rpcHandlers, requestTimeout })
+    const msgs: Messages = messages({
+      identityFor,
+      announceMessage,
+      mqttHost,
+      rpc,
+      rpcHandlers,
+      requestTimeout
+    })
 
     return {
       msgs,

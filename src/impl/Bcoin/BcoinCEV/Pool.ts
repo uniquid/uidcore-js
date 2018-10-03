@@ -77,7 +77,12 @@ export const Pool = async (options: Options): Promise<BCPool> => {
     level: options.logLevel
   })
 
-  const chain = bcoin.chain({ logger: chainLogger, db: 'leveldb', location: options.dbFolder, spv: true })
+  const chain = bcoin.chain({
+    logger: chainLogger,
+    db: 'leveldb',
+    location: options.dbFolder,
+    spv: true
+  })
   const pool = new bcoin.pool({
     logger: poolLogger,
     seeds: options.seeds,

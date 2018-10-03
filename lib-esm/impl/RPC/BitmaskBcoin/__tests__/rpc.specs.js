@@ -14,7 +14,8 @@ describe('RPC', () => {
         sender: ${test.request.sender}`, () => {
         const scenarioDir = path.join(__dirname, 'scenarios', test.scenario);
         const idOpts = {
-            home: path.join(scenarioDir, 'id_home')
+            home: path.join(scenarioDir, 'id_home'),
+            network: 'uqregtest'
         };
         const dbOpts = { home: path.join(scenarioDir, 'db_home') };
         return Promise.all([BcoinID_1.makeBcoinID(idOpts), BcoinDB_1.makeBcoinDB(dbOpts)])
