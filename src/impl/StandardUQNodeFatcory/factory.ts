@@ -1,3 +1,11 @@
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
 import * as path from 'path'
 import { makeBcoinCEV, Options as CEVOpts } from '../Bcoin/BcoinCEV'
 import { fromHTTPRegistry } from '../Bcoin/BcoinCEV/providerNameResolvers/httpRegistry'

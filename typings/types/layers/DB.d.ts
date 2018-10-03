@@ -1,3 +1,11 @@
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
 import { Contract, ImprintingContract, OrchestrationContract, Payload, ProviderContract } from '../data/Contract';
 import { AbstractIdentity, IdAddress, Role } from '../data/Identity';
 import { UserContract } from './../data/Contract';
