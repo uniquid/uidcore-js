@@ -1,5 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
 const path = require("path");
 const BcoinID_1 = require("./../../../BcoinID");
 const sign_1 = require("./../sign");
@@ -11,7 +19,10 @@ describe('sign TX', () => {
         const unsignedRawTX = '010000000136c5a79de0dac41a7c1e9c4d5c833c7633ab540451443909a7d9f9bc758e60d8000000004847304402207fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a002207fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a001ffffffff0410270000000000001976a914f5ec6511ca44bab954bb1d6c97e55f5b7178941d88ac0000000000000000536a4c50000000004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000030750000000000001976a914f5ec6511ca44bab954bb1d6c97e55f5b7178941d88acf07e0e00000000001976a9140fc863841cf1ec7fcadf8364c33c32187c87d9da88ac00000000';
         const expected = '2164fa1d4257a353140c8b219bf0aa711943eef3d013a7b5be38e40bea34ff94'; // ( `0 - ${expected}` )
         const paths = ['0/0/0'].map(p => p.split('/'));
-        const id = await BcoinID_1.makeBcoinID({ home: path.join(__dirname, 'sign_home_test_1') });
+        const id = await BcoinID_1.makeBcoinID({
+            home: path.join(__dirname, 'sign_home_test_1'),
+            network: 'uqregtest'
+        });
         const result = sign_1.transactionSigner(id, unsignedRawTX, paths);
         expect(result.txid).toEqual(expected);
     });
@@ -22,7 +33,10 @@ describe('sign TX', () => {
         const unsignedRawTX = '0100000001eefaf2940cfcd15a8c18727a0f83ec44849318e329d62f3b84a6b186f72c0e3b000000004847304402207fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a002207fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a001ffffffff0410270000000000001976a914853711887a6279268212c2323e54c00d2c8f809688ac0000000000000000536a4c50000000004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000030750000000000001976a914853711887a6279268212c2323e54c00d2c8f809688acf07e0e00000000001976a9147638f2498957582602020dce44a6a8587be97f3988ac00000000';
         const expected = 'f45e14de75a77d2f825821d4b2078aca10f7dbf90ba1452d7f3fd7c3e2cdbc67'; // ( `0 - ${expected}` )
         const paths = ['0/0/0'].map(p => p.split('/'));
-        const id = await BcoinID_1.makeBcoinID({ home: path.join(__dirname, 'sign_home_test_2') });
+        const id = await BcoinID_1.makeBcoinID({
+            home: path.join(__dirname, 'sign_home_test_2'),
+            network: 'uqregtest'
+        });
         const result = sign_1.transactionSigner(id, unsignedRawTX, paths);
         expect(result.txid).toEqual(expected);
     });

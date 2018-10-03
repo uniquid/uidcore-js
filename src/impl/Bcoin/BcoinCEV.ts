@@ -1,4 +1,12 @@
-import { existsSync, mkdir } from 'fs'
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
+import { existsSync, mkdirSync } from 'fs'
 import * as path from 'path'
 import { ProviderNameResolver, startContractManager } from './BcoinCEV/CtrManager'
 import { Pool } from './BcoinCEV/Pool'
@@ -50,7 +58,7 @@ export interface Options {
  */
 export const makeBcoinCEV = (db: BcoinDB, id: BcoinID, options: Options): BcoinCEV => {
   if (!existsSync(options.home)) {
-    mkdir(options.home)
+    mkdirSync(options.home)
   }
   const poolPromise = Pool({
     dbFolder: path.join(options.home, 'chain.db'),

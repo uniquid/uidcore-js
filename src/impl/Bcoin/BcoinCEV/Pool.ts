@@ -1,19 +1,19 @@
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
 import { IdAddress } from '../../../types/data/Identity'
-import { BCTX } from './../../../../lib-esm/impl/Bcoin/BcoinCEV/Pool.d'
+// import { BCTX } from './../../../../lib-esm/impl/Bcoin/BcoinCEV/Pool.d'
 import { formatTx, TXObj } from './TX/parse'
 // tslint:disable-next-line:no-require-imports
-const Tx = require('bcoin/lib/primitives/tx')
+const Tx = require('lcoin/lib/primitives/tx')
 
 // tslint:disable-next-line:no-require-imports
-const bcoin = require('bcoin')
-bcoin.networks.uq = Object.assign({}, bcoin.networks.regtest, {
-  port: 19000,
-  addressPrefix: bcoin.networks.testnet.addressPrefix,
-  keyPrefix: Object.assign({}, bcoin.networks.testnet.keyPrefix, {
-    coinType: 0
-  })
-})
-bcoin.set('uq')
+const bcoin = require('lcoin')
 const BROADCAST_WAIT_BEFORE_RESPONSE = 3000
 const BROADCAST_TIMEOUT = 60000
 const WATCHADDRESS_WAIT_BEFORE_RESPONSE = 10000
@@ -36,6 +36,12 @@ export interface Options {
    * @memberof Options
    */
   dbFolder: string
+
+  /**
+   * the network to connect to
+   * @type {string}
+   * @memberof Options
+   */
   logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam'
 }
 /**
@@ -79,7 +85,12 @@ export const Pool = async (options: Options): Promise<BCPool> => {
     level: options.logLevel
   })
 
-  const chain = bcoin.chain({ logger: chainLogger, db: 'leveldb', location: options.dbFolder, spv: true })
+  const chain = bcoin.chain({
+    logger: chainLogger,
+    db: 'leveldb',
+    location: options.dbFolder,
+    spv: true
+  })
   const pool = new bcoin.pool({
     logger: poolLogger,
     seeds: options.seeds,

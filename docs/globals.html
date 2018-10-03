@@ -913,6 +913,64 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<div class="tsd-panel tsd-typography">
+			<h1 id="uniquid-js-library">Uniquid JS Library</h1>
+			<h2 id="requirements">Requirements</h2>
+			<ul>
+				<li>Node 8  </li>
+			</ul>
+			<h2 id="getting-started">Getting started</h2>
+			<p>install dependecy<br><code>npm i -S git+https://github.com/uniquid/uidcore-js.git</code>   </p>
+			<p>sample code:  </p>
+			<pre><code class="language-javascript"><span class="hljs-keyword">import</span> { standardUQNodeFactory } <span class="hljs-keyword">from</span> <span class="hljs-string">'@uniquid/uidcore/lib'</span>
+
+<span class="hljs-comment">// create some handlers for bitmask rpc over mqtt</span>
+<span class="hljs-keyword">const</span> RPC_METHOD_ECHO = <span class="hljs-number">34</span>
+<span class="hljs-keyword">const</span> rpcHandlers  = [
+ {
+   <span class="hljs-attr">m</span>: RPC_METHOD_ECHO,  <span class="hljs-comment">// the bit number associated to method</span>
+   h: <span class="hljs-function">(<span class="hljs-params">params <span class="hljs-regexp">/*string*/</span></span>) =&gt;</span> <span class="hljs-string">`ECHO: <span class="hljs-subst">${params}</span>`</span>  <span class="hljs-comment">// function to call when bitmask method is invoked</span>
+ }
+]
+
+<span class="hljs-comment">// Use standard UQ node factory to create an UQ Node:   </span>
+standardUQNodeFactory({
+  home, <span class="hljs-comment">// {string} path to the home folder for data persistence (folder must exist)</span>
+  mqttHost, <span class="hljs-comment">// {string} url of the mqtt broker host (e.g. tcp://192.168.0.108:1883)</span>
+  bcSeeds, <span class="hljs-comment">// {string[]} array of string ips </span>
+  registryUrl, <span class="hljs-comment">// {string} the url of the UQ registry (e.g. http://192.168.0.108:8080)</span>
+  requestTimeout, <span class="hljs-comment">// {number} millis to wait before an RPC request times out</span>
+  rpcHandlers, <span class="hljs-comment">// an array of handlers object</span>
+  nodenamePrefix: <span class="hljs-string">'My-Node-'</span>
+})
+.then(<span class="hljs-function"><span class="hljs-params">uq</span> =&gt;</span> {
+  <span class="hljs-comment">// as a User make a request to a Provider bound by a UQ contract</span>
+  uq.msgs.request(
+    userAddress, <span class="hljs-comment">// string : BC adrress of node user</span>
+    providerName, <span class="hljs-comment">// string : provider's unique name</span>
+    method, <span class="hljs-comment">// number : method number </span>
+    params <span class="hljs-comment">// string : serialized params for rpc</span>
+  ).then(
+    <span class="hljs-function"><span class="hljs-params">responseString</span> =&gt;</span> {
+      <span class="hljs-comment">// manage response</span>
+    },
+    error =&gt; {
+      <span class="hljs-comment">// manage error</span>
+    })
+
+}, 
+error =&gt; {
+  <span class="hljs-comment">// initialization error</span>
+})
+</code></pre>
+			<h3 id="litecoin-edition">litecoin edition</h3>
+			<pre><code><span class="hljs-attribute">home</span> = <span class="hljs-string">"./data"</span>;
+<span class="hljs-attribute">mqttHost</span> = <span class="hljs-string">"tcp://appliance4.uniquid.co:1883"</span>;
+<span class="hljs-attribute">bcSeeds</span> = [<span class="hljs-string">"testnet-seed.litecointools.com"</span>,<span class="hljs-string">"seed-b.litecoin.loshan.co.uk"</span>,<span class="hljs-string">"dnsseed-testnet.thrasher.io"</span>];
+<span class="hljs-attribute">registryUrl</span> = <span class="hljs-string">"http://appliance4.uniquid.co:8080"</span>;
+<span class="hljs-attribute">requestTimeout</span> = 10000;
+<span class="hljs-attribute">nodenamePrefix</span> = <span class="hljs-string">'MY-TANK-JS'</span>;</code></pre>
+		</div>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
 			<section class="tsd-panel tsd-index-panel">
@@ -940,6 +998,11 @@ img { max-width: 100%; }
 							<li class="tsd-kind-external-module"><a href="modules/_impl_rpc_bitmaskbcoin_payloaddef_.html" class="tsd-kind-icon">"impl/RPC/<wbr>Bitmask<wbr>Bcoin/<wbr>Payload<wbr>Def"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_impl_rpc_bitmaskbcoin_rpc_.html" class="tsd-kind-icon">"impl/RPC/<wbr>Bitmask<wbr>Bcoin/RPC"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_impl_rpc_bitmaskbcoin_types_.html" class="tsd-kind-icon">"impl/RPC/<wbr>Bitmask<wbr>Bcoin/types"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_impl_standarduqnodefatcory_factory_.html" class="tsd-kind-icon">"impl/<wbr>StandardUQNode<wbr>Fatcory/factory"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_impl_standarduqnodefatcory_message_.html" class="tsd-kind-icon">"impl/<wbr>StandardUQNode<wbr>Fatcory/message"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_impl_standarduqnodefatcory_message_defs_.html" class="tsd-kind-icon">"impl/<wbr>StandardUQNode<wbr>Fatcory/message/<wbr>Defs"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_impl_standarduqnodefatcory_nodename_.html" class="tsd-kind-icon">"impl/<wbr>StandardUQNode<wbr>Fatcory/nodename"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_index_.html" class="tsd-kind-icon">"index"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_types_data_contract_.html" class="tsd-kind-icon">"types/data/<wbr>Contract"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_types_data_identity_.html" class="tsd-kind-icon">"types/data/<wbr>Identity"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_types_layers_contractexchangevalidator_.html" class="tsd-kind-icon">"types/layers/<wbr>Contract<wbr>Exchange<wbr>Validator"</a></li>

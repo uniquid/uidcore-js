@@ -9,7 +9,7 @@ const Identity_1 = require("./../../../../types/data/Identity");
  * @param {BCTX[]} rawBcoinTxs
  */
 exports.getRoleContracts = (identities, rawBcoinTxs) => rawBcoinTxs.filter(exports.isContractTX()).reduce((contracts, tx) => {
-    const identity = identities.find(id => id.address === exports.getProviderAddress(tx) || id.address === exports.getUserAddress(tx));
+    const identity = identities.find(id => id.address === (id.role === Identity_1.Role.Provider ? exports.getProviderAddress(tx) : exports.getUserAddress(tx)));
     if (identity) {
         const providerCtr = exports.convertToRoleContract(Object.assign({}, identity, { ext: identity.role === Identity_1.Role.Provider ? '1' : '0' }), tx);
         contracts.push(providerCtr);
@@ -119,7 +119,12 @@ exports.getRevokingAddresses = (revokingAddresses, rawBcoinTxs) => {
     const txInputAddresses = rawBcoinTxs
         .map(tx => tx.inputs.map(base58))
         .reduce((addresses, inputAddr) => addresses.concat(inputAddr), []);
-    return revokingAddresses.filter(revokingAddress => txInputAddresses.includes(revokingAddress));
+    const presentRevokingAddresses = revokingAddresses.filter(revokingAddress => txInputAddresses.includes(revokingAddress));
+    console.log('GET REVOKING:');
+    console.log('revokingAddresses:', revokingAddresses);
+    console.log('txInputAddresses:', txInputAddresses);
+    console.log('presentRevokingAddresses:', presentRevokingAddresses);
+    return presentRevokingAddresses;
 };
 exports.isContractTX = (orchestration = false) => (tx // tslint:disable-next-line:no-magic-numbers
 ) => 

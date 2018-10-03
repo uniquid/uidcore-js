@@ -1,4 +1,12 @@
-import { existsSync, mkdir } from 'fs'
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
+import { existsSync, mkdirSync } from 'fs'
 import * as path from 'path'
 import { IdAddress, Role } from '../../types/data/Identity'
 import {
@@ -35,7 +43,7 @@ export interface Options {
 export const makeBcoinDB = (options: Options): Promise<BcoinDB> =>
   new Promise((resolve, reject) => {
     if (!existsSync(options.home)) {
-      mkdir(options.home)
+      mkdirSync(options.home)
     }
 
     const db = new LokiConstructor(path.join(options.home, 'db.json'), {
@@ -78,7 +86,9 @@ export const makeBcoinDB = (options: Options): Promise<BcoinDB> =>
       const getLastProviderContractIdentity = () =>
         (((contracts.find({ 'identity.role': Role.Provider, 'identity.ext': '1' }) as ProviderContract[]).sort(
           (ctr1, ctr2) => ctr2.identity.index - ctr1.identity.index
-        )[0] as ProviderContract) || { identity: { role: Role.Provider, index: -1 } }).identity
+        )[0] as ProviderContract) || {
+          identity: { role: Role.Provider, index: -1 }
+        }).identity
 
       const getActiveRoleContracts = () =>
         contracts.find({
@@ -87,7 +97,11 @@ export const makeBcoinDB = (options: Options): Promise<BcoinDB> =>
         }) as Contract[]
 
       const revokeContract = (revoker: IdAddress) => {
-        const ctr = contracts.findOne({ revoked: null, revoker, orchestration: { $ne: true } }) as Contract
+        const ctr = contracts.findOne({
+          revoked: null,
+          revoker,
+          orchestration: { $ne: true }
+        }) as Contract
         ctr.revoked = new Date().valueOf()
         contracts.update(ctr)
       }
@@ -96,9 +110,16 @@ export const makeBcoinDB = (options: Options): Promise<BcoinDB> =>
         [contracts.findOne({ identity: absId }) as Contract].map(ctr => ctr.payload)[0]
 
       const getContractForExternalUser = (userAddr: IdAddress) =>
-        contracts.findOne({ 'identity.role': Role.Provider, contractor: userAddr, revoked: null }) as ProviderContract
+        contracts.findOne({
+          'identity.role': Role.Provider,
+          contractor: userAddr,
+          revoked: null
+        }) as ProviderContract
       const findContractsWithUnresolvedProviderNames = () =>
-        contracts.find({ 'identity.role': Role.User, providerName: null }) as UserContract[]
+        contracts.find({
+          'identity.role': Role.User,
+          providerName: null
+        }) as UserContract[]
       const setProviderName = (providerAddress: IdAddress, providerName: string) => {
         contracts.findAndUpdate(
           { 'identity.role': Role.User, contractor: providerAddress },

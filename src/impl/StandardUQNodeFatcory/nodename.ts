@@ -1,5 +1,13 @@
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
 import * as crypto from 'crypto'
-import * as fs from 'fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import * as path from 'path'
 export const NAME_LENGTH = 12
 export const generateUniqueName = (() => {
@@ -24,14 +32,17 @@ export interface Config {
   prefix?: string
 }
 export const getNodeName = (config: Config) => {
+  if (!existsSync(config.home)) {
+    mkdirSync(config.home)
+  }
   const nodenameFilePath = path.join(config.home, NODE_NAME_FILE)
-  const exists = fs.existsSync(nodenameFilePath)
+  const exists = existsSync(nodenameFilePath)
   let nodename: string
   if (exists) {
-    nodename = fs.readFileSync(nodenameFilePath, 'UTF8')
+    nodename = readFileSync(nodenameFilePath, 'UTF8')
   } else {
     nodename = generateUniqueName(config.prefix)
-    fs.writeFileSync(nodenameFilePath, nodename, { encoding: 'UTF8' })
+    writeFileSync(nodenameFilePath, nodename, { encoding: 'UTF8' })
   }
 
   return nodename

@@ -1,3 +1,11 @@
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
 import { Role } from '../../../types/data/Identity'
 import { ID } from '../../../types/layers/ID'
 import { HDPath, PublicKey } from '../BcoinID/HD'
@@ -37,4 +45,15 @@ export interface BcoinID extends ID {
    * @memberof BcoinID
    */
   getBaseXpub(): string
+
+  /**
+   * sign a message with Lite(Bit)Coni algorithm
+   * against the PK for abstractIdentity
+   *
+   * @param {string} message
+   * @param {BcoinAbstractIdentity<Role>} abstractIdentity
+   * @returns {Buffer}
+   * @memberof BcoinID
+   */
+  signMessage(message: string, abstractIdentity: BcoinAbstractIdentity<Role>): Buffer
 }

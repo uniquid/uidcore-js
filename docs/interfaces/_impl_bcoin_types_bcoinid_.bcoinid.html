@@ -930,6 +930,9 @@ img { max-width: 100%; }
 				<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
 					<a href="_impl_bcoin_types_bcoinid_.bcoinid.html#signfor" class="tsd-kind-icon">sign<wbr>For</a>
 				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-interface">
+					<a href="_impl_bcoin_types_bcoinid_.bcoinid.html#signmessage" class="tsd-kind-icon">sign<wbr>Message</a>
+				</li>
 			</ul>
 		</li>
 	</ul>
@@ -979,6 +982,7 @@ img { max-width: 100%; }
 							<li class="tsd-kind-method tsd-parent-kind-interface tsd-has-type-parameter tsd-is-inherited"><a href="_impl_bcoin_types_bcoinid_.bcoinid.html#identityfor" class="tsd-kind-icon">identity<wbr>For</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_impl_bcoin_types_bcoinid_.bcoinid.html#publickeyatpath" class="tsd-kind-icon">public<wbr>Key<wbr>AtPath</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite"><a href="_impl_bcoin_types_bcoinid_.bcoinid.html#signfor" class="tsd-kind-icon">sign<wbr>For</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_impl_bcoin_types_bcoinid_.bcoinid.html#signmessage" class="tsd-kind-icon">sign<wbr>Message</a></li>
 						</ul>
 					</section>
 				</div>
@@ -996,7 +1000,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uniquid/uidcore-js/blob/306e0a4/src/impl/Bcoin/types/BcoinID.ts#L39">impl/Bcoin/types/BcoinID.ts:39</a></li>
+								<li>Defined in <a href="https://github.com/uniquid/uidcore-js/blob/8bde35f/src/impl/Bcoin/types/BcoinID.ts#L47">impl/Bcoin/types/BcoinID.ts:47</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1024,7 +1028,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="_types_layers_id_.id.html">ID</a>.<a href="_types_layers_id_.id.html#getimprintingaddress">getImprintingAddress</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/uniquid/uidcore-js/blob/306e0a4/src/types/layers/ID.ts#L34">types/layers/ID.ts:34</a></li>
+								<li>Defined in <a href="https://github.com/uniquid/uidcore-js/blob/8bde35f/src/types/layers/ID.ts#L42">types/layers/ID.ts:42</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1052,7 +1056,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="_types_layers_id_.id.html">ID</a>.<a href="_types_layers_id_.id.html#getorchestrateaddress">getOrchestrateAddress</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/uniquid/uidcore-js/blob/306e0a4/src/types/layers/ID.ts#L41">types/layers/ID.ts:41</a></li>
+								<li>Defined in <a href="https://github.com/uniquid/uidcore-js/blob/8bde35f/src/types/layers/ID.ts#L49">types/layers/ID.ts:49</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1080,7 +1084,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="_types_layers_id_.id.html">ID</a>.<a href="_types_layers_id_.id.html#identityfor">identityFor</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/uniquid/uidcore-js/blob/306e0a4/src/types/layers/ID.ts#L27">types/layers/ID.ts:27</a></li>
+								<li>Defined in <a href="https://github.com/uniquid/uidcore-js/blob/8bde35f/src/types/layers/ID.ts#L35">types/layers/ID.ts:35</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1126,7 +1130,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uniquid/uidcore-js/blob/306e0a4/src/impl/Bcoin/types/BcoinID.ts#L32">impl/Bcoin/types/BcoinID.ts:32</a></li>
+								<li>Defined in <a href="https://github.com/uniquid/uidcore-js/blob/8bde35f/src/impl/Bcoin/types/BcoinID.ts#L40">impl/Bcoin/types/BcoinID.ts:40</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1153,14 +1157,14 @@ img { max-width: 100%; }
 				<a name="signfor" class="tsd-anchor"></a>
 				<h3>sign<wbr>For</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
-					<li class="tsd-signature tsd-kind-icon">sign<wbr>For<span class="tsd-signature-symbol">(</span>abstrId<span class="tsd-signature-symbol">: </span><a href="_impl_bcoin_types_data_bcoinidentity_.bcoinabstractidentity.html" class="tsd-signature-type">BcoinAbstractIdentity</a><span class="tsd-signature-symbol">&lt;</span><a href="../enums/_types_data_identity_.role.html" class="tsd-signature-type">Role</a><span class="tsd-signature-symbol">&gt;</span>, bytes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span>, der<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span></li>
+					<li class="tsd-signature tsd-kind-icon">sign<wbr>For<span class="tsd-signature-symbol">(</span>abstrId<span class="tsd-signature-symbol">: </span><a href="_impl_bcoin_types_data_bcoinidentity_.bcoinabstractidentity.html" class="tsd-signature-type">BcoinAbstractIdentity</a><span class="tsd-signature-symbol">&lt;</span><a href="../enums/_types_data_identity_.role.html" class="tsd-signature-type">Role</a><span class="tsd-signature-symbol">&gt;</span>, bytes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span>, der<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Overrides <a href="_types_layers_id_.id.html">ID</a>.<a href="_types_layers_id_.id.html#signfor">signFor</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/uniquid/uidcore-js/blob/306e0a4/src/impl/Bcoin/types/BcoinID.ts#L24">impl/Bcoin/types/BcoinID.ts:24</a></li>
+								<li>Defined in <a href="https://github.com/uniquid/uidcore-js/blob/8bde35f/src/impl/Bcoin/types/BcoinID.ts#L32">impl/Bcoin/types/BcoinID.ts:32</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1183,7 +1187,44 @@ img { max-width: 100%; }
 								<h5>bytes: <span class="tsd-signature-type">Buffer</span></h5>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> der: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> der: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Buffer</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+				<a name="signmessage" class="tsd-anchor"></a>
+				<h3>sign<wbr>Message</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+					<li class="tsd-signature tsd-kind-icon">sign<wbr>Message<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, abstractIdentity<span class="tsd-signature-symbol">: </span><a href="_impl_bcoin_types_data_bcoinidentity_.bcoinabstractidentity.html" class="tsd-signature-type">BcoinAbstractIdentity</a><span class="tsd-signature-symbol">&lt;</span><a href="../enums/_types_data_identity_.role.html" class="tsd-signature-type">Role</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/uniquid/uidcore-js/blob/8bde35f/src/impl/Bcoin/types/BcoinID.ts#L58">impl/Bcoin/types/BcoinID.ts:58</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>sign a message with Lite(Bit)Coni algorithm
+								against the PK for abstractIdentity</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>memberof</dt>
+								<dd><p>BcoinID</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>message: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>abstractIdentity: <a href="_impl_bcoin_types_data_bcoinidentity_.bcoinabstractidentity.html" class="tsd-signature-type">BcoinAbstractIdentity</a><span class="tsd-signature-symbol">&lt;</span><a href="../enums/_types_data_identity_.role.html" class="tsd-signature-type">Role</a><span class="tsd-signature-symbol">&gt;</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Buffer</span></h4>

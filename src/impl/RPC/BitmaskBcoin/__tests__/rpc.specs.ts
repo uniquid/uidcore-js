@@ -1,9 +1,17 @@
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
 import * as path from 'path'
 import { transactionSigner } from '../../../Bcoin/BcoinCEV/TX/sign'
 import { HDPath } from '../../../Bcoin/BcoinID/HD'
 import { makeRPC } from '../RPC'
 import { makeBcoinDB } from './../../../Bcoin/BcoinDB'
-import { makeBcoinID } from './../../../Bcoin/BcoinID'
+import { makeBcoinID, Options as IDOptions } from './../../../Bcoin/BcoinID'
 import { BcoinCEV } from './../../../Bcoin/types/BcoinCEV'
 import tests from './tests'
 describe('RPC', () => {
@@ -14,8 +22,9 @@ describe('RPC', () => {
         method: ${test.request.body.method}
         sender: ${test.request.sender}`, () => {
       const scenarioDir = path.join(__dirname, 'scenarios', test.scenario)
-      const idOpts = {
-        home: path.join(scenarioDir, 'id_home')
+      const idOpts: IDOptions = {
+        home: path.join(scenarioDir, 'id_home'),
+        network: 'uqregtest'
       }
       const dbOpts = { home: path.join(scenarioDir, 'db_home') }
 

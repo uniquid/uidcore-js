@@ -1,3 +1,11 @@
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
 import { IdAddress } from '../../../types/data/Identity'
 import { Contract, ImprintingContract, UserContract } from './../../../types/data/Contract'
 import { BCPool } from './../BcoinCEV/Pool'
@@ -22,7 +30,10 @@ const loopRoleContractWatch = async (
     .map(lastIdentity => {
       const identities = []
       for (let offset = 1; offset <= watchahead; offset++) {
-        const waIdentity = id.identityFor({ ...lastIdentity, index: lastIdentity.index + offset })
+        const waIdentity = id.identityFor({
+          ...lastIdentity,
+          index: lastIdentity.index + offset
+        })
         identities.push(waIdentity)
       }
 

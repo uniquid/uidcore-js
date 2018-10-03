@@ -1,5 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
 const path = require("path");
 const sign_1 = require("../../../Bcoin/BcoinCEV/TX/sign");
 const RPC_1 = require("../RPC");
@@ -14,7 +22,8 @@ describe('RPC', () => {
         sender: ${test.request.sender}`, () => {
         const scenarioDir = path.join(__dirname, 'scenarios', test.scenario);
         const idOpts = {
-            home: path.join(scenarioDir, 'id_home')
+            home: path.join(scenarioDir, 'id_home'),
+            network: 'uqregtest'
         };
         const dbOpts = { home: path.join(scenarioDir, 'db_home') };
         return Promise.all([BcoinID_1.makeBcoinID(idOpts), BcoinDB_1.makeBcoinDB(dbOpts)])

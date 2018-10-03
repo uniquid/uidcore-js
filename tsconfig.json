@@ -4,27 +4,19 @@
     "module": "commonjs",
     "target": "es5",
     "lib": [
-      // "dom",
-      "es2015",
-      "es2016",
-      "es2017"
+      "es2018"
     ],
-    // "types": ["node"],
     "strict": true,
     "strictNullChecks": true,
     "allowSyntheticDefaultImports": true,
-    // "suppressImplicitAnyIndexErrors": true,
     "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": true,
     "pretty": true,
     "noImplicitAny": true,
-    // "jsx": "react",
-    // change this to any hyperscript like function that you're using
-    // "jsxFactory": "React.createElement",
     "sourceMap": true,
     "outDir": "lib",
     "declaration": true,
-    // "declarationDir": "typings",
+    "declarationDir": "typings",
     "baseUrl": "src",
     "stripInternal": true
   },
