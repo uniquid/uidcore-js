@@ -1,5 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
 const fs_1 = require("fs");
 const path = require("path");
 const CtrManager_1 = require("./BcoinCEV/CtrManager");
@@ -14,7 +22,7 @@ const sign_1 = require("./BcoinCEV/TX/sign");
  */
 exports.makeBcoinCEV = (db, id, options) => {
     if (!fs_1.existsSync(options.home)) {
-        fs_1.mkdir(options.home);
+        fs_1.mkdirSync(options.home);
     }
     const poolPromise = Pool_1.Pool({
         dbFolder: path.join(options.home, 'chain.db'),

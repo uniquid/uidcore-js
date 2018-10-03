@@ -1,5 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
 const path = require("path");
 const BcoinCEV_1 = require("../Bcoin/BcoinCEV");
 const httpRegistry_1 = require("../Bcoin/BcoinCEV/providerNameResolvers/httpRegistry");
@@ -10,11 +18,11 @@ const message_1 = require("./message");
 const nodename_1 = require("./nodename");
 exports.DEFAULT_ANNOUNCE_TOPIC = 'UIDLitecoin/announce';
 exports.DEFAULT_RPC_TIMEOUT = 10000;
-exports.standardUQNodeFactory = ({ home, mqttHost, bcSeeds, rpcHandlers, registryUrl, requestTimeout = exports.DEFAULT_RPC_TIMEOUT, announceTopic = exports.DEFAULT_ANNOUNCE_TOPIC, nodenamePrefix = '' }) => {
+exports.standardUQNodeFactory = ({ home, mqttHost, bcSeeds, rpcHandlers, registryUrl, requestTimeout = exports.DEFAULT_RPC_TIMEOUT, announceTopic = exports.DEFAULT_ANNOUNCE_TOPIC, nodenamePrefix = '', network }) => {
     console.log(mqttHost, announceTopic, bcSeeds, registryUrl);
     const dbOpts = { home: path.join(home, 'DB') };
     const dbProm = BcoinDB_1.makeBcoinDB(dbOpts);
-    const idOpts = { home: path.join(home, 'ID') };
+    const idOpts = { home: path.join(home, 'ID'), network };
     const idProm = BcoinID_1.makeBcoinID(idOpts);
     return Promise.all([dbProm, idProm]).then(([db, id]) => {
         const cevOpts = {
@@ -24,13 +32,26 @@ exports.standardUQNodeFactory = ({ home, mqttHost, bcSeeds, rpcHandlers, registr
             watchahead: 10,
             providerNameResolver: httpRegistry_1.fromHTTPRegistry(registryUrl)
         };
-        const nodenameOpts = { home: path.join(home, 'NODENAME'), prefix: nodenamePrefix };
+        const nodenameOpts = {
+            home: path.join(home, 'NODENAME'),
+            prefix: nodenamePrefix
+        };
         const nodename = nodename_1.getNodeName(nodenameOpts);
-        const announceMessage = { topic: announceTopic, data: { name: nodename, xpub: id.getBaseXpub() } };
+        const announceMessage = {
+            topic: announceTopic,
+            data: { name: nodename, xpub: id.getBaseXpub() }
+        };
         const cev = BcoinCEV_1.makeBcoinCEV(db, id, cevOpts);
         const rpc = RPC_1.makeRPC(cev, db, id);
         const { identityFor } = id;
-        const msgs = message_1.messages({ identityFor, announceMessage, mqttHost, rpc, rpcHandlers, requestTimeout });
+        const msgs = message_1.messages({
+            identityFor,
+            announceMessage,
+            mqttHost,
+            rpc,
+            rpcHandlers,
+            requestTimeout
+        });
         return {
             msgs,
             cev,

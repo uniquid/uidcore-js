@@ -1,3 +1,11 @@
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
 import * as path from 'path'
 import { makeBcoinCEV, Options as CEVOpts } from '../Bcoin/BcoinCEV'
 import { fromHTTPRegistry } from '../Bcoin/BcoinCEV/providerNameResolvers/httpRegistry'
@@ -57,13 +65,26 @@ export const standardUQNodeFactory = ({
       watchahead: 10,
       providerNameResolver: fromHTTPRegistry(registryUrl)
     }
-    const nodenameOpts = { home: path.join(home, 'NODENAME'), prefix: nodenamePrefix }
+    const nodenameOpts = {
+      home: path.join(home, 'NODENAME'),
+      prefix: nodenamePrefix
+    }
     const nodename = getNodeName(nodenameOpts)
-    const announceMessage = { topic: announceTopic, data: { name: nodename, xpub: id.getBaseXpub() } }
+    const announceMessage = {
+      topic: announceTopic,
+      data: { name: nodename, xpub: id.getBaseXpub() }
+    }
     const cev = makeBcoinCEV(db, id, cevOpts)
     const rpc = makeRPC(cev, db, id)
     const { identityFor } = id
-    const msgs: Messages = messages({ identityFor, announceMessage, mqttHost, rpc, rpcHandlers, requestTimeout })
+    const msgs: Messages = messages({
+      identityFor,
+      announceMessage,
+      mqttHost,
+      rpc,
+      rpcHandlers,
+      requestTimeout
+    })
 
     return {
       msgs,

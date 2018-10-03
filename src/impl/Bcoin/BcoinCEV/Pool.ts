@@ -1,3 +1,11 @@
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
 import { IdAddress } from '../../../types/data/Identity'
 // import { BCTX } from './../../../../lib-esm/impl/Bcoin/BcoinCEV/Pool.d'
 import { formatTx, TXObj } from './TX/parse'
@@ -77,7 +85,12 @@ export const Pool = async (options: Options): Promise<BCPool> => {
     level: options.logLevel
   })
 
-  const chain = bcoin.chain({ logger: chainLogger, db: 'leveldb', location: options.dbFolder, spv: true })
+  const chain = bcoin.chain({
+    logger: chainLogger,
+    db: 'leveldb',
+    location: options.dbFolder,
+    spv: true
+  })
   const pool = new bcoin.pool({
     logger: poolLogger,
     seeds: options.seeds,

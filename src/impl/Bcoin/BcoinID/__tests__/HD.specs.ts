@@ -1,3 +1,11 @@
+/**!
+ *
+ * Copyright 2016-2018 Uniquid Inc. or its affiliates. All Rights Reserved.
+ *
+ * License is in the "LICENSE" file accompanying this file.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
 import { Role } from '../../../../types/data/Identity'
 
 import { identityFor, signFor } from '../HD'
@@ -16,12 +24,20 @@ describe('HD keys derivation', () => {
   // })
   it('derive ProviderIdentity', () => {
     // m/44'/0'/0/0/1/5
-    const identity = identityFor(masterPrivKey)({ role: Role.Provider, index: 5, ext: '1' })
+    const identity = identityFor(masterPrivKey)({
+      role: Role.Provider,
+      index: 5,
+      ext: '1'
+    })
     expect(identity.address).toBe('n26AHAeWe9NxTFmZ7DuDtCaBNMzfcKzPRA')
   })
   it('derive UserIdentity', () => {
     // m/44'/0'/0/1/0/5
-    const identity = identityFor(masterPrivKey)({ role: Role.User, index: 5, ext: '0' })
+    const identity = identityFor(masterPrivKey)({
+      role: Role.User,
+      index: 5,
+      ext: '0'
+    })
     expect(identity.address).toBe('mqQt5iKft7ZNuTfdCVMxwuzc2RK9DwcyFz')
   })
   it('signs hash for an AbstractIdentity', () => {
