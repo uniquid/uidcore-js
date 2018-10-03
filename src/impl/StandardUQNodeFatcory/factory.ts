@@ -28,6 +28,7 @@ export interface Config {
   requestTimeout?: number
   announceTopic?: string
   nodenamePrefix?: string
+  bcLogLevel: CEVOpts['logLevel']
   network: IDOptions['network']
 }
 export interface StdUQNode {
@@ -48,7 +49,8 @@ export const standardUQNodeFactory = ({
   requestTimeout = DEFAULT_RPC_TIMEOUT,
   announceTopic = DEFAULT_ANNOUNCE_TOPIC,
   nodenamePrefix = '',
-  network
+  network,
+  bcLogLevel = 'info'
 }: Config): Promise<StdUQNode> => {
   console.log(mqttHost, announceTopic, bcSeeds, registryUrl)
   const dbOpts = { home: path.join(home, 'DB') }
@@ -60,7 +62,7 @@ export const standardUQNodeFactory = ({
   return Promise.all([dbProm, idProm]).then(([db, id]) => {
     const cevOpts: CEVOpts = {
       home: path.join(home, 'CEV'),
-      logLevel: 'debug',
+      logLevel: bcLogLevel,
       seeds: bcSeeds,
       watchahead: 10,
       providerNameResolver: fromHTTPRegistry(registryUrl)

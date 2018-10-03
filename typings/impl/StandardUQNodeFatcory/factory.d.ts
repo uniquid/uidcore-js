@@ -1,3 +1,4 @@
+import { Options as CEVOpts } from '../Bcoin/BcoinCEV';
 import { Options as IDOptions } from '../Bcoin/BcoinID';
 import { BcoinCEV } from '../Bcoin/types/BcoinCEV';
 import { BcoinDB } from '../Bcoin/types/BcoinDB';
@@ -13,6 +14,7 @@ export interface Config {
     requestTimeout?: number;
     announceTopic?: string;
     nodenamePrefix?: string;
+    bcLogLevel: CEVOpts['logLevel'];
     network: IDOptions['network'];
 }
 export interface StdUQNode {
@@ -24,4 +26,4 @@ export interface StdUQNode {
 }
 export declare const DEFAULT_ANNOUNCE_TOPIC = "UIDLitecoin/announce";
 export declare const DEFAULT_RPC_TIMEOUT = 10000;
-export declare const standardUQNodeFactory: ({ home, mqttHost, bcSeeds, rpcHandlers, registryUrl, requestTimeout, announceTopic, nodenamePrefix, network }: Config) => Promise<StdUQNode>;
+export declare const standardUQNodeFactory: ({ home, mqttHost, bcSeeds, rpcHandlers, registryUrl, requestTimeout, announceTopic, nodenamePrefix, network, bcLogLevel }: Config) => Promise<StdUQNode>;
