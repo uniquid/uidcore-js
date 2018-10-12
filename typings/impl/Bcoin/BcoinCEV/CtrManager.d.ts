@@ -25,4 +25,4 @@ export declare type ProviderNameResolver = (providerAddress: IdAddress) => Promi
  * @param {number} watchahead how many {@link IdAddress} to watch ahead the latest BIP32 index on user and provider {@link Contract}
  * @param {ProviderNameResolver} providerNameResolver
  */
-export declare const startContractManager: (db: BcoinDB, id: BcoinID, pool: BCPool, watchahead: number, providerNameResolver: ProviderNameResolver) => Promise<void>;
+export declare const startContractManager: (db: BcoinDB, id: BcoinID, pool: BCPool, watchahead: number, providerNameResolver: ProviderNameResolver, logger: any) => Promise<void>;

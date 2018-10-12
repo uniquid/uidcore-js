@@ -34,6 +34,12 @@ export interface Options {
      */
     providerNameResolver: ProviderNameResolver;
     logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam';
+    /**
+     * the bcoin logger
+     * @type {string}
+     * @memberof Options
+     */
+    logger: any;
 }
 /**
  * constructs a {@link BcoinCEV}
