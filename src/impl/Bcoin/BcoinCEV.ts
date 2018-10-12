@@ -15,6 +15,8 @@ import { HDPath } from './BcoinID/HD'
 import { BcoinCEV } from './types/BcoinCEV'
 import { BcoinDB } from './types/BcoinDB'
 import { BcoinID } from './types/BcoinID'
+// tslint:disable-next-line:no-require-imports
+const bcoin = require('lcoin')
 
 /**
  * Options for constructing a {@link BcoinCEV}
@@ -56,22 +58,27 @@ export interface Options {
  * @param {Options} options Options
  * @returns {BcoinCEV}
  */
-export const makeBcoinCEV = (db: BcoinDB, id: BcoinID, options: Options): BcoinCEV => {
+export const makeBcoinCEV = async (db: BcoinDB, id: BcoinID, options: Options): Promise<BcoinCEV> => {
   if (!existsSync(options.home)) {
     mkdirSync(options.home)
   }
-  const poolPromise = Pool({
+  const logger = new bcoin.logger({
+    level: options.logLevel,
+    filename: path.join(options.home, 'log')
+  })
+  await logger.open()
+
+  const pool = await Pool({
     dbFolder: path.join(options.home, 'chain.db'),
-    logLevel: options.logLevel,
+    logger,
     seeds: options.seeds
   })
-  poolPromise
-    .then(pool => startContractManager(db, id, pool, options.watchahead, options.providerNameResolver))
-    .catch(err => console.log('makeBcoinCEV ERROR', err))
-  const signRawTransaction = (txString: string, paths: HDPath[]) => {
+  await startContractManager(db, id, pool, options.watchahead, options.providerNameResolver)
+  const signRawTransaction = async (txString: string, paths: HDPath[]) => {
     const { signedTxObj, txid } = transactionSigner(id, txString, paths)
+    await pool.broadcast(txid, signedTxObj)
 
-    return poolPromise.then(pool => pool.broadcast(txid, signedTxObj)).then(() => txid)
+    return txid
   }
 
   return {

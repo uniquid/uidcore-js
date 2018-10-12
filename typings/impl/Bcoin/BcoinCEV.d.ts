@@ -42,4 +42,4 @@ export interface Options {
  * @param {Options} options Options
  * @returns {BcoinCEV}
  */
-export declare const makeBcoinCEV: (db: BcoinDB, id: BcoinID, options: Options) => BcoinCEV;
+export declare const makeBcoinCEV: (db: BcoinDB, id: BcoinID, options: Options) => Promise<BcoinCEV>;

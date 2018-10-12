@@ -28,11 +28,11 @@ export interface Options {
      */
     dbFolder: string;
     /**
-     * the network to connect to
+     * the bcoin loggers
      * @type {string}
      * @memberof Options
      */
-    logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam';
+    logger: any;
 }
 /**
  * A Bcoin Pool wrapper for UQ {@link BcoinCEV} it handles Bitcoin Network net communication and exposes UQ related necessary functions
