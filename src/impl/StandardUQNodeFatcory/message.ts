@@ -21,6 +21,7 @@ export interface Config {
   rpcHandlers: RPCHandler[]
   requestTimeout: number
   identityFor: ID['identityFor']
+  logger: any
 }
 export type MessagePublish = (msg: Msg.Message<string, any>) => Promise<void>
 export type MessageRequest = (
@@ -40,7 +41,7 @@ const bufStrToObj = (messageBuf: Buffer) => {
     return null
   }
 }
-export const messages = ({ announceMessage, mqttHost, rpc, rpcHandlers, requestTimeout }: Config) => {
+export const messages = ({ announceMessage, mqttHost, rpc, rpcHandlers, requestTimeout, logger }: Config) => {
   rpcHandlers.forEach(({ m, h }) => rpc.register(m, h))
   const client = mqtt.connect(mqttHost)
 
@@ -93,7 +94,7 @@ export const messages = ({ announceMessage, mqttHost, rpc, rpcHandlers, requestT
 
   client.on('connect', () => {
     client.subscribe(announceMessage.data.name)
-    publish(announceMessage).catch(err => console.error('Publish Announce Error:', err))
+    publish(announceMessage).catch(err => logger.error('Publish Announce Error:', err))
   })
 
   client.on('message', (topic: string, messageBuf) => {
@@ -103,7 +104,7 @@ export const messages = ({ announceMessage, mqttHost, rpc, rpcHandlers, requestT
       rpc
         .manageRequest(_request)
         .then(resp => publish({ topic: _request.sender, data: resp }))
-        .catch(err => console.error('Request Message Error:', err))
+        .catch(err => logger.error('Request Message Error:', err))
   })
 
   return { publish, request }

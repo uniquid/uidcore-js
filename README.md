@@ -1,13 +1,13 @@
-# Uniquid JS Library  
+# Uniquid JS Library
 
-## Requirements  
-- Node 8  
+## Requirements
+- Node 8
 
-## Getting started  
-install dependecy   
-`npm i -S git+https://github.com/uniquid/uidcore-js.git`   
+## Getting started
+install dependecy
+`npm i -S git+https://github.com/uniquid/uidcore-js.git`
 
-sample code:  
+sample code:
 
 ```javascript
 import { standardUQNodeFactory } from '@uniquid/uidcore/lib'
@@ -21,14 +21,16 @@ const rpcHandlers  = [
  }
 ]
 
-// Use standard UQ node factory to create an UQ Node:   
+// Use standard UQ node factory to create an UQ Node:
 standardUQNodeFactory({
   home, // {string} path to the home folder for data persistence (folder must exist)
   mqttHost, // {string} url of the mqtt broker host (e.g. tcp://192.168.0.108:1883)
-  bcSeeds, // {string[]} array of string ips 
+  bcSeeds, // {string[]} array of string ips
   registryUrl, // {string} the url of the UQ registry (e.g. http://192.168.0.108:8080)
   requestTimeout, // {number} millis to wait before an RPC request times out
   rpcHandlers, // an array of handlers object
+  bcLogLevel, // {string} log level for the underlying LCoin process can be "error" | "warning" | "info" | "debug" | "spam"
+  network, // {string} choose bc network "uqregtest" | "main" | "testnet"
   nodenamePrefix: 'My-Node-'
 })
 .then(uq => {
@@ -36,7 +38,7 @@ standardUQNodeFactory({
   uq.msgs.request(
     userAddress, // string : BC adrress of node user
     providerName, // string : provider's unique name
-    method, // number : method number 
+    method, // number : method number
     params // string : serialized params for rpc
   ).then(
     responseString => {
@@ -45,8 +47,8 @@ standardUQNodeFactory({
     error => {
       // manage error
     })
-    
-}, 
+
+},
 error => {
   // initialization error
 })

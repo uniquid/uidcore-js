@@ -48,6 +48,13 @@ export interface Options {
    */
   providerNameResolver: ProviderNameResolver
   logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam'
+
+  /**
+   * the bcoin logger
+   * @type {string}
+   * @memberof Options
+   */
+  logger: any
 }
 /**
  * constructs a {@link BcoinCEV}
@@ -56,22 +63,22 @@ export interface Options {
  * @param {Options} options Options
  * @returns {BcoinCEV}
  */
-export const makeBcoinCEV = (db: BcoinDB, id: BcoinID, options: Options): BcoinCEV => {
+export const makeBcoinCEV = async (db: BcoinDB, id: BcoinID, options: Options): Promise<BcoinCEV> => {
   if (!existsSync(options.home)) {
     mkdirSync(options.home)
   }
-  const poolPromise = Pool({
+
+  const pool = await Pool({
     dbFolder: path.join(options.home, 'chain.db'),
-    logLevel: options.logLevel,
+    logger: options.logger,
     seeds: options.seeds
   })
-  poolPromise
-    .then(pool => startContractManager(db, id, pool, options.watchahead, options.providerNameResolver))
-    .catch(err => console.log('makeBcoinCEV ERROR', err))
-  const signRawTransaction = (txString: string, paths: HDPath[]) => {
+  await startContractManager(db, id, pool, options.watchahead, options.providerNameResolver, options.logger)
+  const signRawTransaction = async (txString: string, paths: HDPath[]) => {
     const { signedTxObj, txid } = transactionSigner(id, txString, paths)
+    await pool.broadcast(txid, signedTxObj)
 
-    return poolPromise.then(pool => pool.broadcast(txid, signedTxObj)).then(() => txid)
+    return txid
   }
 
   return {
