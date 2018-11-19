@@ -10,6 +10,7 @@ import { existsSync, mkdirSync } from 'fs'
 import * as path from 'path'
 import { ProviderNameResolver, startContractManager } from './BcoinCEV/CtrManager'
 import { Pool } from './BcoinCEV/Pool'
+import { formatTx } from './BcoinCEV/TX/parse'
 import { transactionSigner } from './BcoinCEV/TX/sign'
 import { HDPath } from './BcoinID/HD'
 import { BcoinCEV } from './types/BcoinCEV'
@@ -75,10 +76,12 @@ export const makeBcoinCEV = async (db: BcoinDB, id: BcoinID, options: Options): 
   })
   await startContractManager(db, id, pool, options.watchahead, options.providerNameResolver, options.logger)
   const signRawTransaction = async (txString: string, paths: HDPath[]) => {
-    const { signedTxObj, txid } = transactionSigner(id, txString, paths)
-    await pool.broadcast(txid, signedTxObj)
+    const { signedTxObj } = transactionSigner(id, txString, paths)
 
-    return txid
+    return Buffer.from(formatTx(signedTxObj)).toString('hex')
+
+    // await pool.broadcast(txid, signedTxObj)
+    // return txid
   }
 
   return {
