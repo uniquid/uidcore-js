@@ -96,10 +96,18 @@
     }
   },
   "dependencies": {
+    "@types/md5-file": "4.0.0",
+    "@types/request": "2.48.1",
+    "cli-progress": "2.1.0",
+    "commander": "2.19.0",
+    "compressing": "1.3.1",
     "download": "7.1.0",
     "lcoin": "1.0.0-beta.15",
     "lokijs": "1.5.3",
+    "md5-file": "4.0.0",
     "mqtt": "2.18.0",
+    "request": "2.88.0",
+    "request-progress": "3.0.0",
     "simple-get": "2.7.0",
     "varuint-bitcoin": "1.1.0"
   },

@@ -1,0 +1,1 @@
+{"version":3,"file":"extractChainDB.js","sourceRoot":"","sources":["../../../../src/impl/Bcoin/node_facilities/extractChainDB.ts"],"names":[],"mappings":";;AAAA,8CAA8C;AAC9C,IAAM,WAAW,GAAG,OAAO,CAAC,aAAa,CAAC,CAAA;AAC1C,SAAgB,qBAAqB,CAAC,CAA6C;IACjF,OAAO,WAAW,CAAC,GAAG,CAAC,UAAU,CAAC,CAAC,CAAC,WAAW,EAAE,CAAC,CAAC,SAAS,CAAC,CAAA;AAC/D,CAAC;AAFD,sDAEC"}
