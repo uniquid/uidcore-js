@@ -96,6 +96,7 @@
     }
   },
   "dependencies": {
+    "@types/cli-progress": "1.8.0",
     "@types/md5-file": "4.0.0",
     "@types/request": "2.48.1",
     "cli-progress": "2.1.0",

@@ -1,24 +1,43 @@
+const HOST = 'http://35.180.120.244'
+
 const program = require('commander')
-const cliProgress = require('cli-progress');
-const downloadChainDb = require('../lib/impl/Bcoin/node_facilities/downloadChainDb')
-const checkMD5 = require('../lib/impl/Bcoin/node_facilities/checkMD5')
+const downloadBackup = require('../lib/impl/Bcoin/node_facilities/downloadBackup')
 const extractChainDB = require('../lib/impl/Bcoin/node_facilities/extractChainDB')
 
 program
-  .option('-n, --network', 'the LTC Network', /^(a|b)$/i, 'a')
-  .option('-b, --block', 'at block', Number)
-  .option('-s, --saveto', 'dest file')
-  //.parse(process.argv)
+  .command('download <testnet|regtest>')
+  .option('-b, --block <int>', 'at block')
+  .option('-t, --target <path>', 'target filename')
+  .description('download LTC headers backup')
+  .action(download);
 
-  program
-  .command('y')
-  .action(function () {
-    console.log('y',arguments)
+function download(network, opts) {
+  if(!['testnet','regtest'].includes(network)){
+    console.error(`invailid network argument: ${network}, it should be one of <testnet|regtest>`)
+    process.exit(1)
+  }
+  let blockNumber;
+  if('block' in opts){
+    blockNumber = parseInt(opts.block)
+    if(!blockNumber || `${blockNumber}` !== opts.block.replace(/^0*/,'')){
+      console.error(`invalid block option: ${opts.block}, it should be an integer > 0`)
+      process.exit(1)
+    }
+  }
+  console.log('download', network, blockNumber);
+  const reqs = downloadBackup.default({
+    blockNumber,
+    network,
+    host: HOST,
+    saveAs: opts.target
   })
+  .then(console.log,console.error)
+}
+program
+  .version('0.0.1')
+  .parse(process.argv)
+  .parseExpectedArgs(process.argv)
+  .allowUnknownOption(false)
 
-  program
-  .command('x')
-  .action(function () {
-    console.log('x',arguments)
-  })
+
 
