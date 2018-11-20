@@ -74,7 +74,9 @@ export const makeBcoinCEV = async (db: BcoinDB, id: BcoinID, options: Options): 
     logger: options.logger,
     seeds: options.seeds
   })
-  await startContractManager(db, id, pool, options.watchahead, options.providerNameResolver, options.logger)
+  startContractManager(db, id, pool, options.watchahead, options.providerNameResolver, options.logger).catch(e =>
+    options.logger.error(`startContractManager ERROR : ${e}`)
+  )
   const signRawTransaction = async (txString: string, paths: HDPath[]) => {
     const { signedTxObj } = transactionSigner(id, txString, paths)
 
