@@ -58,8 +58,11 @@ error => {
 ### ltc-backup CLI tool
 
 `ltc-backup` CLI tool will help you speed up development and UQ node startup time, downloading a LTC header's backup from UniquId's servers and injecting it for UniquId node usage.
+
 It will be available in any package that installs `@uniquid/uidcore`
+
 Perform it using `npx ltc-backup [options] [command]`
+
 Checkout helps in CLI
 
 ```
@@ -75,6 +78,7 @@ Starting up a blockchain node is a time-consuming task, the newly created node r
 For speeding up this task in test and development environment it is possible to inject a pre-populated DB into the node's home directory
 
 When Node start it is configured with a node home directory for node persistency
+
 the process structures the directory this way:
 ```
 <node_home>/
@@ -108,5 +112,3 @@ Previous backups are also present in http://35.180.120.244/{network_name}/db_{bl
 i.e. http://35.180.120.244/testnet/db_000700000.tar and http://35.180.120.244/testnet/db_000700000.tar_md5
 
 Feel free to navigate with your browser to http://35.180.120.244 and checkout contents
-
-
