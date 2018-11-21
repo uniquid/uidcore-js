@@ -10,32 +10,92 @@ import injectTarball from './injectTarball'
 program
   .command('download <testnet|regtest>')
   .option('-h, --host <url>', `download from host (efaults to ${DEFAULT_HOST})`)
-  .option('-b, --block <int>', 'at block')
+  .option('-b, --block <int>', 'at block (if exists ;) )')
   .option('-o, --output <file>', 'target output filename')
-  .description('download LTC headers backup')
+  .description(`downloads LTC headers backup tarball and corresponding md5 checksum`)
   .action(download)
+  .on('--help', function() {
+    console.log(`
+downloads LTC headers backup tarball and corresponding md5 checksum,
+checks downloaded tarball's md5 sum to match
+saves tarball and corresponding md5
+cleans up on error or md5 no match
+
+Note: if using --block option, you should choose a specific height backup present in referenced host.
+UniquId is not backupping at all and each Blockchain height ( feel free to browse @ ${DEFAULT_HOST} )
+
+Examples usage:
+
+# downloads latest testnet's headers and saves them in cwd
+$ ${program.name()} download testnet
+
+# downloads testnet's headers at block 40000
+$ ${program.name()} download testnet -b 40000
+
+# save files as /target/filename.tgz and /target/filename.tgz_md5
+$ ${program.name()} download testnet -b 40000 -o /target/filename
+`)
+  })
 
 program
   .command('inject <backup-file>')
   .option('-t, --target <dir>', 'target node home')
-  .description('injects a LTC headers backup tarball into a node home directory')
+  .description('extracts and injects a LTC headers backup tarball into a node home directory')
   .action(injectInNodeHome)
+  .on('--help', function() {
+    console.log(`
+Examples usage:
+
+# extract and inject path/to/chaindb/tarball.tgz headers DB in cwd
+$ ${program.name()} inject path/to/chaindb/tarball.tgz
+
+# extract and inject path/to/chaindb/tarball.tgz headers DB in path/to/node/home/dir
+$ ${program.name()} inject path/to/chaindb/tarball.tgz -t path/to/node/home/dir
+`)
+  })
 
 program
   .command('install <testnet|regtest>')
-  .option('-b, --block <int>', 'at block')
+  .option('-b, --block <int>', 'at block (if exists ;) )')
   .option('-o, --output <file>', 'target output filename')
   .option('-t, --target <dir>', 'target node home')
-  .option('-h, --host <url>', `download from host (efaults to ${DEFAULT_HOST})`)
-  .description('download and inject LTC headers backup into a node home directory')
+  .option('-h, --host <url>', `download from host (defaults to ${DEFAULT_HOST})`)
+  .description(`download and inject LTC headers backup into a node home directory`)
   .action((network, options) => {
     download(network, options).then(_ => injectInNodeHome(_.backupFile, options)).catch(exitError)
   })
+  .on('--help', function() {
+    console.log(`
+download and inject LTC headers backup into a node home directory
+it is foundamentally a sequence of <ltc-backup download> and <ltc-backup inject>
+options for the two commands apply here too
 
-program.command('*').action(cmd => {
-  exitError(`command <${cmd}> not implemented`)
+Note: if using --block option, you should choose a specific height backup present in referenced host.
+UniquId is not backupping at all and each Blockchain height ( feel free to browse @ ${DEFAULT_HOST} )
+
+Examples usage:
+
+# installs latest testnet's headers DB in cwd
+$ ${program.name()} inject path/to/chainbb/tarball.tgz
+
+# installs latest testnet's headers DB in path/to/node/home/dir
+$ ${program.name()} inject path/to/chainbb/tarball.tgz -t path/to/node/home/dir
+`)
+  })
+
+// program.on('command:*', function () {
+//   program.help()
+//   exitError(`Invalid command: ${program.args.join(' ')}\nSee --help for a list of available commands.`);
+// });
+
+program.action(() => program.help()).on('--help', function() {
+  console.log(`
+checkout commands help:
+$ ${program.name()} download --help
+$ ${program.name()} inject --help
+$ ${program.name()} install --help
+`)
 })
-
 function injectInNodeHome(tarball: string, opts: { target?: string }) {
   const target = typeof opts.target === 'string' ? String(opts.target) : '.'
   console.log(`Install ${tarball} in ${target}`)
