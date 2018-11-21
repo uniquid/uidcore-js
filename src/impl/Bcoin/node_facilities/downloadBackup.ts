@@ -3,9 +3,6 @@ import * as request from 'request'
 const progress = require('request-progress')
 import * as cliProgress from 'cli-progress'
 import { createWriteStream, unlink } from 'fs'
-import { readFile } from 'fs'
-import * as md5File from 'md5-file'
-import { promisify } from 'util'
 
 export default downloadBackup
 export function downloadBackup(_: { blockNumber: number | void; network: string; host: string; saveAs?: string }) {
@@ -16,12 +13,10 @@ export function downloadBackup(_: { blockNumber: number | void; network: string;
     baseSaveTo = `${baseSaveTo}.tgz`
   }
 
-  return dl(`${baseFileUrl}_md5`, `${baseSaveTo}_md5`).then(() => dl(baseFileUrl, `${baseSaveTo}`)).then(() =>
-    checkBackupFileMD5({
-      checksumFile: `${baseSaveTo}_md5`,
-      backupFile: baseSaveTo
-    })
-  )
+  return dl(`${baseFileUrl}_md5`, `${baseSaveTo}_md5`).then(() => dl(baseFileUrl, `${baseSaveTo}`)).then(() => ({
+    checksumFile: `${baseSaveTo}_md5`,
+    backupFile: baseSaveTo
+  }))
 }
 
 function dl(url: string, toFile: string) {
@@ -36,7 +31,7 @@ function dl(url: string, toFile: string) {
         if (response.statusCode !== 200) {
           progressBar.stop()
           dlReq.abort()
-          cleanupAndReject(response.statusCode)
+          cleanupAndReject(response.statusMessage)
         }
       })
       .on('request', function() {
@@ -77,16 +72,4 @@ export function getBackupFilename({ blockNumber, network }: { blockNumber: numbe
   }
 
   return dbFileUrl
-}
-
-export async function checkBackupFileMD5({ checksumFile, backupFile }: { checksumFile: string; backupFile: string }) {
-  const [md5, hash] = await Promise.all([promisify(readFile)(checksumFile, 'utf8'), promisify(md5File)(backupFile)])
-
-  if (md5.trim() !== hash.trim()) {
-    throw new Error(`
-MD5 checksum didn't match
-    ${md5.trim()} : [${checksumFile}]
-    ${hash.trim()} : [md5sum ${backupFile}]
-`)
-  }
 }

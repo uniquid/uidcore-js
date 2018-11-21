@@ -917,11 +917,12 @@ img { max-width: 100%; }
 			<h1 id="uniquid-js-library">Uniquid JS Library</h1>
 			<h2 id="requirements">Requirements</h2>
 			<ul>
-				<li>Node 8  </li>
+				<li>Node 8</li>
 			</ul>
 			<h2 id="getting-started">Getting started</h2>
-			<p>install dependecy<br><code>npm i -S git+https://github.com/uniquid/uidcore-js.git</code>   </p>
-			<p>sample code:  </p>
+			<p>install dependecy
+			<code>npm i -S git+https://github.com/uniquid/uidcore-js.git</code></p>
+			<p>sample code:</p>
 			<pre><code class="language-javascript"><span class="hljs-keyword">import</span> { standardUQNodeFactory } <span class="hljs-keyword">from</span> <span class="hljs-string">'@uniquid/uidcore/lib'</span>
 
 <span class="hljs-comment">// create some handlers for bitmask rpc over mqtt</span>
@@ -933,14 +934,16 @@ img { max-width: 100%; }
  }
 ]
 
-<span class="hljs-comment">// Use standard UQ node factory to create an UQ Node:   </span>
+<span class="hljs-comment">// Use standard UQ node factory to create an UQ Node:</span>
 standardUQNodeFactory({
   home, <span class="hljs-comment">// {string} path to the home folder for data persistence (folder must exist)</span>
   mqttHost, <span class="hljs-comment">// {string} url of the mqtt broker host (e.g. tcp://192.168.0.108:1883)</span>
-  bcSeeds, <span class="hljs-comment">// {string[]} array of string ips </span>
+  bcSeeds, <span class="hljs-comment">// {string[]} array of string ips</span>
   registryUrl, <span class="hljs-comment">// {string} the url of the UQ registry (e.g. http://192.168.0.108:8080)</span>
   requestTimeout, <span class="hljs-comment">// {number} millis to wait before an RPC request times out</span>
   rpcHandlers, <span class="hljs-comment">// an array of handlers object</span>
+  bcLogLevel, <span class="hljs-comment">// {string} log level for the underlying LCoin process can be "error" | "warning" | "info" | "debug" | "spam"</span>
+  network, <span class="hljs-comment">// {string} choose bc network "uqregtest" | "main" | "testnet"</span>
   nodenamePrefix: <span class="hljs-string">'My-Node-'</span>
 })
 .then(<span class="hljs-function"><span class="hljs-params">uq</span> =&gt;</span> {
@@ -948,7 +951,7 @@ standardUQNodeFactory({
   uq.msgs.request(
     userAddress, <span class="hljs-comment">// string : BC adrress of node user</span>
     providerName, <span class="hljs-comment">// string : provider's unique name</span>
-    method, <span class="hljs-comment">// number : method number </span>
+    method, <span class="hljs-comment">// number : method number</span>
     params <span class="hljs-comment">// string : serialized params for rpc</span>
   ).then(
     <span class="hljs-function"><span class="hljs-params">responseString</span> =&gt;</span> {
@@ -958,7 +961,7 @@ standardUQNodeFactory({
       <span class="hljs-comment">// manage error</span>
     })
 
-}, 
+},
 error =&gt; {
   <span class="hljs-comment">// initialization error</span>
 })
@@ -990,6 +993,9 @@ error =&gt; {
 							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_bcoindb_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/<wbr>BcoinDB"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_bcoinid_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/<wbr>BcoinID"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_bcoinid_hd_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/<wbr>BcoinID/HD"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_node_facilities_checkbackupfilemd5_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/node_<wbr>facilities/check<wbr>Backup<wbr>FileMD5"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_node_facilities_downloadbackup_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/node_<wbr>facilities/download<wbr>Backup"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_node_facilities_injecttarball_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/node_<wbr>facilities/inject<wbr>Tarball"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_types_bcoincev_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/types/<wbr>BcoinCEV"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_types_bcoindb_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/types/<wbr>BcoinDB"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_types_bcoinid_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/types/<wbr>BcoinID"</a></li>
