@@ -1,1 +1,0 @@
-{"version":3,"file":"installTarball.js","sourceRoot":"","sources":["../../../../src/impl/Bcoin/node_facilities/installTarball.ts"],"names":[],"mappings":";;AAAA,8CAA8C;AAC9C,IAAM,WAAW,GAAG,OAAO,CAAC,aAAa,CAAC,CAAA;AAE1C,kBAAe,cAAc,CAAA;AAC7B,SAAgB,cAAc,CAAC,CAA6C;IAC1E,OAAO,WAAW,CAAC,GAAG,CAAC,UAAU,CAAC,CAAC,CAAC,WAAW,EAAE,CAAC,CAAC,SAAS,CAAC,CAAA;AAC/D,CAAC;AAFD,wCAEC"}
