@@ -18,6 +18,8 @@ import { makeRPC } from '../RPC/BitmaskBcoin/RPC'
 import { RPCHandler } from '../RPC/BitmaskBcoin/types'
 import { messages, Messages } from './message'
 import { getNodeName } from './nodename'
+// tslint:disable-next-line:no-require-imports
+const bcoin = require('lcoin')
 
 export interface Config {
   home: string
@@ -40,7 +42,7 @@ export interface StdUQNode {
 }
 export const DEFAULT_ANNOUNCE_TOPIC = 'UIDLitecoin/announce'
 export const DEFAULT_RPC_TIMEOUT = 10000
-export const standardUQNodeFactory = ({
+export const standardUQNodeFactory = async ({
   home,
   mqttHost,
   bcSeeds,
@@ -52,20 +54,26 @@ export const standardUQNodeFactory = ({
   network,
   bcLogLevel = 'info'
 }: Config): Promise<StdUQNode> => {
-  console.log(mqttHost, announceTopic, bcSeeds, registryUrl)
+  const logger = new bcoin.logger({
+    level: bcLogLevel,
+    filename: path.join(home, 'log')
+  })
+  await logger.open()
+
   const dbOpts = { home: path.join(home, 'DB') }
   const dbProm: Promise<BcoinDB> = makeBcoinDB(dbOpts)
 
   const idOpts = { home: path.join(home, 'ID'), network }
   const idProm: Promise<BcoinID> = makeBcoinID(idOpts)
 
-  return Promise.all([dbProm, idProm]).then(([db, id]) => {
+  return Promise.all([dbProm, idProm]).then(async ([db, id]) => {
     const cevOpts: CEVOpts = {
       home: path.join(home, 'CEV'),
       logLevel: bcLogLevel,
       seeds: bcSeeds,
       watchahead: 10,
-      providerNameResolver: fromHTTPRegistry(registryUrl)
+      providerNameResolver: fromHTTPRegistry(registryUrl),
+      logger
     }
     const nodenameOpts = {
       home: path.join(home, 'NODENAME'),
@@ -76,7 +84,7 @@ export const standardUQNodeFactory = ({
       topic: announceTopic,
       data: { name: nodename, xpub: id.getBaseXpub() }
     }
-    const cev = makeBcoinCEV(db, id, cevOpts)
+    const cev = await makeBcoinCEV(db, id, cevOpts)
     const rpc = makeRPC(cev, db, id)
     const { identityFor } = id
     const msgs: Messages = messages({
@@ -85,7 +93,8 @@ export const standardUQNodeFactory = ({
       mqttHost,
       rpc,
       rpcHandlers,
-      requestTimeout
+      requestTimeout,
+      logger
     })
 
     return {

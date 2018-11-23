@@ -162,10 +162,6 @@ export const getRevokingAddresses = (revokingAddresses: IdAddress[], rawBcoinTxs
   const presentRevokingAddresses = revokingAddresses.filter(revokingAddress =>
     txInputAddresses.includes(revokingAddress)
   ) as IdAddress[]
-  console.log('GET REVOKING:')
-  console.log('revokingAddresses:', revokingAddresses)
-  console.log('txInputAddresses:', txInputAddresses)
-  console.log('presentRevokingAddresses:', presentRevokingAddresses)
 
   return presentRevokingAddresses
 }

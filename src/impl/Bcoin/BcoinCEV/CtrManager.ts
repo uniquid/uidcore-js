@@ -24,7 +24,8 @@ const loopRoleContractWatch = async (
   pool: BCPool,
   id: BcoinID,
   watchahead: number,
-  onContracts: OnContracts
+  onContracts: OnContracts,
+  logger: any
 ) => {
   const _nextWatchIdentities = [db.getLastProviderContractIdentity(), db.getLastUserContractIdentity()]
     .map(lastIdentity => {
@@ -45,33 +46,33 @@ const loopRoleContractWatch = async (
   const nextWatchAddresses = nextWatchIdentities.map(identity => identity.address)
 
   const watchingRevokingAddresses = db.getActiveRoleContracts().map(ctr => ctr.revoker)
-  console.log(`watchingRevokingAddresses: `, watchingRevokingAddresses.reduce((s, a, i) => `${s}\n${i} : ${a}`, ''))
-  console.log(`nextWatchAddresses: `, nextWatchAddresses.reduce((s, a, i) => `${s}\n${i} : ${a}`, ''))
+  logger.debug(`watchingRevokingAddresses: `, watchingRevokingAddresses.reduce((s, a, i) => `${s}\n${i} : ${a}`, ''))
+  logger.debug(`nextWatchAddresses: `, nextWatchAddresses.reduce((s, a, i) => `${s}\n${i} : ${a}`, ''))
   const txs = await pool.watchAddresses(nextWatchAddresses.concat(watchingRevokingAddresses))
   const newContracts = getRoleContracts(nextWatchIdentities, txs)
-  console.log(`\n++NEW Role Contracts: ${newContracts.length} `)
-  console.log(newContracts.reduce((s, c) => `${s}${c.identity.role}[${c.identity.index}] -> ${c.contractor}\n`, ''))
+  logger.info(`\n++NEW Role Contracts: ${newContracts.length} `)
+  logger.debug(newContracts.reduce((s, c) => `${s}${c.identity.role}[${c.identity.index}] -> ${c.contractor}\n`, ''))
   newContracts.forEach(db.storeCtr)
   const revokingAddresses = getRevokingAddresses(watchingRevokingAddresses, txs)
-  console.log(`\n--REVOKING Addresses: ${revokingAddresses.length}`)
-  console.log(revokingAddresses.reduce((s, a) => `${s}${a}\n`, ''))
+  logger.debug(`\n--REVOKING Addresses: ${revokingAddresses.length}`)
+  logger.debug(revokingAddresses.reduce((s, a) => `${s}${a}\n`, ''))
   revokingAddresses.forEach(db.revokeContract)
   onContracts(newContracts, revokingAddresses)
-  loopRoleContractWatch(db, pool, id, watchahead, onContracts).catch(err =>
-    console.error('loopRoleContractWatch ERROR:', err)
+  loopRoleContractWatch(db, pool, id, watchahead, onContracts, logger).catch(err =>
+    logger.error('loopRoleContractWatch ERROR:', err)
   )
 }
 
-const ensureImprinting = async (db: BcoinDB, id: BcoinID, pool: BCPool) => {
+const ensureImprinting = async (db: BcoinDB, id: BcoinID, pool: BCPool, logger: any) => {
   let shallBeImprintingContract = db.getImprinting()
   const imprintingAddress = id.getImprintingAddress()
-  console.log(
+  logger.info(
     `---------------------------------------------------------- IMPR (${imprintingAddress}) `,
     shallBeImprintingContract
   )
   while (!shallBeImprintingContract) {
     const txs = await pool.watchAddresses([imprintingAddress])
-    console.log(`---------------------------------------------------------- got IMPR ${imprintingAddress}`, txs)
+    logger.info(`---------------------------------------------------------- got IMPR ${imprintingAddress}`, txs)
     shallBeImprintingContract = convertToImprintingContract(imprintingAddress, txs)
     if (shallBeImprintingContract) {
       db.storeImprinting(shallBeImprintingContract)
@@ -81,18 +82,18 @@ const ensureImprinting = async (db: BcoinDB, id: BcoinID, pool: BCPool) => {
   return shallBeImprintingContract
 }
 
-const ensureOrchestration = (db: BcoinDB, id: BcoinID, pool: BCPool) => async (
+const ensureOrchestration = (db: BcoinDB, id: BcoinID, pool: BCPool, logger: any) => async (
   imprintingContract: ImprintingContract
 ) => {
   let shallBeOrchestrationContract = db.getOrchestration()
   const orchestrationAddress = id.getOrchestrateAddress()
   while (!shallBeOrchestrationContract) {
-    console.log(
+    logger.info(
       `---------------------------------------------------------- ORCH (${orchestrationAddress}) `,
       shallBeOrchestrationContract
     )
     const txs = await pool.watchAddresses([orchestrationAddress])
-    console.log(`---------------------------------------------------------- got ORCH ${orchestrationAddress}`, txs)
+    logger.info(`---------------------------------------------------------- got ORCH ${orchestrationAddress}`, txs)
     shallBeOrchestrationContract = convertToOrchestrationContract(imprintingContract, orchestrationAddress, txs)
     if (shallBeOrchestrationContract) {
       db.storeOrchestration(shallBeOrchestrationContract)
@@ -102,7 +103,7 @@ const ensureOrchestration = (db: BcoinDB, id: BcoinID, pool: BCPool) => async (
 
   return shallBeOrchestrationContract
 }
-const providerNameProcess = (db: BcoinDB, providerNameResolver: ProviderNameResolver) => {
+const providerNameProcess = (db: BcoinDB, providerNameResolver: ProviderNameResolver, logger: any) => {
   let contractsWithUnresolvedProviderNames: UserContract[] = []
   const trigger = () => {
     contractsWithUnresolvedProviderNames = db.findContractsWithUnresolvedProviderNames()
@@ -120,7 +121,7 @@ const providerNameProcess = (db: BcoinDB, providerNameResolver: ProviderNameReso
       providerNameResolver(providerAddress)
         .then(providerName => db.setProviderName(providerAddress, providerName))
         .catch(error => {
-          console.error(`ProviderNameResolver [${providerAddress}] Error`, error)
+          logger.error(`ProviderNameResolver [${providerAddress}] Error`, error)
           // tslint:disable-next-line:no-magic-numbers
           setTimeout(trigger, 10000)
         })
@@ -148,12 +149,13 @@ export const startContractManager = async (
   id: BcoinID,
   pool: BCPool,
   watchahead: number,
-  providerNameResolver: ProviderNameResolver
+  providerNameResolver: ProviderNameResolver,
+  logger: any
 ) =>
-  ensureImprinting(db, id, pool).then(ensureOrchestration(db, id, pool)).then(() => {
-    const { trigger } = providerNameProcess(db, providerNameResolver)
-    loopRoleContractWatch(db, pool, id, watchahead, trigger).catch(err =>
-      console.error('loopRoleContractWatch ERROR:', err)
+  ensureImprinting(db, id, pool, logger).then(ensureOrchestration(db, id, pool, logger)).then(() => {
+    const { trigger } = providerNameProcess(db, providerNameResolver, logger)
+    loopRoleContractWatch(db, pool, id, watchahead, trigger, logger).catch(err =>
+      logger.error('loopRoleContractWatch ERROR:', err)
     )
     trigger()
   })

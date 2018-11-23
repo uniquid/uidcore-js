@@ -34,6 +34,12 @@ export interface Options {
      */
     providerNameResolver: ProviderNameResolver;
     logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam';
+    /**
+     * the bcoin logger
+     * @type {string}
+     * @memberof Options
+     */
+    logger: any;
 }
 /**
  * constructs a {@link BcoinCEV}
@@ -42,4 +48,4 @@ export interface Options {
  * @param {Options} options Options
  * @returns {BcoinCEV}
  */
-export declare const makeBcoinCEV: (db: BcoinDB, id: BcoinID, options: Options) => BcoinCEV;
+export declare const makeBcoinCEV: (db: BcoinDB, id: BcoinID, options: Options) => Promise<BcoinCEV>;

@@ -10,6 +10,7 @@ import { existsSync, mkdirSync } from 'fs'
 import * as path from 'path'
 import { ProviderNameResolver, startContractManager } from './BcoinCEV/CtrManager'
 import { Pool } from './BcoinCEV/Pool'
+import { formatTx } from './BcoinCEV/TX/parse'
 import { transactionSigner } from './BcoinCEV/TX/sign'
 import { HDPath } from './BcoinID/HD'
 import { BcoinCEV } from './types/BcoinCEV'
@@ -48,6 +49,13 @@ export interface Options {
    */
   providerNameResolver: ProviderNameResolver
   logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam'
+
+  /**
+   * the bcoin logger
+   * @type {string}
+   * @memberof Options
+   */
+  logger: any
 }
 /**
  * constructs a {@link BcoinCEV}
@@ -56,22 +64,26 @@ export interface Options {
  * @param {Options} options Options
  * @returns {BcoinCEV}
  */
-export const makeBcoinCEV = (db: BcoinDB, id: BcoinID, options: Options): BcoinCEV => {
+export const makeBcoinCEV = async (db: BcoinDB, id: BcoinID, options: Options): Promise<BcoinCEV> => {
   if (!existsSync(options.home)) {
     mkdirSync(options.home)
   }
-  const poolPromise = Pool({
+
+  const pool = await Pool({
     dbFolder: path.join(options.home, 'chain.db'),
-    logLevel: options.logLevel,
+    logger: options.logger,
     seeds: options.seeds
   })
-  poolPromise
-    .then(pool => startContractManager(db, id, pool, options.watchahead, options.providerNameResolver))
-    .catch(err => console.log('makeBcoinCEV ERROR', err))
-  const signRawTransaction = (txString: string, paths: HDPath[]) => {
-    const { signedTxObj, txid } = transactionSigner(id, txString, paths)
+  startContractManager(db, id, pool, options.watchahead, options.providerNameResolver, options.logger).catch(e =>
+    options.logger.error(`startContractManager ERROR : ${e}`)
+  )
+  const signRawTransaction = async (txString: string, paths: HDPath[]) => {
+    const { signedTxObj } = transactionSigner(id, txString, paths)
 
-    return poolPromise.then(pool => pool.broadcast(txid, signedTxObj)).then(() => txid)
+    return Buffer.from(formatTx(signedTxObj)).toString('hex')
+
+    // await pool.broadcast(txid, signedTxObj)
+    // return txid
   }
 
   return {

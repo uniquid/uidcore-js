@@ -1,6 +1,6 @@
 {
   "name": "@uniquid/uidcore",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "Uniquid Core Js/Ts library",
   "main": "lib/index.js",
   "module": "lib/index.js",
@@ -49,6 +49,9 @@
     "release:preflight:package": "npm pack",
     "size": "shx echo \"Gzipped Size:\" && cross-var strip-json-comments --no-whitespace $npm_package_main | gzip-size"
   },
+  "bin": {
+    "ltc-backup": "./lib/impl/Bcoin/node_facilities/CLI.js"
+  },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
@@ -96,16 +99,28 @@
     }
   },
   "dependencies": {
+    "@types/cli-progress": "1.8.0",
+    "@types/md5-file": "4.0.0",
+    "@types/request": "2.48.1",
+    "cli-progress": "2.1.0",
+    "commander": "2.19.0",
+    "compressing": "1.3.1",
+    "download": "7.1.0",
     "lcoin": "1.0.0-beta.15",
     "lokijs": "1.5.3",
+    "md5-file": "4.0.0",
     "mqtt": "2.18.0",
+    "request": "2.88.0",
+    "request-progress": "3.0.0",
     "simple-get": "2.7.0",
     "varuint-bitcoin": "1.1.0"
   },
   "devDependencies": {
+    "@types/download": "6.2.2",
     "@types/jest": "20.0.2",
     "@types/lokijs": "1.5.2",
     "@types/node": "8",
+    "@types/tar-fs": "1.16.1",
     "awesome-typescript-loader": "3.2.1",
     "commitizen": "2.9.6",
     "cross-var": "1.0.3",

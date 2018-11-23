@@ -917,11 +917,12 @@ img { max-width: 100%; }
 			<h1 id="uniquid-js-library">Uniquid JS Library</h1>
 			<h2 id="requirements">Requirements</h2>
 			<ul>
-				<li>Node 8  </li>
+				<li>Node 8</li>
 			</ul>
 			<h2 id="getting-started">Getting started</h2>
-			<p>install dependecy<br><code>npm i -S git+https://github.com/uniquid/uidcore-js.git</code>   </p>
-			<p>sample code:  </p>
+			<p>install dependecy
+			<code>npm i -S git+https://github.com/uniquid/uidcore-js.git</code></p>
+			<p>sample code:</p>
 			<pre><code class="language-javascript"><span class="hljs-keyword">import</span> { standardUQNodeFactory } <span class="hljs-keyword">from</span> <span class="hljs-string">'@uniquid/uidcore/lib'</span>
 
 <span class="hljs-comment">// create some handlers for bitmask rpc over mqtt</span>
@@ -933,14 +934,16 @@ img { max-width: 100%; }
  }
 ]
 
-<span class="hljs-comment">// Use standard UQ node factory to create an UQ Node:   </span>
+<span class="hljs-comment">// Use standard UQ node factory to create an UQ Node:</span>
 standardUQNodeFactory({
   home, <span class="hljs-comment">// {string} path to the home folder for data persistence (folder must exist)</span>
   mqttHost, <span class="hljs-comment">// {string} url of the mqtt broker host (e.g. tcp://192.168.0.108:1883)</span>
-  bcSeeds, <span class="hljs-comment">// {string[]} array of string ips </span>
+  bcSeeds, <span class="hljs-comment">// {string[]} array of string ips</span>
   registryUrl, <span class="hljs-comment">// {string} the url of the UQ registry (e.g. http://192.168.0.108:8080)</span>
   requestTimeout, <span class="hljs-comment">// {number} millis to wait before an RPC request times out</span>
   rpcHandlers, <span class="hljs-comment">// an array of handlers object</span>
+  bcLogLevel, <span class="hljs-comment">// {string} log level for the underlying LCoin process can be "error" | "warning" | "info" | "debug" | "spam"</span>
+  network, <span class="hljs-comment">// {string} choose bc network "uqregtest" | "main" | "testnet"</span>
   nodenamePrefix: <span class="hljs-string">'My-Node-'</span>
 })
 .then(<span class="hljs-function"><span class="hljs-params">uq</span> =&gt;</span> {
@@ -948,7 +951,7 @@ standardUQNodeFactory({
   uq.msgs.request(
     userAddress, <span class="hljs-comment">// string : BC adrress of node user</span>
     providerName, <span class="hljs-comment">// string : provider's unique name</span>
-    method, <span class="hljs-comment">// number : method number </span>
+    method, <span class="hljs-comment">// number : method number</span>
     params <span class="hljs-comment">// string : serialized params for rpc</span>
   ).then(
     <span class="hljs-function"><span class="hljs-params">responseString</span> =&gt;</span> {
@@ -958,18 +961,42 @@ standardUQNodeFactory({
       <span class="hljs-comment">// manage error</span>
     })
 
-}, 
+},
 error =&gt; {
   <span class="hljs-comment">// initialization error</span>
 })
 </code></pre>
-			<h3 id="litecoin-edition">litecoin edition</h3>
-			<pre><code><span class="hljs-attribute">home</span> = <span class="hljs-string">"./data"</span>;
-<span class="hljs-attribute">mqttHost</span> = <span class="hljs-string">"tcp://appliance4.uniquid.co:1883"</span>;
-<span class="hljs-attribute">bcSeeds</span> = [<span class="hljs-string">"testnet-seed.litecointools.com"</span>,<span class="hljs-string">"seed-b.litecoin.loshan.co.uk"</span>,<span class="hljs-string">"dnsseed-testnet.thrasher.io"</span>];
-<span class="hljs-attribute">registryUrl</span> = <span class="hljs-string">"http://appliance4.uniquid.co:8080"</span>;
-<span class="hljs-attribute">requestTimeout</span> = 10000;
-<span class="hljs-attribute">nodenamePrefix</span> = <span class="hljs-string">'MY-TANK-JS'</span>;</code></pre>
+			<h3 id="ltc-backup-cli-tool">ltc-backup CLI tool</h3>
+			<p><code>ltc-backup</code> CLI tool will help you speed up development and UQ node startup time, downloading a LTC header&#39;s backup from UniquId&#39;s servers and injecting it for UniquId node usage.</p>
+			<p>It will be available in any package that installs <code>@uniquid/uidcore</code></p>
+			<p>Perform it using <code>npx ltc-backup [options] [command]</code></p>
+			<p>Checkout helps in CLI</p>
+			<pre><code><span class="hljs-meta">$</span><span class="bash"> npx ltc-backup --<span class="hljs-built_in">help</span></span>
+<span class="hljs-meta">$</span><span class="bash"> npx ltc-backup download --<span class="hljs-built_in">help</span></span>
+<span class="hljs-meta">$</span><span class="bash"> npx ltc-backup inject --<span class="hljs-built_in">help</span></span>
+<span class="hljs-meta">$</span><span class="bash"> npx ltc-backup install --<span class="hljs-built_in">help</span></span></code></pre><h4 id="intro">Intro</h4>
+			<p>Starting up a blockchain node is a time-consuming task, the newly created node requires to download the whole header chain from the network.</p>
+			<p>For speeding up this task in test and development environment it is possible to inject a pre-populated DB into the node&#39;s home directory</p>
+			<p>When Node start it is configured with a node home directory for node persistency</p>
+			<p>the process structures the directory this way:</p>
+			<pre><code>&lt;node_home&gt;/
+    CEV/
+        chain.db.ldb/ &lt;-- <span class="hljs-keyword">this</span> <span class="hljs-keyword">is</span> the blockchain headers (leveldb)DB directory
+    ID/
+    DB/</code></pre><p>If the process finds some resources present in the directory, it will use them.</p>
+			<p>So, letting the node find a valid and pre-populated CEV/chain.db.ldb into its home directory will let the node use it and start syncing from there, as long as the node and the DB-backup refer to the same network.</p>
+			<p>Any chain.db.ldb created with any UQ node is valid and can be imported in any other node, as it is not bound to node&#39;s identity.</p>
+			<h4 id="uniquid-chain-db-backups-repo">Uniquid Chain DB Backups repo</h4>
+			<p>Uniquid currently provides a set of CEV/chain.db.ldb backups for speeding up development, test, and evaluation.</p>
+			<p>Download of DB backup TARs is possible at url:</p>
+			<p><a href="http://35.180.120.244/%7Bnetwork_name%7D_db_latest.tar">http://35.180.120.244/{network_name}_db_latest.tar</a>
+				along with a checksum file
+				<a href="http://35.180.120.244/%7Bnetwork_name%7D_db_latest.tar_md5">http://35.180.120.244/{network_name}_db_latest.tar_md5</a>
+			for checksum verification</p>
+			<p>i.e.  <a href="http://35.180.120.244/testnet_db_latest.tar">http://35.180.120.244/testnet_db_latest.tar</a> and <a href="http://35.180.120.244/testnet_db_latest.tar_md5">http://35.180.120.244/testnet_db_latest.tar_md5</a></p>
+			<p>Previous backups are also present in <a href="http://35.180.120.244/%7Bnetwork_name%7D/db_%7Bblock_number%7D.tar">http://35.180.120.244/{network_name}/db_{block_number}.tar</a></p>
+			<p>i.e. <a href="http://35.180.120.244/testnet/db_000700000.tar">http://35.180.120.244/testnet/db_000700000.tar</a> and <a href="http://35.180.120.244/testnet/db_000700000.tar_md5">http://35.180.120.244/testnet/db_000700000.tar_md5</a></p>
+			<p>Feel free to navigate with your browser to <a href="http://35.180.120.244">http://35.180.120.244</a> and checkout contents</p>
 		</div>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
@@ -990,6 +1017,10 @@ error =&gt; {
 							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_bcoindb_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/<wbr>BcoinDB"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_bcoinid_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/<wbr>BcoinID"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_bcoinid_hd_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/<wbr>BcoinID/HD"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_node_facilities_cli_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/node_<wbr>facilities/CLI"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_node_facilities_checkbackupfilemd5_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/node_<wbr>facilities/check<wbr>Backup<wbr>FileMD5"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_node_facilities_downloadbackup_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/node_<wbr>facilities/download<wbr>Backup"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_node_facilities_injecttarball_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/node_<wbr>facilities/inject<wbr>Tarball"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_types_bcoincev_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/types/<wbr>BcoinCEV"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_types_bcoindb_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/types/<wbr>BcoinDB"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_impl_bcoin_types_bcoinid_.html" class="tsd-kind-icon">"impl/<wbr>Bcoin/types/<wbr>BcoinID"</a></li>

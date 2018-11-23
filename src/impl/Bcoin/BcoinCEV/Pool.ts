@@ -38,11 +38,11 @@ export interface Options {
   dbFolder: string
 
   /**
-   * the network to connect to
+   * the bcoin loggers
    * @type {string}
    * @memberof Options
    */
-  logLevel: 'error' | 'warning' | 'info' | 'debug' | 'spam'
+  logger: any
 }
 /**
  * A Bcoin Pool wrapper for UQ {@link BcoinCEV} it handles Bitcoin Network net communication and exposes UQ related necessary functions
@@ -78,28 +78,19 @@ export interface BCPool {
  * @returns {Promise<BCPool>}
  */
 export const Pool = async (options: Options): Promise<BCPool> => {
-  const chainLogger = new bcoin.logger({
-    level: options.logLevel
-  })
-  const poolLogger = new bcoin.logger({
-    level: options.logLevel
-  })
-
   const chain = bcoin.chain({
-    logger: chainLogger,
+    logger: options.logger,
     db: 'leveldb',
     location: options.dbFolder,
     spv: true
   })
   const pool = new bcoin.pool({
-    logger: poolLogger,
+    logger: options.logger,
     seeds: options.seeds,
     chain,
-    maxPeers: 8
+    maxPeers: 8,
+    spv: true
   })
-
-  await chainLogger.open()
-  await poolLogger.open()
 
   await pool.open()
   await pool.connect()
@@ -117,17 +108,17 @@ export const Pool = async (options: Options): Promise<BCPool> => {
       resolve = _resolve
     })
   pool.on('tx', (tx: any) => {
-    console.log('----_TX------------')
-    console.log(tx.toJSON())
+    options.logger.debug('----------TX------------')
+    options.logger.debug(tx.toJSON())
     pool.watch(tx.toJSON().hash)
-    console.log('-------------------')
+    options.logger.debug('------------------------')
   })
 
   let scheduledResponse = false
   const listener = (block: any, entry: any) => {
     txs = txs.concat(block.txs)
     if (block.txs.length && !scheduledResponse) {
-      console.log(
+      options.logger.debug(
         `*BLOCK with txs: ${block.toJSON().hash}`,
         block.txs.map((tx: any) => tx.toJSON().hash),
         `waits ${WATCHADDRESS_WAIT_BEFORE_RESPONSE}`
