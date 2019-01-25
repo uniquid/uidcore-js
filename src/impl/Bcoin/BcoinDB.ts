@@ -96,6 +96,12 @@ export const makeBcoinDB = (options: Options): Promise<BcoinDB> =>
           orchestration: { $ne: true }
         }) as Contract[]
 
+      const getAllRoleContracts = () =>
+        contracts.find({
+          orchestration: { $ne: true },
+          imprinting: { $ne: true }
+        }) as Contract[]
+
       const revokeContract = (revoker: IdAddress) => {
         const ctr = contracts.findOne({
           revoked: null,
@@ -129,7 +135,24 @@ export const makeBcoinDB = (options: Options): Promise<BcoinDB> =>
       const findUserContractsByProviderName = (providerName: string): UserContract[] =>
         contracts.find({ 'identity.role': Role.User, providerName })
 
+      const getAllUserContracts = (): UserContract[] =>
+        contracts.find({
+          'identity.role': Role.User,
+          orchestration: { $ne: true },
+          imprinting: { $ne: true }
+        })
+
+      const getAllProviderContracts = (): ProviderContract[] =>
+        contracts.find({
+          'identity.role': Role.Provider,
+          orchestration: { $ne: true },
+          imprinting: { $ne: true }
+        })
+
       const bcoinDB: BcoinDB = {
+        getAllRoleContracts,
+        getAllUserContracts,
+        getAllProviderContracts,
         findUserContractsByProviderName,
         getContractForExternalUser,
         storeImprinting,
