@@ -76,6 +76,27 @@ export interface DB {
      */
     getActiveRoleContracts(): Contract[];
     /**
+     * Gets all contracts
+     *
+     * @returns {Contract[]}
+     * @memberof DB
+     */
+    getAllRoleContracts(): Contract[];
+    /**
+     * Gets all User contracts
+     *
+     * @returns {UserContract[]}
+     * @memberof DB
+     */
+    getAllUserContracts(): UserContract[];
+    /**
+     * Gets all Provider contracts
+     *
+     * @returns {ProviderContract[]}
+     * @memberof DB
+     */
+    getAllProviderContracts(): ProviderContract[];
+    /**
      * revokes contract whose revoker is revokerAddress
      *
      * @param {IdAddress} revokerAddress the contract's revoker address
