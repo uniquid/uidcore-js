@@ -43,15 +43,23 @@ const bufStrToObj = (messageBuf: Buffer) => {
 }
 export const messages = ({ announceMessage, mqttHost, rpc, rpcHandlers, requestTimeout, logger }: Config) => {
   rpcHandlers.forEach(({ m, h }) => rpc.register(m, h))
-  const client = mqtt.connect(mqttHost)
+  // this is the "main" connection:
+  // handles publishing and incoming RPC requests (subscription to "nodename" topic)
+  const mainClient = mqtt.connect(mqttHost)
 
   const publish = (msg: Msg.Message<string, any>) =>
-    new Promise<void>((resolve, reject) =>
-      client.publish(msg.topic, JSON.stringify(msg.data), err => (err ? reject(err) : resolve()))
-    )
+    new Promise<void>((resolve, reject) => {
+      mainClient.publish(msg.topic, JSON.stringify(msg.data), err => (err ? reject(err) : resolve()))
+    })
 
   const request = (userAddress: IdAddress, providerName: ProviderName, method: Method, params: Params) =>
     new Promise<Response>((resolve, reject) => {
+      // this is the "rpc" connection:
+      // one connection for each outgoing RPC request
+      // this is to avoid interference between same topic subscription/unsubscription
+      // that would occour for different RPCs using same contract
+      const RPCRequestClient = mqtt.connect(mqttHost)
+
       // tslint:disable-next-line:no-magic-numbers
       const id = Math.floor(Math.random() * 1e6)
       const msg: Msg.RPCMessage = {
@@ -65,39 +73,44 @@ export const messages = ({ announceMessage, mqttHost, rpc, rpcHandlers, requestT
           }
         }
       }
+      let timeoutId: NodeJS.Timer
+      const release = () => {
+        // tslint:disable-next-line:no-use-before-declare
+        RPCRequestClient.removeListener('message', handleIncomingMessages)
+        RPCRequestClient.unsubscribe(userAddress)
+        clearTimeout(timeoutId)
+        RPCRequestClient.end()
+      }
 
-      client.subscribe(userAddress)
-      // tslint:disable-next-line:no-floating-promises
-      publish(msg).then(() => {
-        const release = () => {
-          // tslint:disable-next-line:no-use-before-declare
-          client.removeListener('message', handleIncomingMessages)
-          client.unsubscribe(userAddress)
-        }
-
-        const handleIncomingMessages = (topic: string, messageBuf: Buffer) => {
-          const response = bufStrToObj(messageBuf)
-          if (response && !isRequest(response) && topic === userAddress && id === response.body.id) {
-            release()
-            resolve(response)
-          }
-        }
-
-        client.on('message', handleIncomingMessages)
-
-        setTimeout(() => {
+      const handleIncomingMessages = (topic: string, messageBuf: Buffer) => {
+        const response = bufStrToObj(messageBuf)
+        if (response && !isRequest(response) && topic === userAddress && id === response.body.id) {
           release()
-          reject('timeout')
-        }, requestTimeout)
-      }, reject)
+          resolve(response)
+        }
+      }
+
+      RPCRequestClient.on('connect', () => {
+        RPCRequestClient.subscribe(userAddress)
+        RPCRequestClient.on('message', handleIncomingMessages)
+
+        // tslint:disable-next-line:no-floating-promises
+        publish(msg).then(() => {
+          timeoutId = setTimeout(() => {
+            release()
+            reject('timeout')
+            // console.log(`Timeout for RPC id: ${msg.data.body.id}`)
+          }, requestTimeout)
+        }, reject)
+      })
     })
 
-  client.on('connect', () => {
-    client.subscribe(announceMessage.data.name)
+  mainClient.on('connect', () => {
+    mainClient.subscribe(announceMessage.data.name)
     publish(announceMessage).catch(err => logger.error('Publish Announce Error:', err))
   })
 
-  client.on('message', (topic: string, messageBuf) => {
+  mainClient.on('message', (topic: string, messageBuf) => {
     const _request = bufStrToObj(messageBuf)
     _request &&
       isRequest(_request) &&
