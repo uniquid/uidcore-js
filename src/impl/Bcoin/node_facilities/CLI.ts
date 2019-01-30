@@ -118,7 +118,7 @@ function download(network: string, opts: { block: string; host?: string; output?
       exitError(`invalid block option: ${opts.block}, it should be an integer > 0`)
     }
   }
-  console.log('download', network, blockNumber)
+  console.log('download', network, blockNumber || 'latest')
 
   return downloadBackup({
     blockNumber,
