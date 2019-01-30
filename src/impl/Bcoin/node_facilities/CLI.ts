@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const DEFAULT_HOST = 'http://35.180.120.244'
+const DEFAULT_HOST = 'http://dbs-ltc-testnet.uniquid.co'
 
 import * as program from 'commander'
 import checkBackupFileMD5 from './checkBackupFileMD5'
