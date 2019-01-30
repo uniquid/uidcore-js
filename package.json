@@ -1,6 +1,6 @@
 {
   "name": "@uniquid/uidcore",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Uniquid Core Js/Ts library",
   "main": "lib/index.js",
   "module": "lib/index.js",

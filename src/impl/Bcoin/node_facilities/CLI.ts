@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const DEFAULT_HOST = 'http://35.180.120.244'
+const DEFAULT_HOST = 'http://dbs-ltc-testnet.uniquid.co'
 
 import * as program from 'commander'
 import checkBackupFileMD5 from './checkBackupFileMD5'
@@ -118,7 +118,7 @@ function download(network: string, opts: { block: string; host?: string; output?
       exitError(`invalid block option: ${opts.block}, it should be an integer > 0`)
     }
   }
-  console.log('download', network, blockNumber)
+  console.log('download', network, blockNumber || 'latest')
 
   return downloadBackup({
     blockNumber,
