@@ -100,15 +100,15 @@ Uniquid currently provides a set of CEV/chain.db.ldb backups for speeding up dev
 
 Download of DB backup TARs is possible at url:
 
-http://35.180.120.244/{network_name}_db_latest.tar
+http://dbs-ltc-testnet.uniquid.co/{network_name}_db_latest.tar
 along with a checksum file
-http://35.180.120.244/{network_name}_db_latest.tar_md5
+http://dbs-ltc-testnet.uniquid.co/{network_name}_db_latest.tar_md5
 for checksum verification
 
-i.e.  http://35.180.120.244/testnet_db_latest.tar and http://35.180.120.244/testnet_db_latest.tar_md5
+i.e.  http://dbs-ltc-testnet.uniquid.co/testnet_db_latest.tar and http://dbs-ltc-testnet.uniquid.co/testnet_db_latest.tar_md5
 
-Previous backups are also present in http://35.180.120.244/{network_name}/db_{block_number}.tar
+Previous backups are also present in http://dbs-ltc-testnet.uniquid.co/{network_name}/db_{block_number}.tar
 
-i.e. http://35.180.120.244/testnet/db_000700000.tar and http://35.180.120.244/testnet/db_000700000.tar_md5
+i.e. http://dbs-ltc-testnet.uniquid.co/testnet/db_000700000.tar and http://dbs-ltc-testnet.uniquid.co/testnet/db_000700000.tar_md5
 
-Feel free to navigate with your browser to http://35.180.120.244 and checkout contents
+Feel free to navigate with your browser to http://dbs-ltc-testnet.uniquid.co and checkout contents
