@@ -6,7 +6,9 @@
  * See the License for the specific language governing permissions and limitations under the License.
  *
  */
+import * as base64 from 'base-64'
 import * as mqtt from 'mqtt'
+import * as utf8 from 'utf8'
 import { ProviderName } from '../../types/data/Contract'
 import { IdAddress } from '../../types/data/Identity'
 import { ID } from '../../types/layers/ID'
@@ -59,6 +61,10 @@ export const messages = ({ announceMessage, mqttHost, rpc, rpcHandlers, requestT
       // this is to avoid interference between same topic subscription/unsubscription
       // that would occour for different RPCs using same contract
       const RPCRequestClient = mqtt.connect(mqttHost)
+
+      const bytes = utf8.encode(params)
+      const encoded = base64.encode(bytes)
+      params = encoded
 
       // tslint:disable-next-line:no-magic-numbers
       const id = Math.floor(Math.random() * 1e6)

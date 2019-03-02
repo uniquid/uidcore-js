@@ -113,6 +113,8 @@
     "request": "2.88.0",
     "request-progress": "3.0.0",
     "simple-get": "2.7.0",
+    "@types/base-64": "*",
+    "@types/utf8": "*",
     "varuint-bitcoin": "1.1.0"
   },
   "devDependencies": {
