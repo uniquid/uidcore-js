@@ -7,10 +7,12 @@
  *
  */
 import { Payload } from '../../../types/data/Contract'
+import { Role } from '../../../types/data/Identity'
 import { HDPath } from '../../Bcoin/BcoinID/HD'
 import { BcoinCEV } from '../../Bcoin/types/BcoinCEV'
 import { BcoinDB } from '../../Bcoin/types/BcoinDB'
 import { BcoinID } from '../../Bcoin/types/BcoinID'
+import { BcoinAbstractIdentity } from '../../Bcoin/types/data/BcoinIdentity'
 import { ImprintingContract } from './../../../types/data/Contract'
 import {
   SYSTEM_RESERVED_RPC_FUNCS_BYTE_LENGTH,
@@ -50,37 +52,53 @@ const verify = (payload: Payload, method: Method) => bitmask(payload)[method]
 const manageRequest = (db: BcoinDB, id: BcoinID, handlers: Handlers) => (request: Request): Promise<Response> =>
   new Promise(async (resolve, reject) => {
     const { method, params } = request.body
-    const contract = db.getContractForExternalUser(request.sender)
-    if (contract) {
-      let error: Error = ERROR_NONE
-      let result: Result = BLANK_RESULT
-      const providerIdentity = id.identityFor(contract.identity)
-      const sender = providerIdentity.address
-      if ((contract as ImprintingContract).imprinting || verify(contract.payload, method)) {
-        const handler = handlers[method]
-        if (handler) {
-          try {
-            result = await handler(params, contract)
-          } catch (err) {
-            result = String(err)
+
+    const js = request.body.method + request.body.params + request.body.id
+    const valid = id.verifyMessage(js, request.signature as string)
+
+    if (valid) {
+      const _sender = id.recoverAddress(js, request.signature as string)
+      const contract = db.getContractForExternalUser(_sender)
+      if (contract) {
+        let error: Error = ERROR_NONE
+        let result: Result = BLANK_RESULT
+        // const providerIdentity = id.identityFor(contract.identity)
+        // const sender = providerIdentity.address
+        if ((contract as ImprintingContract).imprinting || verify(contract.payload, method)) {
+          const handler = handlers[method]
+          if (handler) {
+            try {
+              result = await handler(params, contract)
+            } catch (err) {
+              result = String(err)
+            }
+          } else {
+            error = ERROR_METHOD_NOT_IMPLEMENTED
           }
         } else {
-          error = ERROR_METHOD_NOT_IMPLEMENTED
+          error = ERROR_NOT_AUTHORIZED
         }
+        const response: Response = {
+          requester: _sender,
+          body: {
+            result,
+            error,
+            id: request.body.id
+          },
+          signature: ''
+        }
+
+        const jsresp = response.body.error + response.body.result + response.body.id
+        const sjson = id.signMessage(jsresp, contract.identity as BcoinAbstractIdentity<Role>)
+        response.signature = sjson.toString('base64')
+
+        resolve(response)
       } else {
-        error = ERROR_NOT_AUTHORIZED
+        reject(`No contract for user:${_sender}`)
       }
-      const response: Response = {
-        sender,
-        body: {
-          result,
-          error,
-          id: request.body.id
-        }
-      }
-      resolve(response)
+    } else {
+      reject(`Signature is not valid`)
     }
-    reject(`No contract for user:${request.sender}`)
   })
 
 const ECHO_FN = 31

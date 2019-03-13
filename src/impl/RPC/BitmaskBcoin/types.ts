@@ -50,8 +50,9 @@ export interface Request {
    * @type {IdAddress}
    * @memberof Request
    */
-  sender: IdAddress
+  // sender: IdAddress
   body: RequestBody
+  signature: string
 }
 
 /**
@@ -84,8 +85,9 @@ export interface ResponseBody {
  * @export
  */
 export interface Response {
-  sender: IdAddress
+  requester: IdAddress
   body: ResponseBody
+  signature: string
 }
 export type Nonce = number
 export type Handler = (params: Params, contract: ProviderContract) => Promise<Result> | Result

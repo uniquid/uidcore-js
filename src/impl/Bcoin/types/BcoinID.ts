@@ -56,4 +56,7 @@ export interface BcoinID extends ID {
    * @memberof BcoinID
    */
   signMessage(message: string, abstractIdentity: BcoinAbstractIdentity<Role>): Buffer
+
+  verifyMessage(message: string, signature: string): object
+  recoverAddress(message: string, signature: string): string
 }

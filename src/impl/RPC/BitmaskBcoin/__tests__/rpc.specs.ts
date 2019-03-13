@@ -19,8 +19,8 @@ describe('RPC', () => {
     it(`
         scenario: ${test.scenario}
         description: ${test.description}
-        method: ${test.request.body.method}
-        sender: ${test.request.sender}`, () => {
+        method: ${test.request.body.method}`, () => {
+      // sender: ${test.request.sender}`,() => {
       const scenarioDir = path.join(__dirname, 'scenarios', test.scenario)
       const idOpts: IDOptions = {
         home: path.join(scenarioDir, 'id_home'),

@@ -26,3 +26,11 @@ export declare const getBaseXpub: (bip32ExtMasterPrivateKey: string) => () => st
 export declare const publicKeyAtPath: (bip32ExtMasterPrivateKey: string) => (path: string[]) => Buffer;
 export declare const identityFor: (bip32ExtMasterPrivateKey: string) => <R extends Role>(abstrId: BcoinAbstractIdentity<R>) => BcoinIdentity<R>;
 export declare const signMessage: (bip32ExtMasterPrivateKey: string) => (message: string, abstractIdentity: BcoinAbstractIdentity<Role>) => Buffer;
+export declare const recoverAddress: (bip32ExtMasterPrivateKey: string) => (message: string, signature: string) => any;
+export declare const verifyMessage: (bip32ExtMasterPrivateKey: string) => (message: string, signature: string) => {
+    verify: any;
+    address: any;
+} | {
+    verify?: undefined;
+    address?: undefined;
+};

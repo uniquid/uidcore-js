@@ -13,13 +13,11 @@ import { BcoinAbstractIdentity, BcoinIdentity } from './../types/data/BcoinIdent
 // tslint:disable-next-line:no-require-imports
 const varuint = require('varuint-bitcoin')
 // tslint:disable-next-line:no-require-imports
-const sha265 = require('lcoin/lib/crypto/sha256')
-// tslint:disable-next-line:no-require-imports
 const crypto = require('lcoin/lib/crypto')
 // tslint:disable-next-line:no-require-imports
-const secp256k1 = require('elliptic').ec('secp256k1')
+const secp256k1 = require('secp256k1')
 // tslint:disable-next-line:no-require-imports
-const base58 = require('lcoin/lib/utils/base58')
+const bs58check = require('bs58check')
 // tslint:disable-next-line:no-require-imports
 const BcoinPrivateKey = require('lcoin/lib/hd/private')
 
@@ -87,12 +85,7 @@ const base58AddrByPrivKey = (privkey: BcoinHDPrivateKey) => {
   // tslint:disable-next-line:no-magic-numbers
   b.writeUInt8(0x6f, 0) // (111) https://en.bitcoin.it/wiki/List_of_address_prefixes
   const step3 = Buffer.concat([b, step2])
-  const step4: Buffer = crypto.sha256(step3)
-  const step5: Buffer = crypto.sha256(step4)
-  // tslint:disable-next-line:no-magic-numbers
-  const step6 = step5.slice(0, 4)
-  const step7 = Buffer.concat([step3, step6])
-  const address: Base58Address = base58.encode(step7)
+  const address: Base58Address = bs58check.encode(step3)
 
   return address
 }
@@ -142,33 +135,76 @@ export const signMessage = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (
   abstractIdentity: BcoinAbstractIdentity<Role>
 ) => {
   const messagePrefix = Buffer.from('\u0018Bitcoin Signed Message:\n', 'utf8')
+
   const messageVISize = varuint.encodingLength(message.length)
   const buffer = Buffer.allocUnsafe(messagePrefix.length + messageVISize + message.length)
   messagePrefix.copy(buffer, 0)
   varuint.encode(message.length, buffer, messagePrefix.length)
   buffer.write(message, messagePrefix.length + messageVISize)
-  const hs = sha265.hash256(buffer)
+  const hs = crypto.hash256(buffer)
 
-  /**
-   * extract as (private?) function
-   * it is necessary in 3 functions here
-   */
   const isForProvider = abstractIdentity.role === Role.Provider
   const rolePath = isForProvider ? '0' : '1'
   const extOrInt = abstractIdentity.ext || (isForProvider ? '1' : '0')
   const subPath = [rolePath, extOrInt, `${abstractIdentity.index}`]
-  /**
-   * ***
-   */
 
   const derivedPK = derivePrivateKey(bip32ExtMasterPrivateKey)(subPath)
   const sigObj = secp256k1.sign(hs, derivedPK.privateKey)
   // tslint:disable-next-line:no-magic-numbers
-  sigObj.recoveryParam += 4
+  sigObj.recovery += 4
   // tslint:disable-next-line:no-magic-numbers
-  const signature = Buffer.concat([sigObj.r.toBuffer(), sigObj.s.toBuffer()], 64)
-  // tslint:disable-next-line:no-magic-numbers
-  const _tsSigned = Buffer.concat([Buffer.alloc(1, sigObj.recoveryParam + 27), signature])
+  const signatureWithRecovery = Buffer.concat([Buffer.alloc(1, sigObj.recovery + 27), sigObj.signature])
 
-  return _tsSigned
+  return signatureWithRecovery
+}
+
+export const recoverAddress = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (
+  message: string,
+  signature: string
+) => {
+  const signatureWithRecovery = Buffer.from(signature, 'base64')
+  // tslint:disable-next-line:no-magic-numbers
+  if (signatureWithRecovery.length !== 65) throw new Error('Invalid signature length')
+  // tslint:disable-next-line:no-magic-numbers
+  const flagByte = signatureWithRecovery.readUInt8(0) - 27
+  // tslint:disable-next-line:no-magic-numbers
+  if (flagByte > 7) throw new Error('Invalid signature parameter')
+
+  const parsed = {
+    // tslint:disable-next-line:no-magic-numbers no-bitwise
+    compressed: !!(flagByte & 4),
+    // tslint:disable-next-line:no-magic-numbers no-bitwise
+    recovery: flagByte & 3,
+    signature: signatureWithRecovery.slice(1)
+  }
+
+  const messagePrefix = Buffer.from('\u0018Bitcoin Signed Message:\n', 'utf8')
+
+  const messageVISize = varuint.encodingLength(message.length)
+  const buffer = Buffer.allocUnsafe(messagePrefix.length + messageVISize + message.length)
+  messagePrefix.copy(buffer, 0)
+  varuint.encode(message.length, buffer, messagePrefix.length)
+  buffer.write(message, messagePrefix.length + messageVISize)
+  const hs = crypto.hash256(buffer)
+
+  const publicKey = secp256k1.recover(hs, parsed.signature, parsed.recovery, parsed.compressed)
+  const sh = crypto.sha256(publicKey)
+  const add = crypto.ripemd160(sh)
+
+  const newbuffer = Buffer.allocUnsafe(add.length + 1)
+  newbuffer.write('\u006f', 0)
+  add.copy(newbuffer, 1)
+
+  return bs58check.encode(newbuffer)
+}
+
+export const verifyMessage = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (message: string, signature: string) => {
+  // tslint:disable-next-line:no-require-imports
+  const bitcoinMessage = require('bitcoinjs-message')
+  const sBuffer = Buffer.from(signature, 'base64')
+  const rAddr = recoverAddress(bip32ExtMasterPrivateKey)(message, signature)
+  const _verify = bitcoinMessage.verify(message, rAddr, sBuffer)
+  if (_verify) return { verify: _verify, address: rAddr }
+
+  return {}
 }
