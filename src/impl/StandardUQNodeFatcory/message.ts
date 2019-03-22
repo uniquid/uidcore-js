@@ -13,7 +13,16 @@ import { ID } from '../../types/layers/ID'
 import { BcoinID } from '../Bcoin/types/BcoinID'
 import { BcoinAbstractIdentity } from '../Bcoin/types/data/BcoinIdentity'
 import { RPC } from '../RPC/BitmaskBcoin/RPC'
-import { isRequest, Method, Params, Request, Response, RPCHandler } from '../RPC/BitmaskBcoin/types'
+import {
+  isRequest,
+  Method,
+  Params,
+  Request,
+  Response,
+  RPCHandler,
+  SigRequest,
+  SigResponse
+} from '../RPC/BitmaskBcoin/types'
 import * as Msg from './message/Defs'
 
 export interface Config {
@@ -32,15 +41,16 @@ export type MessageRequest = (
   userAddress: string,
   providerName: string,
   method: number,
-  params: string
-) => Promise<Response>
+  params: string,
+  sig: boolean
+) => Promise<Response | SigResponse>
 export interface Messages {
   publish: MessagePublish
   request: MessageRequest
 }
 const bufStrToObj = (messageBuf: Buffer) => {
   try {
-    return JSON.parse(messageBuf.toString('utf-8')) as Request | Response
+    return JSON.parse(messageBuf.toString('utf-8')) as Request | SigRequest | Response | SigResponse
   } catch (e) {
     return null
   }
@@ -53,7 +63,7 @@ export const messages = ({ announceMessage, mqttHost, rpc, rpcHandlers, requestT
 
   const publish = (msg: Msg.Message<string, any>) =>
     new Promise<void>((resolve, reject) => {
-      delete msg.data.requester
+      if (msg.data.hasOwnProperty('requester')) delete msg.data.requester
       mainClient.publish(msg.topic, JSON.stringify(msg.data), err => (err ? reject(err) : resolve()))
     })
 
@@ -63,33 +73,48 @@ export const messages = ({ announceMessage, mqttHost, rpc, rpcHandlers, requestT
     userAddress: IdAddress,
     providerName: ProviderName,
     method: Method,
-    params: Params
+    params: Params,
+    sig: boolean
   ) =>
-    new Promise<Response>((resolve, reject) => {
+    new Promise<Response | SigResponse>((resolve, reject) => {
       // this is the "rpc" connection:
       // one connection for each outgoing RPC request
       // this is to avoid interference between same topic subscription/unsubscription
       // that would occour for different RPCs using same contract
       const RPCRequestClient = mqtt.connect(mqttHost)
-
-      // tslint:disable-next-line:no-magic-numbers
       const id = new Date().getTime()
-      const msg: Msg.RPCMessage = {
-        topic: providerName,
-        data: {
-          // sender: userAddress,
-          body: {
-            id,
-            method,
-            params
-          },
-          signature: ''
+      let msg: Msg.RPCMessage
+      if (sig) {
+        msg = {
+          topic: providerName,
+          data: {
+            body: {
+              id,
+              method,
+              params
+            },
+            signature: ''
+          }
         }
-      }
+        msg.data = msg.data as SigRequest
 
-      const stringTosign = msg.data.body.method + msg.data.body.params + msg.data.body.id
-      const signature = uqId.signMessage(stringTosign, cIdentity)
-      msg.data.signature = signature.toString('base64')
+        const stringTosign = msg.data.body.method + msg.data.body.params + msg.data.body.id
+        const signature = uqId.signMessage(stringTosign, cIdentity)
+        msg.data.signature = signature.toString('base64')
+      } else {
+        msg = {
+          topic: providerName,
+          data: {
+            sender: userAddress,
+            body: {
+              id,
+              method,
+              params
+            }
+          }
+        }
+        msg.data = msg.data as Request
+      }
 
       let timeoutId: NodeJS.Timer
       const release = () => {
@@ -103,11 +128,16 @@ export const messages = ({ announceMessage, mqttHost, rpc, rpcHandlers, requestT
       const handleIncomingMessages = (topic: string, messageBuf: Buffer) => {
         const response = bufStrToObj(messageBuf)
         if (response && !isRequest(response) && topic === userAddress && id === response.body.id) {
-          const js = response.body.error + response.body.result + response.body.id
-          const valid = uqId.verifyMessage(js, response.signature)
-          if (Object.keys(valid).length === 0) {
-            release()
-            resolve(response)
+          if (!response.hasOwnProperty('sender') && response.hasOwnProperty('signature')) {
+            const js = response.body.error + response.body.result + response.body.id
+            const valid = uqId.verifyMessage(js, (response as SigResponse).signature)
+            if (valid) {
+              release()
+              resolve(response)
+            } else {
+              release()
+              resolve(response)
+            }
           } else {
             release()
             resolve(response)
@@ -142,7 +172,15 @@ export const messages = ({ announceMessage, mqttHost, rpc, rpcHandlers, requestT
       isRequest(_request) &&
       rpc
         .manageRequest(_request)
-        .then(resp => publish({ topic: resp.requester, data: resp }))
+        .then(function(resp) {
+          if (resp.hasOwnProperty('requester') && resp.hasOwnProperty('signature')) {
+            // tslint:disable-next-line:no-floating-promises
+            publish({ topic: (resp as SigResponse).requester, data: resp as SigResponse })
+          } else {
+            // tslint:disable-next-line:no-floating-promises
+            publish({ topic: (_request as Request).sender, data: resp as Response })
+          }
+        })
         .catch(err => logger.error('Request Message Error:', err))
   })
 

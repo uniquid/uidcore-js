@@ -17,6 +17,8 @@ const crypto = require('lcoin/lib/crypto')
 // tslint:disable-next-line:no-require-imports
 const secp256k1 = require('secp256k1')
 // tslint:disable-next-line:no-require-imports
+const secp256k1DER = require('elliptic').ec('secp256k1')
+// tslint:disable-next-line:no-require-imports
 const bs58check = require('bs58check')
 // tslint:disable-next-line:no-require-imports
 const BcoinPrivateKey = require('lcoin/lib/hd/private')
@@ -68,7 +70,7 @@ export const signFor = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (
    */
 
   const privK = derivePrivateKey(bip32ExtMasterPrivateKey)(subPath)
-  const res = secp256k1.sign(hash, privK.privateKey, { canonical: true })
+  const res = secp256k1DER.sign(hash, privK.privateKey, { canonical: true })
 
   // tslint:disable-next-line:no-magic-numbers
   return der ? res.toDER() as Buffer : Buffer.concat([res.r.toBuffer(), res.s.toBuffer()], 64)
@@ -203,8 +205,8 @@ export const verifyMessage = (bip32ExtMasterPrivateKey: Bip32Base58PrivKey) => (
   const bitcoinMessage = require('bitcoinjs-message')
   const sBuffer = Buffer.from(signature, 'base64')
   const rAddr = recoverAddress(bip32ExtMasterPrivateKey)(message, signature)
-  const _verify = bitcoinMessage.verify(message, rAddr, sBuffer)
-  if (_verify) return { verify: _verify, address: rAddr }
+  const verify = bitcoinMessage.verify(message, rAddr, sBuffer)
+  if (verify) return rAddr as string
 
-  return {}
+  return null
 }

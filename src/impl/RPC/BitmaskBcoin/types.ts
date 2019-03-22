@@ -50,7 +50,22 @@ export interface Request {
    * @type {IdAddress}
    * @memberof Request
    */
-  // sender: IdAddress
+  sender: IdAddress
+  body: RequestBody
+}
+/**
+ * Bitmask's RPC SigRequest
+ *
+ * @interface SigRequest
+ * @export
+ */
+export interface SigRequest {
+  /**
+   * the sender's {@link IdAddress}
+   *
+   * @type {IdAddress}
+   * @memberof Request
+   */
   body: RequestBody
   signature: string
 }
@@ -85,10 +100,21 @@ export interface ResponseBody {
  * @export
  */
 export interface Response {
+  sender: IdAddress
+  body: ResponseBody
+}
+/**
+ * Bitmask's RPC SigResponse
+ *
+ * @interface SigResponseBody
+ * @export
+ */
+export interface SigResponse {
   requester: IdAddress
   body: ResponseBody
   signature: string
 }
+
 export type Nonce = number
 export type Handler = (params: Params, contract: ProviderContract) => Promise<Result> | Result
 export type Method = number
@@ -96,7 +122,8 @@ export type Params = string
 export type Result = string
 export type Error = typeof ERROR_METHOD_NOT_IMPLEMENTED | typeof ERROR_NOT_AUTHORIZED | typeof ERROR_NONE
 
-export const isRequest = (msg: Request | Response): msg is Request => 'method' in msg.body
+export const isRequest = (msg: Request | SigRequest | Response | SigResponse): msg is Request | SigRequest =>
+  'method' in msg.body
 
 export interface RPCHandler {
   m: Method

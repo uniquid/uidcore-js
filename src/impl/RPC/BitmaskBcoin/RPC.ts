@@ -30,7 +30,9 @@ import {
   Params,
   Request,
   Response,
-  Result
+  Result,
+  SigRequest,
+  SigResponse
 } from './types'
 
 const bitmask = (payload: Payload) =>
@@ -49,21 +51,61 @@ const bitmask = (payload: Payload) =>
 
 const verify = (payload: Payload, method: Method) => bitmask(payload)[method]
 
-const manageRequest = (db: BcoinDB, id: BcoinID, handlers: Handlers) => (request: Request): Promise<Response> =>
+const manageRequest = (db: BcoinDB, id: BcoinID, handlers: Handlers) => (
+  request: Request | SigRequest
+): Promise<Response | SigResponse> =>
   new Promise(async (resolve, reject) => {
     const { method, params } = request.body
 
-    const js = request.body.method + request.body.params + request.body.id
-    const valid = id.verifyMessage(js, request.signature as string)
-
-    if (valid) {
-      const _sender = id.recoverAddress(js, request.signature as string)
-      const contract = db.getContractForExternalUser(_sender)
+    if (!request.hasOwnProperty('sender') && request.hasOwnProperty('signature')) {
+      const js = request.body.method + request.body.params + request.body.id
+      const valid = id.verifyMessage(js, (request as SigRequest).signature as string)
+      if (valid) {
+        const _sender = id.recoverAddress(js, (request as SigRequest).signature as string)
+        const contract = db.getContractForExternalUser(_sender)
+        if (contract) {
+          let error: Error = ERROR_NONE
+          let result: Result = BLANK_RESULT
+          if ((contract as ImprintingContract).imprinting || verify(contract.payload, method)) {
+            const handler = handlers[method]
+            if (handler) {
+              try {
+                result = await handler(params, contract)
+              } catch (err) {
+                result = String(err)
+              }
+            } else {
+              error = ERROR_METHOD_NOT_IMPLEMENTED
+            }
+          } else {
+            error = ERROR_NOT_AUTHORIZED
+          }
+          const response: SigResponse = {
+            requester: _sender,
+            body: {
+              result,
+              error,
+              id: request.body.id
+            },
+            signature: ''
+          }
+          const jsresp = response.body.error + response.body.result + response.body.id
+          const sjson = id.signMessage(jsresp, contract.identity as BcoinAbstractIdentity<Role>)
+          response.signature = sjson.toString('base64')
+          resolve(response)
+        } else {
+          reject(`No contract for user:${_sender}`)
+        }
+      } else {
+        reject(`Signature is not valid`)
+      }
+    } else {
+      const contract = db.getContractForExternalUser((request as Request).sender)
       if (contract) {
         let error: Error = ERROR_NONE
         let result: Result = BLANK_RESULT
-        // const providerIdentity = id.identityFor(contract.identity)
-        // const sender = providerIdentity.address
+        const providerIdentity = id.identityFor(contract.identity)
+        const sender = providerIdentity.address
         if ((contract as ImprintingContract).imprinting || verify(contract.payload, method)) {
           const handler = handlers[method]
           if (handler) {
@@ -79,25 +121,16 @@ const manageRequest = (db: BcoinDB, id: BcoinID, handlers: Handlers) => (request
           error = ERROR_NOT_AUTHORIZED
         }
         const response: Response = {
-          requester: _sender,
+          sender,
           body: {
             result,
             error,
             id: request.body.id
-          },
-          signature: ''
+          }
         }
-
-        const jsresp = response.body.error + response.body.result + response.body.id
-        const sjson = id.signMessage(jsresp, contract.identity as BcoinAbstractIdentity<Role>)
-        response.signature = sjson.toString('base64')
-
         resolve(response)
-      } else {
-        reject(`No contract for user:${_sender}`)
       }
-    } else {
-      reject(`Signature is not valid`)
+      reject(`No contract for user:${(request as Request).sender}`)
     }
   })
 
@@ -118,7 +151,7 @@ interface Handlers {
 const MIN_USER_FUNC_BIT = 32
 const MAX_USER_FUNC_BIT = 143
 export interface RPC {
-  manageRequest(request: Request): Promise<Response>
+  manageRequest(request: Request | SigRequest): Promise<Response | SigResponse>
   register(method: number, handler: Handler): Handler | null
 }
 export const makeRPC = (cev: BcoinCEV, db: BcoinDB, id: BcoinID): RPC => {

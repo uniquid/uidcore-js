@@ -22,22 +22,20 @@ const tests: Test[] = [
     scenario: 'imprinted-only',
     description: 'ECHO for imprinter',
     request: {
-      // sender: 'mu1NE35VDZi8jFkKiPZmnmhK1FEAwiBbbU',
+      sender: 'mu1NE35VDZi8jFkKiPZmnmhK1FEAwiBbbU',
       body: {
         method: 31,
         params: 'abc',
         id: 1
-      },
-      signature: ''
+      }
     },
     response: {
-      requester: 'mu1NE35VDZi8jFkKiPZmnmhK1FEAwiBbbU', // 'mgofddcZaSpuoDiYxgPRVaYNNjsXbKKCsL',
+      sender: 'mgofddcZaSpuoDiYxgPRVaYNNjsXbKKCsL',
       body: {
         result: 'abc',
         error: ERROR_NONE,
         id: 1
-      },
-      signature: ''
+      }
     }
   },
 
@@ -46,23 +44,20 @@ const tests: Test[] = [
     scenario: 'imprinted-only',
     description: 'imprinter asks for unimplemented method',
     request: {
-      // sender: 'mu1NE35VDZi8jFkKiPZmnmhK1FEAwiBbbU',
+      sender: 'mu1NE35VDZi8jFkKiPZmnmhK1FEAwiBbbU',
       body: {
         method: 11,
         params: 'abc',
         id: 2
-      },
-      signature: ''
+      }
     },
     response: {
-      requester: 'mu1NE35VDZi8jFkKiPZmnmhK1FEAwiBbbU',
-      // 'mgofddcZaSpuoDiYxgPRVaYNNjsXbKKCsL',
+      sender: 'mgofddcZaSpuoDiYxgPRVaYNNjsXbKKCsL',
       body: {
         result: BLANK_RESULT,
         error: ERROR_METHOD_NOT_IMPLEMENTED,
         id: 2
-      },
-      signature: ''
+      }
     }
   },
 
@@ -71,13 +66,12 @@ const tests: Test[] = [
     scenario: 'imprinted-only',
     description: 'rejects ECHO for unknown',
     request: {
-      // sender: 'XXX',
+      sender: 'XXX',
       body: {
         method: 31,
         params: 'abc',
         id: 3
-      },
-      signature: ''
+      }
     },
     response: NO_RESPONSE
   },
@@ -87,13 +81,12 @@ const tests: Test[] = [
     scenario: 'imprinted-only',
     description: 'rejects unimplemented method for unknown',
     request: {
-      // sender: 'XXX',
+      sender: 'XXX',
       body: {
         method: 11,
         params: 'xyz',
         id: 4
-      },
-      signature: ''
+      }
     },
     response: NO_RESPONSE
   }
