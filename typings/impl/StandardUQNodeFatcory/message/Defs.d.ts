@@ -6,7 +6,7 @@
  * See the License for the specific language governing permissions and limitations under the License.
  *
  */
-import { Request, SigRequest } from '../../RPC/BitmaskBcoin/types';
+import { Request } from '../../RPC/BitmaskBcoin/types';
 export interface Message<Topic extends string, M> {
     topic: Topic;
     data: M;
@@ -16,4 +16,4 @@ export interface AnnounceData {
     xpub: string;
 }
 export declare type AnnounceMessage = Message<string, AnnounceData>;
-export declare type RPCMessage = Message<string, Request | SigRequest>;
+export declare type RPCMessage = Message<string, Request>;

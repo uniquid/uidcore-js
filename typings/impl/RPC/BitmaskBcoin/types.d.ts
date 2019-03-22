@@ -48,22 +48,6 @@ export interface Request {
      * @type {IdAddress}
      * @memberof Request
      */
-    sender: IdAddress;
-    body: RequestBody;
-}
-/**
- * Bitmask's RPC SigRequest
- *
- * @interface SigRequest
- * @export
- */
-export interface SigRequest {
-    /**
-     * the sender's {@link IdAddress}
-     *
-     * @type {IdAddress}
-     * @memberof Request
-     */
     body: RequestBody;
     signature: string;
 }
@@ -97,16 +81,6 @@ export interface ResponseBody {
  * @export
  */
 export interface Response {
-    sender: IdAddress;
-    body: ResponseBody;
-}
-/**
- * Bitmask's RPC SigResponse
- *
- * @interface SigResponseBody
- * @export
- */
-export interface SigResponse {
     requester: IdAddress;
     body: ResponseBody;
     signature: string;
@@ -117,7 +91,7 @@ export declare type Method = number;
 export declare type Params = string;
 export declare type Result = string;
 export declare type Error = typeof ERROR_METHOD_NOT_IMPLEMENTED | typeof ERROR_NOT_AUTHORIZED | typeof ERROR_NONE;
-export declare const isRequest: (msg: Request | SigRequest | Response | SigResponse) => msg is Request | SigRequest;
+export declare const isRequest: (msg: Request | Response) => msg is Request;
 export interface RPCHandler {
     m: Method;
     h: Handler;
