@@ -54,7 +54,9 @@ const manageRequest = (db: BcoinDB, id: BcoinID, handlers: Handlers) => (request
     const { method, params } = request.body
     const js = request.body.method + request.body.params + request.body.id
     const valid = id.verifyMessage(js, request.signature as string)
-    if (valid) {
+    const current = new Date().getTime()
+    const offset = 60000
+    if (valid && (request.body.id <= current + offset && request.body.id >= current - offset)) {
       const _sender = id.recoverAddress(js, request.signature as string)
       const contract = db.getContractForExternalUser(_sender)
       if (contract) {
