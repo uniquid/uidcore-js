@@ -8,7 +8,7 @@ export declare function downloadBackup(_: {
     checksumFile: string;
     backupFile: string;
 }>;
-export declare function getBackupFilename({ blockNumber, network }: {
+export declare function getBackupFilename({blockNumber, network}: {
     blockNumber: number | void;
     network: string;
 }): string;

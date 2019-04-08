@@ -48,8 +48,8 @@ export interface Request {
      * @type {IdAddress}
      * @memberof Request
      */
-    sender: IdAddress;
     body: RequestBody;
+    signature: string;
 }
 /**
  * Bitmask's RPC Response Body
@@ -81,8 +81,9 @@ export interface ResponseBody {
  * @export
  */
 export interface Response {
-    sender: IdAddress;
+    requester: IdAddress;
     body: ResponseBody;
+    signature: string;
 }
 export declare type Nonce = number;
 export declare type Handler = (params: Params, contract: ProviderContract) => Promise<Result> | Result;

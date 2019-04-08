@@ -113,7 +113,10 @@
     "request": "2.88.0",
     "request-progress": "3.0.0",
     "simple-get": "2.7.0",
-    "varuint-bitcoin": "1.1.0"
+    "varuint-bitcoin": "1.1.0",
+    "bitcoinjs-message": "^2.0.0",
+    "secp256k1": "^3.6.2",
+    "bs58check": "^2.0.2"
   },
   "devDependencies": {
     "@types/download": "6.2.2",
