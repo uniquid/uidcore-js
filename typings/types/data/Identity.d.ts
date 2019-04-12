@@ -16,7 +16,7 @@ export declare type IdIndex = number;
  */
 export declare enum Role {
     Provider = "PROVIDER",
-    User = "USER"
+    User = "USER",
 }
 /**
  * An abstract representaton of an internal identity
